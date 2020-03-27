@@ -1,0 +1,5 @@
+<Configuration>
+<VGpu>Enable</VGpu>
+<Networking>Enable</Networking>
+<ReadOnlyAccess>true</ReadOnlyAccess>
+</Configuration>

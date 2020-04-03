@@ -10,7 +10,7 @@ $Sources = $Current_Folder + "\" + "Sources\*"
 $ProgData = $env:ProgramData
 $Destination_folder = $ProgData
 copy-item $Sources $Destination_folder -force -recurse
-
+$Sandbox_Icon = "$Destination_folder\Run_in_Sandbox\sandbox.ico"
 
 # RUN ON PS1
 $PS1_Shell_Registry_Key = "HKCR_SD:\Microsoft.PowerShellScript.1\Shell"
@@ -27,8 +27,12 @@ New-Item -Path $ContextMenu_Basic_PS1 -Name "Command" -force
 New-Item -Path $ContextMenu_Parameters_PS1 -Name "Command" -force
 $Command_For_Basic_PS1 = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -executionpolicy bypass -sta -file C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type PS1Basic -LiteralPath "%V" -ScriptPath "%V"' 
 $Command_For_Params_PS1 = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -executionpolicy bypass -sta -file C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type PS1Params -LiteralPath "%V" -ScriptPath "%V"' 
+# Set the command path
 Set-Item -Path "$ContextMenu_Basic_PS1\command" -Value $Command_For_Basic_PS1 -force
 Set-Item -Path "$ContextMenu_Parameters_PS1\command" -Value $Command_For_Params_PS1 -force
+# Add Sandbox Icons
+New-ItemProperty -Path $ContextMenu_Basic_PS1 -Name "icon" -PropertyType String -Value $Sandbox_Icon
+New-ItemProperty -Path $ContextMenu_Parameters_PS1 -Name "icon" -PropertyType String -Value $Sandbox_Icon
 
 
 # RUN ON VBS
@@ -43,8 +47,12 @@ New-Item -Path $ContextMenu_Basic_VBS -Name "Command" -force
 New-Item -Path $ContextMenu_Parameters_VBS -Name "Command" -force
 $Command_For_Basic_VBS = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -executionpolicy bypass -sta -file C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type VBSBasic -LiteralPath "%V" -ScriptPath "%V"' 
 $Command_For_Params_VBS = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -executionpolicy bypass -sta -file C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type VBSParams -LiteralPath "%V" -ScriptPath "%V"' 
+# Set the command path
 Set-Item -Path "$ContextMenu_Basic_VBS\command" -Value $Command_For_Basic_VBS -force
 Set-Item -Path "$ContextMenu_Parameters_VBS\command" -Value $Command_For_Params_VBS -force
+# Add Sandbox Icons
+New-ItemProperty -Path $ContextMenu_Basic_VBS -Name "icon" -PropertyType String -Value $Sandbox_Icon
+New-ItemProperty -Path $ContextMenu_Parameters_VBS -Name "icon" -PropertyType String -Value $Sandbox_Icon
 
 
 # RUN ON EXE
@@ -53,7 +61,10 @@ $EXE_Basic_Run = "Run the EXE in Sandbox"
 $ContextMenu_Basic_EXE = "$EXE_Shell_Registry_Key\$EXE_Basic_Run"
 New-Item -Path $EXE_Shell_Registry_Key -Name $EXE_Basic_Run -force
 New-Item -Path $ContextMenu_Basic_EXE -Name "Command" -force
+# Add Sandbox Icons
+New-ItemProperty -Path $ContextMenu_Basic_EXE -Name "icon" -PropertyType String -Value $Sandbox_Icon
 $Command_For_EXE = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -executionpolicy bypass -sta -file C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type EXE -LiteralPath "%V" -ScriptPath "%V"' 
+# Set the command path
 Set-Item -Path "$ContextMenu_Basic_EXE\command" -Value $Command_For_EXE -force
 
 
@@ -63,7 +74,10 @@ $MSI_Basic_Run = "Run the MSI in Sandbox"
 $ContextMenu_Basic_MSI = "$MSI_Shell_Registry_Key\$MSI_Basic_Run"
 New-Item -Path $MSI_Shell_Registry_Key -Name $MSI_Basic_Run -force
 New-Item -Path $ContextMenu_Basic_MSI -Name "Command" -force
+# Add Sandbox Icons
+New-ItemProperty -Path $ContextMenu_Basic_MSI -Name "icon" -PropertyType String -Value $Sandbox_Icon
 $Command_For_MSI = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -executionpolicy bypass -sta -file C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type MSI -LiteralPath "%V" -ScriptPath "%V"' 
+# Set the command path
 Set-Item -Path "$ContextMenu_Basic_MSI\command" -Value $Command_For_MSI -force
 
 

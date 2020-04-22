@@ -2,4 +2,5 @@
 <VGpu>Enable</VGpu>
 <Networking>Enable</Networking>
 <ReadOnlyAccess>true</ReadOnlyAccess>
+<WSB_Location>Default</WSB_Location>
 </Configuration>

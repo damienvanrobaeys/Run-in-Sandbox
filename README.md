@@ -1,4 +1,4 @@
-# Run-in-Sandbox
+# Run in Sandbox
 Run PS1, VBS, EXE, msi in Windows Sandbox from a right-click
 
 ![alt text](https://github.com/damienvanrobaeys/Run-in-Sandbox/blob/master/run_ps1_preview.gif.gif)

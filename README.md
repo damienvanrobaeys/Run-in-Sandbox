@@ -1,5 +1,5 @@
 # Run in Sandbox
-Run PS1, VBS, EXE, MSI directly in Windows Sandbox from a right-click
+Run PS1, VBS, EXE, MSI or extract ZIP directly in Windows Sandbox from a right-click
 
 ![alt text](https://github.com/damienvanrobaeys/Run-in-Sandbox/blob/master/run_ps1_preview.gif.gif)
 

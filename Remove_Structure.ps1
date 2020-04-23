@@ -38,4 +38,17 @@ $MSI_Shell_Registry_Key = "HKCR_SD:\Msi.Package\Shell"
 $MSI_Basic_Run = "Run the MSI in Sandbox"
 Remove-Item -Path "$MSI_Shell_Registry_Key\$MSI_Basic_Run" -Recurse
 
+# RUN ON ZIP
+$ZIP_Shell_Registry_Key = "HKCR_SD:\CompressedFolder\Shell"
+$ZIP_Basic_Run = "Extract the ZIP in Sandbox"
+Remove-Item -Path "$ZIP_Shell_Registry_Key\$ZIP_Basic_Run" -Recurse
+
+# RUN ON ZIP if WinRAR is installed
+If(test-path "HKCR_SD:\WinRAR.ZIP\Shell")
+	{
+		$ZIP_WinRAR_Shell_Registry_Key = "HKCR_SD:\WinRAR.ZIP\Shell"
+		$ZIP_WinRAR_Basic_Run = "Extract the ZIP in Sandbox"
+		Remove-Item -Path "$ZIP_WinRAR_Shell_Registry_Key\$ZIP_WinRAR_Basic_Run" -Recurse
+	}
+
 If($List_Drive -ne $null){Remove-PSDrive $List_Drive}

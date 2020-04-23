@@ -1,5 +1,5 @@
 # Run in Sandbox
-This allows you to do the below things in Windows Sandbox just from a right-click
+This allows you to do the below things in Windows Sandbox **just from a right-click**
 - Run PS1, VBS, EXE, MSI or 
 - Extract ZIP directly 
 - Share a specific folder

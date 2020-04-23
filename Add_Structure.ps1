@@ -117,4 +117,33 @@ If(test-path "HKCR_SD:\WinRAR.ZIP\Shell")
 		Set-Item -Path "$ContextMenu_Basic_ZIP_RAR\command" -Value $Command_For_ZIP -force
 	}
 
+
+# Share this folder - Inside the folder
+$Folder_Inside_Shell_Registry_Key = "HKCR_SD:\Directory\Background\shell"
+$Folder_Inside_Basic_Run = "Share this folder in a Sandbox"
+$ContextMenu_Folder_Inside = "$Folder_Inside_Shell_Registry_Key\$Folder_Inside_Basic_Run"
+
+New-Item -Path $Folder_Inside_Shell_Registry_Key -Name $Folder_Inside_Basic_Run -force
+New-Item -Path $ContextMenu_Folder_Inside -Name "Command" -force
+# Add Sandbox Icons
+New-ItemProperty -Path $ContextMenu_Folder_Inside -Name "icon" -PropertyType String -Value $Sandbox_Icon
+$Command_For_Folder_Inside = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -executionpolicy bypass -sta -file C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type Folder_Inside -LiteralPath "%V" -ScriptPath "%V"' 
+# Set the command path
+Set-Item -Path "$ContextMenu_Folder_Inside\command" -Value $Command_For_Folder_Inside -force
+
+
+# Share this folder - Right-click on the folder
+$Folder_On_Shell_Registry_Key = "HKCR_SD:\Directory\shell"
+$Folder_On_Run = "Share this folder in a Sandbox"
+$ContextMenu_Folder_On = "$Folder_On_Shell_Registry_Key\$Folder_On_Run"
+
+New-Item -Path $Folder_On_Shell_Registry_Key -Name $Folder_On_Run -force
+New-Item -Path $ContextMenu_Folder_On -Name "Command" -force
+# Add Sandbox Icons
+New-ItemProperty -Path $ContextMenu_Folder_On -Name "icon" -PropertyType String -Value $Sandbox_Icon
+$Command_For_Folder_On = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -executionpolicy bypass -sta -file C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type Folder_On -LiteralPath "%V" -ScriptPath "%V"' 
+# Set the command path
+Set-Item -Path "$ContextMenu_Folder_On\command" -Value $Command_For_Folder_On -force
+
+
 If($List_Drive -ne $null){Remove-PSDrive $List_Drive}

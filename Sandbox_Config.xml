@@ -1,0 +1,7 @@
+﻿<Configuration>
+<VGpu>Enable</VGpu>
+<Networking>Enable</Networking>
+<ReadOnlyAccess>true</ReadOnlyAccess>
+<WSB_Location>Default</WSB_Location>
+<Main_Language></Main_Language>
+</Configuration>

@@ -4,11 +4,13 @@ This allows you to do the below things in Windows Sandbox **just from a right-cl
 - Extract ZIP directly in the Sandbox
 - Share a specific folder in the Sandbox
 
+
 **Update (05/19/20): Add other languages for context menus**
  - Those languages are available: French, Italian, Spanish, English
 - To configure language, go to **Sources\Run_in_Sandbox\Sandbox_Config.xml**
 - Add language in **Main_Language**
 - This language should be the language code name
+
 
 ![alt text](https://github.com/damienvanrobaeys/Run-in-Sandbox/blob/master/run_ps1_preview.gif.gif)
 

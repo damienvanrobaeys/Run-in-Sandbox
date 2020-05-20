@@ -6,7 +6,7 @@ This allows you to do the below things in Windows Sandbox **just from a right-cl
 
 
 **Update (05/19/20): Add other languages for context menus**
- - Those languages are available: French, Italian, Spanish, English
+ - Those languages are available: French, Italian, Spanish, English, German
 - To configure language, go to **Sources\Run_in_Sandbox\Sandbox_Config.xml**
 - Add language in **Main_Language**
 - This language should be the language code name

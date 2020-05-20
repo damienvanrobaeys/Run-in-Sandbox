@@ -4,7 +4,7 @@
 		<Parameters>Ausführen der PS1 in der Sandbox mit Parametern</Parameters>	
 	</PowerShell>
 	<VBS>
-		<Basic>Ausführen der VBS in der Sandbox mit Parametern</Basic>
+		<Basic>Ausführen der VBS in der Sandbox</Basic>
 		<Parameters>Ausführen der VBS in der Sandbox mit Parametern</Parameters>	
 	</VBS>
 	<EXE>Ausführen der EXE in der Sandbox</EXE>

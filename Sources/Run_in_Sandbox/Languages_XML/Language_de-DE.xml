@@ -1,0 +1,14 @@
+﻿<Configuration>
+	<PowerShell>
+		<Basic>Ausführen der PS1 in der Sandbox</Basic>
+		<Parameters>Ausführen der PS1 in der Sandbox mit Parametern</Parameters>	
+	</PowerShell>
+	<VBS>
+		<Basic>Ausführen der VBS in der Sandbox mit Parametern</Basic>
+		<Parameters>Ausführen der VBS in der Sandbox mit Parametern</Parameters>	
+	</VBS>
+	<EXE>Ausführen der EXE in der Sandbox</EXE>
+	<MSI>Ausführen der MSI in der Sandbox</MSI>
+	<ZIP>Extrahieren der ZIP in der Sandbox</ZIP>
+	<Folder>Freigeben dieses Ordners in einer Sandbox</Folder>
+</Configuration>

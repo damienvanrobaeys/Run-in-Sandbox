@@ -4,6 +4,9 @@ This allows you to do the below things in Windows Sandbox **just from a right-cl
 - Extract ZIP directly in the Sandbox
 - Share a specific folder in the Sandbox
 
+**Update (06/02/20): Add new WSB config options for Windows 10 2004**
+- Those settings can be managed in the **Sources\Run_in_Sandbox\Sandbox_Config.xml
+- Following options have been added: AudioInput, VideoInput, ProtectedClient, PrinterRedirection, ClipboardRedirection, MemoryInMB
 
 **Update (05/19/20): Add other languages for context menus**
  - Those languages are available: French, Italian, Spanish, English, German

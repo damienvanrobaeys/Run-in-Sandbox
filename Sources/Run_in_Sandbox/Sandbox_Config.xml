@@ -1,7 +1,13 @@
 ﻿<Configuration>
-<VGpu>Enable</VGpu>
-<Networking>Enable</Networking>
-<ReadOnlyAccess>true</ReadOnlyAccess>
-<WSB_Location>Default</WSB_Location>
-<Main_Language></Main_Language>
+	<VGpu>Enable</VGpu> <!-- Enable or disable the virtualized GPU. If vGPU is disabled, the sandbox will use Windows Advanced Rasterization Platform (WARP). -->
+	<Networking>Enable</Networking> <!-- Enable or disable network access within the sandbox. -->
+	<ReadOnlyAccess>true</ReadOnlyAccess> <!-- True or False. If true, enforces read-only access to the shared folder from within the container. Supported values: true/false. Defaults to false. -->
+	<WSB_Location>Default</WSB_Location> <!-- Path where WSB fils will be saved -->
+	<Main_Language>fr-fr</Main_Language> <!-- Language of context menus -->
+	<AudioInput>Default</AudioInput> <!-- Enable, disable or Default. Shares the host's microphone input into the sandbox. -->
+	<VideoInput>Default</VideoInput> <!-- Enable, disable or Default. Shares the host's webcam input into the sandbox -->
+	<ProtectedClient>Default</ProtectedClient> <!-- Enable, disable or Default. Places increased security settings on the RDP session to the sandbox. -->
+	<PrinterRedirection>Default</PrinterRedirection> <!-- Enable, disable or Default. Shares printers from the host into the sandbox. -->
+	<ClipboardRedirection>Default</ClipboardRedirection> <!-- Enable, disable or Default. Shares the host clipboard with the sandbox so that text and files can be pasted back and forth. -->
+	<MemoryInMB></MemoryInMB> <!-- The amount of memory, in megabytes, to assign to the sandbox. -->
 </Configuration>

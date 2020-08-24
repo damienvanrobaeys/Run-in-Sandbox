@@ -7,9 +7,9 @@ This allows you to do the below things in Windows Sandbox **just from a right-cl
 **How to install it ?**
 - Download the ZIP Run-in-Sandbox project (this is the main prerequiste)
 - Extract the ZIP
-- The Run-in-Sandbox-master should contain Add_Structure.ps1, Remove_Structure.ps1 and a Sources folder
-- The Sources folder should contain a folder Run_in_Sandbox containing 13 files and 2 folders
-- Once you have downloaded the folder structre, **run Add_Structure.ps1 with admin rights**
+- The Run-in-Sandbox-master **should contain** Add_Structure.ps1, Remove_Structure.ps1 and a Sources folder
+- The Sources folder **should contain** a folder Run_in_Sandbox containing 13 files and 2 folders
+- Once you have downloaded the folder structure, run Add_Structure.ps1 **with admin rights**
 
 
 **Update (06/02/20): Add new WSB config options for Windows 10 2004**

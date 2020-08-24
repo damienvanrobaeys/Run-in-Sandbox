@@ -3,7 +3,7 @@
 	<Networking>Enable</Networking> <!-- Enable or disable network access within the sandbox. -->
 	<ReadOnlyAccess>true</ReadOnlyAccess> <!-- True or False. If true, enforces read-only access to the shared folder from within the container. Supported values: true/false. Defaults to false. -->
 	<WSB_Location>Default</WSB_Location> <!-- Path where WSB fils will be saved -->
-	<Main_Language>fr-fr</Main_Language> <!-- Language of context menus -->
+	<Main_Language>en-us</Main_Language> <!-- Language of context menus -->
 	<AudioInput>Default</AudioInput> <!-- Enable, disable or Default. Shares the host's microphone input into the sandbox. -->
 	<VideoInput>Default</VideoInput> <!-- Enable, disable or Default. Shares the host's webcam input into the sandbox -->
 	<ProtectedClient>Default</ProtectedClient> <!-- Enable, disable or Default. Places increased security settings on the RDP session to the sandbox. -->

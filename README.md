@@ -16,12 +16,12 @@ http://www.systanddeploy.com/2019/06/run-file-in-windows-sandbox-from-right.html
 
 
 **Update (06/02/20): Add new WSB config options for Windows 10 2004**
-- Those settings can be managed in the **Sources\Run_in_Sandbox\Sandbox_Config.xml
+- Those settings can be managed in the **Sources\Run_in_Sandbox\Sandbox_Config.xml**
 - New options: AudioInput, VideoInput, ProtectedClient, PrinterRedirection, ClipboardRedirection, MemoryInMB
 
 
 **Update (05/19/20): Add other languages for context menus**
- - Those languages are available: French, Italian, Spanish, English, German
+- Those languages are available: French, Italian, Spanish, English, German
 - To configure language, go to **Sources\Run_in_Sandbox\Sandbox_Config.xml**
 - Add language in **Main_Language**
 - This language should be the language code name

@@ -12,7 +12,9 @@ http://www.systanddeploy.com/2019/06/run-file-in-windows-sandbox-from-right.html
 - Extract the ZIP
 - The Run-in-Sandbox-master **should contain** Add_Structure.ps1, Remove_Structure.ps1 and a Sources folder
 - The Sources folder **should contain** a folder Run_in_Sandbox containing 13 files and 2 folders
-- Once you have downloaded the folder structure, run Add_Structure.ps1 **with admin rights**
+- Once you have downloaded the folder structure, check if files have not be blocked after download
+- Do a right-click on Add_Structure.ps1 and check if needed check Unblocked
+- Run Add_Structure.ps1 **with admin rights**
 
 
 **Update (06/02/20): Add new WSB config options for Windows 10 2004**

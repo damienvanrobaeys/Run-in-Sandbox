@@ -7,6 +7,9 @@ This allows you to do the below things in Windows Sandbox **just from a right-cl
 > *View the full blog post here*
 http://www.systanddeploy.com/2019/06/run-file-in-windows-sandbox-from-right.html
 
+
+**Note that this project has been build on personal time, it's not a professional project. Use it at your own risk, and please read How to install it before running it.**
+
 **How to install it ?**
 - Download the ZIP Run-in-Sandbox project (this is the main prerequiste)
 - Extract the ZIP

@@ -10,12 +10,16 @@ http://www.systanddeploy.com/2019/06/run-file-in-windows-sandbox-from-right.html
 **How to install it ?**
 - Download the ZIP Run-in-Sandbox project (this is the main prerequiste)
 - Extract the ZIP
-- The Run-in-Sandbox-master **should contain** Add_Structure.ps1, Remove_Structure.ps1 and a Sources folder
-- The Sources folder **should contain** a folder Run_in_Sandbox containing 13 files and 2 folders
-- Once you have downloaded the folder structure, check if files have not be blocked after download
+- The Run-in-Sandbox-master **should contain** at least Add_Structure.ps1  and a Sources folder
+- Please **don't not download only** Add_Structure.ps1
+- The Sources folder **should contain** folder Run_in_Sandbox containing 13 files and 2 folders
+- Once you have downloaded the folder structure, **check if files have not be blocked after download**
 - Do a right-click on Add_Structure.ps1 and check if needed check Unblocked
 - Run Add_Structure.ps1 **with admin rights**
 
+**Update (07/16/21): Add more controls to avoid association EXE issue**
+- The Add_Structure.ps1 will now create a restore point
+- It will then check if Sources folder exists
 
 **Update (06/02/20): Add new WSB config options for Windows 10 2004**
 - Those settings can be managed in the **Sources\Run_in_Sandbox\Sandbox_Config.xml**

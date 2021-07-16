@@ -1,4 +1,4 @@
-# Run in Sandbox
+# Run in Sandbox: a quick way to test EXE, PS1, VBS, MSI in Windows Sandbox
 This allows you to do the below things in Windows Sandbox **just from a right-click** by adding context menus:
 - Run PS1, VBS, EXE, MSI in the Sandbox
 - Extract ZIP directly in the Sandbox

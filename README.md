@@ -17,6 +17,8 @@ http://www.systanddeploy.com/2019/06/run-file-in-windows-sandbox-from-right.html
 - Do a right-click on Add_Structure.ps1 and check if needed check Unblocked
 - Run Add_Structure.ps1 **with admin rights**
 
+
+
 **Update (07/16/21): Add more controls to avoid association EXE issue**
 - The Add_Structure.ps1 will now create a restore point
 - It will then check if Sources folder exists

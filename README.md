@@ -20,7 +20,9 @@ http://www.systanddeploy.com/2019/06/run-file-in-windows-sandbox-from-right.html
 - Do a right-click on Add_Structure.ps1 and check if needed check Unblocked
 - Run Add_Structure.ps1 **with admin rights**
 
-
+**Update (07/21/21): Add more controls to avoid association EXE issue**
+- Updated the GUI when running EXE or MSI for more understanding
+- Updated the GUI when running PS1 for more understanding
 
 **Update (07/16/21): Add more controls to avoid association EXE issue**
 - The Add_Structure.ps1 will now create a restore point

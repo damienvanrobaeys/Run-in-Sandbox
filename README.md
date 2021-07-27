@@ -20,6 +20,9 @@ http://www.systanddeploy.com/2019/06/run-file-in-windows-sandbox-from-right.html
 - Do a right-click on Add_Structure.ps1 and check if needed check Unblocked
 - Run Add_Structure.ps1 **with admin rights**
 
+**Update (07/27/21): Change default WSB location**
+- Change the default path where WSB are saved after running Sandbox: now in %temp%
+
 **Update (07/21/21): Change GUI for MSI, EXE, PS1**
 - Updated the GUI when running EXE or MSI for more understanding
 - Updated the GUI when running PS1 for more understanding

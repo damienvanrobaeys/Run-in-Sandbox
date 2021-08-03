@@ -1,4 +1,4 @@
-# Run in Sandbox: a quick way to test EXE, PS1, VBS, MSI in Windows Sandbox
+# Run in Sandbox: a quick way to test EXE, PS1, VBS, MSI, Intunewin in Windows Sandbox
 This allows you to do the below things in Windows Sandbox **just from a right-click** by adding context menus:
 - Run PS1, VBS, EXE, MSI in the Sandbox
 - Extract ZIP directly in the Sandbox
@@ -20,7 +20,7 @@ http://www.systanddeploy.com/2019/06/run-file-in-windows-sandbox-from-right.html
 - Do a right-click on Add_Structure.ps1 and check if needed check Unblocked
 - Run Add_Structure.ps1 **with admin rights**
 
-**Update (07/27/21): Run intunewin file in sandbox**
+**Update (08/03/21): Run intunewin file in sandbox**
 - Add a context menu for intunewin file, to run them in Sandbox
 - Add ability to choose which content menu to add
 

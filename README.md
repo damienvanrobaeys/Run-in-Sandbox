@@ -20,6 +20,10 @@ http://www.systanddeploy.com/2019/06/run-file-in-windows-sandbox-from-right.html
 - Do a right-click on Add_Structure.ps1 and check if needed check Unblocked
 - Run Add_Structure.ps1 **with admin rights**
 
+**Update (07/27/21): Run intunewin file in sandbox**
+- Add a context menu for intunewin file, to run them in Sandbox
+- Add ability to choose which content menu to add
+
 **Update (07/27/21): Change default WSB location**
 - Change the default path where WSB are saved after running Sandbox: now in %temp%
 

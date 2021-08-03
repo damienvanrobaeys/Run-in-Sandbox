@@ -1,0 +1,63 @@
+<Controls:MetroWindow 
+xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks" 						
+Title="Intunewin install command" 
+Width="400" 
+Height="290"  
+ResizeMode="NoResize"
+BorderThickness="0.5"
+BorderBrush="{DynamicResource AccentColorBrush}"
+Topmost="True"
+TitleCaps="False"
+WindowStartupLocation="CenterScreen" 
+>
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colors.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/Cobalt.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
+
+    <Grid>
+        <StackPanel Orientation="Vertical" HorizontalAlignment="Center"  Margin="0,10,0,0">			
+            <GroupBox Header="What is it ?" Height="150" Margin="0,0,0,0" Width="380">	
+				<StackPanel Orientation="Horizontal" Margin="0,0,0,0" >					
+					<Label  FontSize="14" Width="380" Foreground="#037AC2">
+					<StackPanel Orientation="Vertical">
+						<TextBlock TextWrapping="Wrap" >
+						This part allows you type the install command line
+						for your intunewin package.
+						</TextBlock>
+						<TextBlock TextWrapping="Wrap">					
+						For that, type the appropriate command in the textbox, 
+						then click on the <Run FontWeight="Bold">+</Run> button.
+						</TextBlock>
+						<TextBlock TextWrapping="Wrap">					
+						You can bypass this by clicking on the <Run FontWeight="Bold">close</Run> button
+						</TextBlock>							
+					</StackPanel>
+					</Label>									
+				</StackPanel>
+			</GroupBox>			
+		
+            <GroupBox Header="Type install command to add" Height="80" Margin="0,5,0,0" Width="380">	
+				<StackPanel Orientation="Horizontal" Margin="0,0,0,0" HorizontalAlignment="Center">										
+					<TextBox FontSize="14" x:Name="install_command_intunewin" Width="340" Height="22"></TextBox>
+					<Button Height="22" x:Name="add_install_command" BorderThickness="0" Margin="0,0,0,0" 
+						Style="{DynamicResource SquareButtonStyle}" Cursor="Hand" Background="#2196f3">
+						<iconPacks:PackIconModern Width="15" Height="15" Foreground="white" Kind="add" Margin="0,0,0,0"/>							
+					</Button>					
+				</StackPanel>
+			</GroupBox>		
+        </StackPanel>
+    </Grid>
+</Controls:MetroWindow>

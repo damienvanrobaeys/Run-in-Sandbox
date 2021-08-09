@@ -14,7 +14,7 @@ http://www.systanddeploy.com/2019/06/run-file-in-windows-sandbox-from-right.html
 - Download the ZIP Run-in-Sandbox project (this is the main prerequiste)
 - Extract the ZIP
 - The Run-in-Sandbox-master **should contain** at least Add_Structure.ps1  and a Sources folder
-- Please **don't not download only** Add_Structure.ps1
+- Please **do not download only** Add_Structure.ps1
 - The Sources folder **should contain** folder Run_in_Sandbox containing 16 files
 - Once you have downloaded the folder structure, **check if files have not be blocked after download**
 - Do a right-click on Add_Structure.ps1 and check if needed check Unblocked

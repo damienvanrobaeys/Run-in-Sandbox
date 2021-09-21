@@ -17,4 +17,6 @@
 	<ContextMenu_ZIP>True</ContextMenu_ZIP> <!-- Choose to add or not context menu to extract ZIP in Sandbox. True or False -->
 	<ContextMenu_Folder>True</ContextMenu_Folder> <!-- Choose to add or not context menu to share folder content in Sandbox. True or False -->
 	<ContextMenu_Intunewin>True</ContextMenu_Intunewin> <!-- Choose to add or not context menu to run Intunewin in Sandbox. True or False -->
+	<ContextMenu_MultipleApp>True</ContextMenu_MultipleApp> <!-- Choose to add or not context menu to run Intunewin in Sandbox. True or False -->
+	<ContextMenu_Reg>True</ContextMenu_Reg> <!-- Choose to add or not context menu to run Intunewin in Sandbox. True or False -->	
 </Configuration>

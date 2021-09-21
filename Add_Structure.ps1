@@ -83,7 +83,7 @@ Else
 						write-progress -activity $Progress_Activity -percentcomplete 1;
 								
 						$Check_Sources_Files_Count = (get-childitem "$Current_Folder\Sources" -recurse).count
-						If($Check_Sources_Files_Count -eq 19)	
+						If($Check_Sources_Files_Count -eq 22)	
 							{	
 								$Sources_Copied = $False
 								$ProgData = $env:ProgramData
@@ -130,7 +130,9 @@ Else
 												$Add_ZIP = $Get_XML_Content.Configuration.ContextMenu_ZIP
 												$Add_Folder = $Get_XML_Content.Configuration.ContextMenu_Folder
 												$Add_Intunewin = $Get_XML_Content.Configuration.ContextMenu_Intunewin
-													
+												$Add_MultipleApp = $Get_XML_Content.Configuration.ContextMenu_MultipleApp
+												$Add_Reg = $Get_XML_Content.Configuration.ContextMenu_Reg
+																								
 												If(test-path "$ProgData\Run_in_Sandbox\RunInSandbox.ps1")
 													{													
 														write-progress -activity $Progress_Activity  -percentcomplete 5;
@@ -166,6 +168,7 @@ Else
 																Export_Reg_Config -Reg_Path "Directory" -Backup_Path "$Destination_folder\Backup_HKRoot_Directory.reg"						
 
 																write-progress -activity $Progress_Activity  -percentcomplete 15;	
+																
 																Add-content $log_file ""		
 																
 																Write_Log -Message_Type "INFO" -Message "Creating a restore point"		
@@ -219,13 +222,12 @@ Else
 																		Set-Item -Path "$ContextMenu_Basic_PS1\command" -Value $Command_For_Basic_PS1 -force | out-null
 																		Set-Item -Path "$ContextMenu_Parameters_PS1\command" -Value $Command_For_Params_PS1 -force | out-null
 																		# Add Sandbox Icons
-																		New-ItemProperty -Path $ContextMenu_Basic_PS1 -Name "icon" -PropertyType String -Value $Sandbox_Icon | out-null
-																		New-ItemProperty -Path $ContextMenu_Parameters_PS1 -Name "icon" -PropertyType String -Value $Sandbox_Icon | out-null
+																		New-ItemProperty -Path $ContextMenu_Basic_PS1 -Name "icon" -PropertyType String -Value $Sandbox_Icon -force | out-null
+																		New-ItemProperty -Path $ContextMenu_Parameters_PS1 -Name "icon" -PropertyType String -Value $Sandbox_Icon -force | out-null
 																		Write_Log -Message_Type "INFO" -Message "Context menus for PS1 have been added"																		
 																	}
 																	
 																write-progress -activity $Progress_Activity  -percentcomplete 25;
-
 
 																If($Add_Intunewin -eq $True)
 																	{
@@ -237,19 +239,65 @@ Else
 																		$Command_for_Intunewin = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -executionpolicy bypass -sta -windowstyle hidden -file C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type Intunewin -LiteralPath "%V" -ScriptPath "%V"'
 																		If(!(test-path $Intunewin_Shell_Registry_Key))
 																		{
-																			new-item $Intunewin_Shell_Registry_Key | out-null
-																			new-item "$Intunewin_Shell_Registry_Key\Shell" | out-null
-																			new-item $Intunewin_Key_Label_Path | out-null
-																			new-item $Intunewin_Command_Path | out-null	
+																			new-item $Intunewin_Shell_Registry_Key -force | out-null
+																			new-item "$Intunewin_Shell_Registry_Key\Shell" -force | out-null
+																			new-item $Intunewin_Key_Label_Path -force | out-null
+																			new-item $Intunewin_Command_Path -force | out-null	
 																			# Set the command path
 																			Set-Item -Path $Intunewin_Command_Path -Value $Command_for_Intunewin -force | out-null	
 																			# Add Sandbox Icons
-																			New-ItemProperty -Path $Intunewin_Key_Label_Path -Name "icon" -PropertyType String -Value $Sandbox_Icon | out-null			
+																			New-ItemProperty -Path $Intunewin_Key_Label_Path -Name "icon" -PropertyType String -Value $Sandbox_Icon -force | out-null			
 																			Write_Log -Message_Type "INFO" -Message "Context menus for PS1 have been added"																									
 																		}																	
 																	}
+																	
+															write-progress -activity $Progress_Activity  -percentcomplete 30;		
+															
+															If($Add_Reg -eq $True)
+																	{
+																		# RUN ON REG
+																		$Reg_Shell_Registry_Key = "HKCR_SD:\regfile\Shell"
+																		$Reg_Key_Label = "Test the reg file in Sandbox"
+																		$Reg_Key_Label_Path = "$Reg_Shell_Registry_Key\$Reg_Key_Label"
+																		$Reg_Command_Path = "$Reg_Key_Label_Path\Command"
+																		$Command_for_Reg = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -executionpolicy bypass -sta -windowstyle hidden -file C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type REG -LiteralPath "%V" -ScriptPath "%V"'
+																		If(test-path $Reg_Shell_Registry_Key)
+																		{
+																			new-item $Reg_Key_Label_Path -force | out-null
+																			new-item $Reg_Command_Path -force | out-null	
+																			# Set the command path
+																			Set-Item -Path $Reg_Command_Path -Value $Command_for_Reg -force | out-null	
+																			# Add Sandbox Icons
+																			New-ItemProperty -Path $Reg_Key_Label_Path -Name "icon" -PropertyType String -Value $Sandbox_Icon -force | out-null			
+																			Write_Log -Message_Type "INFO" -Message "Context menus for REG have been added"																									
+																		}																	
+																	}
+																	
+																write-progress -activity $Progress_Activity  -percentcomplete 35;																		
+																	
+																If($Add_MultipleApp -eq $True)
+																	{
+																		# RUN ON bundle app
+																		$MultipleApps_Shell_Registry_Key = "HKCR_SD:\.sdbapp"
+																		$MultipleApps_Key_Label = "Test application bundle in Sandbox"
+																		$MultipleApps_Key_Label_Path = "$MultipleApps_Shell_Registry_Key\Shell\$MultipleApps_Key_Label"
+																		$MultipleApps_Command_Path = "$MultipleApps_Key_Label_Path\Command"
+																		$Command_for_MultipleApps = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -executionpolicy bypass -sta -windowstyle hidden -file C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type SDBApp -LiteralPath "%V" -ScriptPath "%V"'
+																		If(!(test-path $MultipleApps_Shell_Registry_Key))
+																		{
+																			new-item $MultipleApps_Shell_Registry_Key -force | out-null
+																			new-item "$MultipleApps_Shell_Registry_Key\Shell" -force | out-null
+																			new-item $MultipleApps_Key_Label_Path -force | out-null
+																			new-item $MultipleApps_Command_Path -force| out-null	
+																			# Set the command path
+																			Set-Item -Path $MultipleApps_Command_Path -Value $Command_for_MultipleApps -force | out-null	
+																			# Add Sandbox Icons
+																			New-ItemProperty -Path $MultipleApps_Key_Label_Path -Name "icon" -PropertyType String -Value $Sandbox_Icon -force | out-null			
+																			Write_Log -Message_Type "INFO" -Message "Context menus for PS1 have been added"																									
+																		}																	
+																	}																	
 																
-																write-progress -activity $Progress_Activity  -percentcomplete 30;
+																write-progress -activity $Progress_Activity  -percentcomplete 40;
 
 																If($Add_VBS -eq $True)
 																	{
@@ -276,12 +324,12 @@ Else
 																		Set-Item -Path "$ContextMenu_Basic_VBS\command" -Value $Command_For_Basic_VBS -force | out-null
 																		Set-Item -Path "$ContextMenu_Parameters_VBS\command" -Value $Command_For_Params_VBS -force | out-null
 																		# Add Sandbox Icons
-																		New-ItemProperty -Path $ContextMenu_Basic_VBS -Name "icon" -PropertyType String -Value $Sandbox_Icon | out-null
-																		New-ItemProperty -Path $ContextMenu_Parameters_VBS -Name "icon" -PropertyType String -Value $Sandbox_Icon | out-null
+																		New-ItemProperty -Path $ContextMenu_Basic_VBS -Name "icon" -PropertyType String -Value $Sandbox_Icon -force | out-null
+																		New-ItemProperty -Path $ContextMenu_Parameters_VBS -Name "icon" -PropertyType String -Value $Sandbox_Icon -force | out-null
 																		Write_Log -Message_Type "INFO" -Message "Context menus for VBS have been added"																		
 																	}
 
-																write-progress -activity $Progress_Activity  -percentcomplete 40;
+																write-progress -activity $Progress_Activity  -percentcomplete 45;
 
 																If($Add_EXE -eq $True)
 																	{
@@ -295,7 +343,7 @@ Else
 																		New-Item -Path $EXE_Shell_Registry_Key -Name $EXE_Basic_Run -force | out-null
 																		New-Item -Path $ContextMenu_Basic_EXE -Name "Command" -force | out-null
 																		# Add Sandbox Icons
-																		New-ItemProperty -Path $ContextMenu_Basic_EXE -Name "icon" -PropertyType String -Value $Sandbox_Icon | out-null
+																		New-ItemProperty -Path $ContextMenu_Basic_EXE -Name "icon" -PropertyType String -Value $Sandbox_Icon -force | out-null
 																		$Command_For_EXE = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -executionpolicy bypass -sta -file C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type EXE -LiteralPath "%V" -ScriptPath "%V"' 
 																		# Set the command path
 																		Set-Item -Path "$ContextMenu_Basic_EXE\command" -Value $Command_For_EXE -force | out-null
@@ -323,7 +371,7 @@ Else
 																		Write_Log -Message_Type "INFO" -Message "Context menus for MSI have been added"																		
 																	}
 
-																write-progress -activity $Progress_Activity  -percentcomplete 60;
+																write-progress -activity $Progress_Activity  -percentcomplete 55;
 
 
 																If($Add_ZIP -eq $True)
@@ -338,13 +386,13 @@ Else
 																		New-Item -Path $ZIP_Shell_Registry_Key -Name $ZiP_Basic_Run -force | out-null
 																		New-Item -Path $ContextMenu_Basic_ZIP -Name "Command" -force | out-null
 																		# Add Sandbox Icons
-																		New-ItemProperty -Path $ContextMenu_Basic_ZIP -Name "icon" -PropertyType String -Value $Sandbox_Icon | out-null
+																		New-ItemProperty -Path $ContextMenu_Basic_ZIP -Name "icon" -PropertyType String -Value $Sandbox_Icon -force | out-null
 																		$Command_For_ZIP = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -executionpolicy bypass -sta -file C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type ZIP -LiteralPath "%V" -ScriptPath "%V"' 
 																		# Set the command path
 																		Set-Item -Path "$ContextMenu_Basic_ZIP\command" -Value $Command_For_ZIP -force | out-null
 																		Write_Log -Message_Type "INFO" -Message "Context menus for ZIP have been added"																		
 																	
-																		write-progress -activity $Progress_Activity  -percentcomplete 70;
+																		write-progress -activity $Progress_Activity  -percentcomplete 65;
 
 																		# RUN ON ZIP if WinRAR is installed
 																		If(test-path "HKCR_SD:\WinRAR.ZIP\Shell")
@@ -358,14 +406,14 @@ Else
 																				New-Item -Path $ZIP_WinRAR_Shell_Registry_Key -Name $ZIP_WinRAR_Basic_Run -force | out-null
 																				New-Item -Path $ContextMenu_Basic_ZIP_RAR -Name "Command" -force | out-null
 																				# Add Sandbox Icons
-																				New-ItemProperty -Path $ContextMenu_Basic_ZIP_RAR -Name "icon" -PropertyType String -Value $Sandbox_Icon | out-null
+																				New-ItemProperty -Path $ContextMenu_Basic_ZIP_RAR -Name "icon" -PropertyType String -Value $Sandbox_Icon -force | out-null
 																				$Command_For_ZIP = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -executionpolicy bypass -sta -file C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type ZIP -LiteralPath "%V" -ScriptPath "%V"' 
 																				# Set the command path
 																				Set-Item -Path "$ContextMenu_Basic_ZIP_RAR\command" -Value $Command_For_ZIP -force | out-null
 																			}																	
 																	}
 
-																write-progress -activity $Progress_Activity  -percentcomplete 80;	
+																write-progress -activity $Progress_Activity  -percentcomplete 75;	
 																
 																If($Add_Folder -eq $True)
 																	{
@@ -379,14 +427,14 @@ Else
 																		New-Item -Path $Folder_Inside_Shell_Registry_Key -Name $Folder_Inside_Basic_Run -force | out-null
 																		New-Item -Path $ContextMenu_Folder_Inside -Name "Command" -force | out-null
 																		# Add Sandbox Icons
-																		New-ItemProperty -Path $ContextMenu_Folder_Inside -Name "icon" -PropertyType String -Value $Sandbox_Icon | out-null
+																		New-ItemProperty -Path $ContextMenu_Folder_Inside -Name "icon" -PropertyType String -Value $Sandbox_Icon -force | out-null
 																		$Command_For_Folder_Inside = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -executionpolicy bypass -sta -file C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type Folder_Inside -LiteralPath "%V" -ScriptPath "%V"' 
 																		# Set the command path
 																		Set-Item -Path "$ContextMenu_Folder_Inside\command" -Value $Command_For_Folder_Inside -force | out-null
 																		Write_Log -Message_Type "INFO" -Message "Context menus for folder have been added"									
 
 
-																		write-progress -activity $Progress_Activity  -percentcomplete 90;	
+																		write-progress -activity $Progress_Activity  -percentcomplete 85;	
 
 
 																		# Share this folder - Right-click on the folder
@@ -399,7 +447,7 @@ Else
 																		New-Item -Path $Folder_On_Shell_Registry_Key -Name $Folder_On_Run -force | out-null
 																		New-Item -Path $ContextMenu_Folder_On -Name "Command" -force | out-null
 																		# Add Sandbox Icons
-																		New-ItemProperty -Path $ContextMenu_Folder_On -Name "icon" -PropertyType String -Value $Sandbox_Icon | out-null
+																		New-ItemProperty -Path $ContextMenu_Folder_On -Name "icon" -PropertyType String -Value $Sandbox_Icon -force | out-null
 																		$Command_For_Folder_On = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -executionpolicy bypass -sta -file C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type Folder_On -LiteralPath "%V" -ScriptPath "%V"' 
 																		# Set the command path
 																		Set-Item -Path "$ContextMenu_Folder_On\command" -Value $Command_For_Folder_On -force | out-null

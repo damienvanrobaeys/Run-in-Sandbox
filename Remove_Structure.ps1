@@ -74,7 +74,9 @@ If(test-path $Sandbox_Folder)
 		$Add_ZIP = $Get_XML_Content.Configuration.ContextMenu_ZIP
 		$Add_Folder = $Get_XML_Content.Configuration.ContextMenu_Folder
 		$Add_Intunewin = $Get_XML_Content.Configuration.ContextMenu_Intunewin
-
+		$Add_MultipleApp = $Get_XML_Content.Configuration.ContextMenu_MultipleApp	
+		$Add_Reg = $Get_XML_Content.Configuration.ContextMenu_Reg	
+		
 		$List_Drive = get-psdrive | where {$_.Name -eq "HKCR_SD"}
 		If($List_Drive -ne $null){Remove-PSDrive $List_Drive}
 		New-PSDrive -PSProvider registry -Root HKEY_CLASSES_ROOT -Name HKCR_SD | out-null
@@ -89,6 +91,15 @@ If(test-path $Sandbox_Folder)
 				Remove_Reg_Item -Reg_Path "$PS1_Shell_Registry_Key\$PS1_Basic_Run"
 				Remove_Reg_Item -Reg_Path "$PS1_Shell_Registry_Key\$PS1_Parameter_Run"			
 			}
+			
+		If($Add_Reg -eq $True)
+			{
+				# REMOVE RUN ON REG
+				write-host "Removing context menu for REG"				
+				$Reg_Shell_Registry_Key = "HKCR_SD:\regfile\Shell"
+				$Reg_Key_Label = "Test the reg file in Sandbox"
+				Remove_Reg_Item -Reg_Path "$REG_Shell_Registry_Key\$Reg_Key_Label"
+			}					
 			
 		If($Add_EXE -eq $True)
 			{
@@ -126,10 +137,15 @@ If(test-path $Sandbox_Folder)
 			{
 				# RUN ON Intunewin
 				write-host "Removing context menu for intunewin"				
-				$Intunewin_Shell_Registry_Key = "HKCR_SD:\.intunewin\Shell"
-				$Intunewin_Basic_Run = "Test the intunewin in Sandbox"	
 				Remove_Reg_Item -Reg_Path "HKCR_SD:\.intunewin"								
 			}
+			
+		If($Add_MultipleApp -eq $True)
+			{
+				# RUN ON multiple app context menu
+				write-host "Removing context menu for multiple app"				
+				Remove_Reg_Item -Reg_Path "HKCR_SD:\.sdbapp"								
+			}			
 			
 		If($Add_VBS -eq $True)
 			{

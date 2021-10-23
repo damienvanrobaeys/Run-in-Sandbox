@@ -33,7 +33,7 @@ Function Export_Reg_Config
 			{
 				Try
 					{
-						reg export "HKEY_CLASSES_ROOT\$Reg_Path" $Backup_Path | out-null
+						reg export "HKEY_CLASSES_ROOT\$Reg_Path" $Backup_Path /y | out-null
 						Write_Log -Message_Type "SUCCESS" -Message "$Reg_Path has been exported"									
 					}
 				Catch
@@ -63,7 +63,7 @@ Else
 	{	
 		Write_Log -Message_Type "INFO" -Message "The script has been launched with admin rights"
 
-		$Is_Sandbox_Installed = (Get-WindowsOptionalFeature -online | where {$_.featurename -eq "Containers-DisposableClientVM"}).state
+		$Is_Sandbox_Installed = (Get-WindowsOptionalFeature -online | Where-Object {$_.featurename -eq "Containers-DisposableClientVM"}).state
 		If($Is_Sandbox_Installed -eq "Disabled")
 			{
 				Write_Log -Message_Type "INFO" -Message "The feature Windows Sandbox is not installed !!!"	
@@ -137,8 +137,8 @@ Else
 													{													
 														write-progress -activity $Progress_Activity  -percentcomplete 5;
 														
-														$List_Drive = get-psdrive | where {$_.Name -eq "HKCR_SD"}
-														If($List_Drive -ne $null){Remove-PSDrive $List_Drive}
+														$List_Drive = get-psdrive | Where-Object {$_.Name -eq "HKCR_SD"}
+														If($null -ne $List_Drive){Remove-PSDrive $List_Drive}
 														
 														Write_Log -Message_Type "INFO" -Message "Mapping registry HKCR"													
 														
@@ -158,7 +158,7 @@ Else
 														If($HKCR_Mapped -eq $True)
 															{
 																write-progress -activity $Progress_Activity  -percentcomplete 10;
-
+																
 																Export_Reg_Config -Reg_Path "exefile" -Backup_Path "$Destination_folder\Backup_HKRoot_EXEFile.reg"
 																Export_Reg_Config -Reg_Path "Microsoft.PowerShellScript.1" -Backup_Path "$Destination_folder\Backup_HKRoot_PowerShellScript.reg"
 																Export_Reg_Config -Reg_Path "VBSFile" -Backup_Path "$Destination_folder\Backup_HKRoot_VBSFile.reg"
@@ -173,7 +173,7 @@ Else
 																
 																Write_Log -Message_Type "INFO" -Message "Creating a restore point"		
 																Checkpoint-Computer -Description "Add Windows Sandbox Context menus" -RestorePointType "MODIFY_SETTINGS" -ea silentlycontinue -ev ErrorRestore
-																If($ErrorRestore -ne $null)
+																If($null -ne $ErrorRestore)
 																	{
 																		Write_Log -Message_Type "SUCCESS" -Message "Creation of restore point 'Add Windows Sandbox Context menus'"																
 																	}
@@ -453,7 +453,7 @@ Else
 																		Set-Item -Path "$ContextMenu_Folder_On\command" -Value $Command_For_Folder_On -force | out-null
 																	}
 
-																If($List_Drive -ne $null){Remove-PSDrive $List_Drive}
+																If($null -ne $List_Drive){Remove-PSDrive $List_Drive}
 
 																write-progress -activity $Progress_Activity  -percentcomplete 100;											
 															}													

@@ -33,7 +33,7 @@ Function Export_Reg_Config
 			{
 				Try
 					{
-						reg export "HKEY_CLASSES_ROOT\$Reg_Path" $Backup_Path | out-null
+						reg export "HKEY_CLASSES_ROOT\$Reg_Path" $Backup_Path /y | out-null
 						Write_Log -Message_Type "SUCCESS" -Message "$Reg_Path has been exported"									
 					}
 				Catch
@@ -82,7 +82,7 @@ Else
 						$Progress_Activity = "Enabling Run in Sandbox context menus"
 						write-progress -activity $Progress_Activity -percentcomplete 1;
 								
-						$Check_Sources_Files_Count = (get-childitem "$Current_Folder\Sources" -recurse).count
+						$Check_Sources_Files_Count = (get-childitem "$Current_Folder\Sources\Run_in_Sandbox" -recurse).count
 						If($Check_Sources_Files_Count -eq 20)	
 							{	
 								$Sources_Copied = $False
@@ -241,14 +241,15 @@ Else
 																		{
 																			new-item $Intunewin_Shell_Registry_Key -force | out-null
 																			new-item "$Intunewin_Shell_Registry_Key\Shell" -force | out-null
-																			new-item $Intunewin_Key_Label_Path -force | out-null
-																			new-item $Intunewin_Command_Path -force | out-null	
-																			# Set the command path
-																			Set-Item -Path $Intunewin_Command_Path -Value $Command_for_Intunewin -force | out-null	
-																			# Add Sandbox Icons
-																			New-ItemProperty -Path $Intunewin_Key_Label_Path -Name "icon" -PropertyType String -Value $Sandbox_Icon -force | out-null			
-																			Write_Log -Message_Type "INFO" -Message "Context menus for PS1 have been added"																									
-																		}																	
+																		}
+																		new-item $Intunewin_Key_Label_Path -force | out-null
+																		new-item $Intunewin_Command_Path -force | out-null	
+																		# Set the command path
+																		Set-Item -Path $Intunewin_Command_Path -Value $Command_for_Intunewin -force | out-null	
+																		# Add Sandbox Icons
+																		New-ItemProperty -Path $Intunewin_Key_Label_Path -Name "icon" -PropertyType String -Value $Sandbox_Icon -force | out-null			
+																		Write_Log -Message_Type "INFO" -Message "Context menus for PS1 have been added"																									
+																																			
 																	}
 																	
 															write-progress -activity $Progress_Activity  -percentcomplete 30;		

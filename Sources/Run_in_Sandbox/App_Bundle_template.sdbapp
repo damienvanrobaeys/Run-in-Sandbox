@@ -1,0 +1,37 @@
+<!-- This is a template --> 
+
+<!-- How to use it ? -->
+<!-- <Application> -->
+	<!-- <Name>Appliction name</Name> -->
+	<!-- <Path>Path of the app</Path> -->
+	<!-- <File>File name</File>		 -->
+	<!-- <CommandLine></CommandLine> -->
+	<!-- <Silent_Switch>silent switch</Silent_Switch>				 -->
+<!-- </Application>	 -->
+
+<!-- <Application> -->
+	<!-- <Name>NPP++</Name> -->
+	<!-- <Path>D:\wdac_tests</Path> -->
+	<!-- <File>npp.7.8.8.Installer.x64.exe</File>		 -->
+	<!-- <CommandLine></CommandLine> -->
+	<!-- <Silent_Switch>/S</Silent_Switch>				 -->
+<!-- </Application>	 -->
+
+<!-- <Application> -->
+	<!-- <Name>winrar</Name> -->
+	<!-- <Path>D:\Verif_OD_Migration\Tool_Sources</Path> -->
+	<!-- <File>Create_Check_Migration_Service.ps1</File>		 -->
+	<!-- <CommandLine></CommandLine> -->
+	<!-- <Silent_Switch></Silent_Switch>				 -->
+<!-- </Application>		 -->
+
+
+<Applications>
+	<Application>
+		<Name></Name>
+		<Path></Path>
+		<File></File>		
+		<CommandLine></CommandLine>
+		<Silent_Switch></Silent_Switch>				
+	</Application>		
+</Applications>

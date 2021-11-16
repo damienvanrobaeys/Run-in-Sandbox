@@ -22,7 +22,8 @@ Function Write_Log
 		)
 		
 		$MyDate = "[{0:MM/dd/yy} {0:HH:mm:ss}]" -f (Get-Date)		
-		Add-Content $Log_File  "$MyDate - $Message_Type : $Message"			
+		# Add-Content $Log_File  "$MyDate - $Message_Type : $Message"	
+		write-host "$MyDate - $Message_Type : $Message"	
 	}
 	
 Function Export_Reg_Config
@@ -336,35 +337,7 @@ Else
 																											New-ItemProperty -Path "$Main_Menu_Shell_Path\$PS1_SubMenu_RunAsUser" -Name "icon" -PropertyType String -Value $Sandbox_Icon | out-null
 																											New-ItemProperty -Path "$Main_Menu_Shell_Path\$PS1_SubMenu_RunAsSystem" -Name "icon" -PropertyType String -Value $Sandbox_Icon | out-null	
 																										}																									
-																								}
-																							
-																							# $Default_HKCU_PS1_Shell_Registry_Key = "$HKCU_Classes\$Get_OpenWithProgids_Default_Value\Shell"
-																							# If(test-path $Default_HKCU_PS1_Shell_Registry_Key)
-																								# {
-																									# $Main_Menu_Path = "$Default_HKCU_PS1_Shell_Registry_Key\$PS1_Main_Menu"
-																									# New-Item -Path $Default_HKCU_PS1_Shell_Registry_Key -Name $PS1_Main_Menu -force | out-null
-																									# New-ItemProperty -Path $Main_Menu_Path -Name "subcommands" -PropertyType String | out-null
-
-																									# New-Item -Path $Main_Menu_Path -Name "Shell" -force | out-null
-																									# $Main_Menu_Shell_Path = "$Main_Menu_Path\Shell"
-
-																									# New-Item -Path $Main_Menu_Shell_Path -Name $PS1_SubMenu_RunAsUser -force | out-null
-																									# New-Item -Path $Main_Menu_Shell_Path -Name $PS1_SubMenu_RunAsSystem -force | out-null
-																									# New-Item -Path $Main_Menu_Shell_Path -Name $PS1_SubMenu_RunwithParams -force | out-null
-
-																									# New-Item -Path "$Main_Menu_Shell_Path\$PS1_SubMenu_RunAsUser" -Name "Command" -force | out-null
-																									# New-Item -Path "$Main_Menu_Shell_Path\$PS1_SubMenu_RunAsSystem" -Name "Command" -force | out-null
-																									# New-Item -Path "$Main_Menu_Shell_Path\$PS1_SubMenu_RunwithParams" -Name "Command" -force | out-null
-
-																									# Set-Item -Path "$Main_Menu_Shell_Path\$PS1_SubMenu_RunAsUser\command" -Value $Command_For_Basic_PS1 -force | out-null
-																									# Set-Item -Path "$Main_Menu_Shell_Path\$PS1_SubMenu_RunwithParams\command" -Value $Command_For_Params_PS1 -force | out-null
-																									# Set-Item -Path "$Main_Menu_Shell_Path\$PS1_SubMenu_RunAsSystem\command" -Value $Command_For_System_PS1 -force | out-null
-
-																									# New-ItemProperty -Path "$Main_Menu_Path" -Name "icon" -PropertyType String -Value $Sandbox_Icon | out-null
-																									# New-ItemProperty -Path "$Main_Menu_Shell_Path\$PS1_SubMenu_RunwithParams" -Name "icon" -PropertyType String -Value $Sandbox_Icon | out-null
-																									# New-ItemProperty -Path "$Main_Menu_Shell_Path\$PS1_SubMenu_RunAsUser" -Name "icon" -PropertyType String -Value $Sandbox_Icon | out-null
-																									# New-ItemProperty -Path "$Main_Menu_Shell_Path\$PS1_SubMenu_RunAsSystem" -Name "icon" -PropertyType String -Value $Sandbox_Icon | out-null	
-																								# }																							
+																								}																						
 																						}																						
 																				}
 																			}																			
@@ -423,10 +396,11 @@ Else
 																If($Add_ISO -eq $True)
 																		{
 																			$Current_User_SID = (Get-ChildItem Registry::\HKEY_USERS | Where-Object { Test-Path "$($_.pspath)\Volatile Environment" } | ForEach-Object { (Get-ItemProperty "$($_.pspath)\Volatile Environment")}).PSParentPath.split("\")[-1]																			# RUN ON ISO
-																			
-																			# Modify value from HKCR
+
 																			$ISO_Key_Label = "Extract ISO file in Sandbox"
 																			$Command_for_ISO = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -executionpolicy bypass -sta -windowstyle hidden -file C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type ISO -LiteralPath "%V" -ScriptPath "%V"'																			
+																			
+																			# Modify value from HKCR
 																			$ISO_Shell_Registry_Key = "HKCR_SD:\Windows.IsoFile\Shell"
 																			$ISO_Key_Label_Path = "$ISO_Shell_Registry_Key\$ISO_Key_Label"
 																			$ISO_Command_Path = "$ISO_Key_Label_Path\Command"
@@ -438,8 +412,51 @@ Else
 																				Set-Item -Path $ISO_Command_Path -Value $Command_for_ISO -force | out-null	
 																				# Add Sandbox Icons
 																				New-ItemProperty -Path $ISO_Key_Label_Path -Name "icon" -PropertyType String -Value $Sandbox_Icon | out-null			
-																				Write_Log -Message_Type "INFO" -Message "Context menu for ISO has been added"																									
+																				Write_Log -Message_Type "INFO" -Message "Context menu for ISO has been added"																															
 																			}			
+																			
+																			Write_Log -Message_Type "INFO" -Message "Checking content of HKCR\.ISO"																																																		
+																			$ISO_Key = "HKCR_SD:\.ISO"
+																			If(test-path $ISO_Key)
+																				{
+																					Write_Log -Message_Type "INFO" -Message "The key HKCR\.ISO exists"	
+																					$Get_ISO_Keys = Get-Item $ISO_Key
+																					ForEach($Key in $Get_ISO_Keys)
+																					{
+																						$Get_Properties = $Key.Property
+																						Write_Log -Message_Type "INFO" -Message "Following subkeys found: $Get_Properties"	
+																						foreach($Property in $Get_Properties)
+																							{
+																								$Prop = (Get-ItemProperty $ISO_Key)."$Property"
+																								Write_Log -Message_Type "INFO" -Message "Following property found: $Prop"	
+																								$ISO_Property_Key = "$HKCR_SD\$Prop"
+																								Write_Log -Message_Type "INFO" -Message "Reg path to test: $ISO_Property_Key"	
+																								If(test-path $ISO_Property_Key)
+																									{
+																										Write_Log -Message_Type "INFO" -Message "The following reg path exists: $ISO_Property_Key"
+																										$ISO_Property_Shell = "$ISO_Property_Key\Shell"
+																										If(test-path $ISO_Property_Shell)
+																											{
+																												Write_Log -Message_Type "INFO" -Message "The following reg path exists: $ISO_Property_Shell"
+																												$ISO_Key_Label_Path = "$ISO_Property_Shell\$ISO_Key_Label"
+																												$ISO_Command_Path = "$ISO_Key_Label_Path\Command"
+																												new-item $ISO_Key_Label_Path | out-null
+																												new-item $ISO_Command_Path | out-null	
+																												# Set the command path
+																												Set-Item -Path $ISO_Command_Path -Value $Command_for_ISO -force | out-null	
+																												# Add Sandbox Icons
+																												New-ItemProperty -Path $ISO_Key_Label_Path -Name "icon" -PropertyType String -Value $Sandbox_Icon | out-null			
+																												Write_Log -Message_Type "INFO" -Message "Creating following context menu for ISO under: $ISO_Key_Label_Path"																																																					
+																											}
+																									}Else
+																									{
+																										Write_Log -Message_Type "INFO" -Message "The following reg path does not exist: $ISO_Property_Key"
+																									}
+																							}																					
+																					}																				
+																				}																			
+
+																			
 
 																			# Modify value from HKCU if 7zip exists
 																			$HKCU_Classes = "Registry::HKEY_USERS\$Current_User_SID" + "_Classes"
@@ -591,12 +608,7 @@ Else
 																If($Add_VBS -eq $True)
 																	{
 																		# RUN ON VBS
-																		$VBS_Shell_Registry_Key = "HKCR_SD:\VBSFile\Shell"
-																		# $VBS_Basic_Run = $Get_Language_File_Content.VBS.Basic
-																		# $VBS_Parameter_Run = $Get_Language_File_Content.VBS.Parameters
-																		# $ContextMenu_Basic_VBS = "$VBS_Shell_Registry_Key\$VBS_Basic_Run"
-																		# $ContextMenu_Parameters_VBS = "$VBS_Shell_Registry_Key\$VBS_Parameter_Run"
-																		
+																		$VBS_Shell_Registry_Key = "HKCR_SD:\VBSFile\Shell"																		
 																		$VBS_Basic_Run = "Run VBS in Sandbox"
 																		$VBS_Parameter_Run = "Run VBS in Sandbox with parameters"					
 																		
@@ -624,8 +636,6 @@ Else
 																	{
 																		# RUN ON EXE
 																		$EXE_Shell_Registry_Key = "HKCR_SD:\exefile\Shell"
-																		# $EXE_Basic_Run = $Get_Language_File_Content.EXE
-																		# $ContextMenu_Basic_EXE = "$EXE_Shell_Registry_Key\$EXE_Basic_Run"
 																		$EXE_Basic_Run = "Run EXE in Sandbox"					
 																		$ContextMenu_Basic_EXE = "$EXE_Shell_Registry_Key\$EXE_Basic_Run"				
 
@@ -645,8 +655,6 @@ Else
 																	{
 																		# RUN ON MSI
 																		$MSI_Shell_Registry_Key = "HKCR_SD:\Msi.Package\Shell"
-																		# $MSI_Basic_Run = $Get_Language_File_Content.MSI
-																		# $ContextMenu_Basic_MSI = "$MSI_Shell_Registry_Key\$MSI_Basic_Run"
 																		$MSI_Basic_Run = "Run MSI in Sandbox"					
 																		$ContextMenu_Basic_MSI = "$MSI_Shell_Registry_Key\$MSI_Basic_Run"				
 
@@ -667,8 +675,6 @@ Else
 																	{
 																		# RUN ON ZIP
 																		$ZIP_Shell_Registry_Key = "HKCR_SD:\CompressedFolder\Shell"
-																		# $ZIP_Basic_Run = $Get_Language_File_Content.ZIP
-																		# $ContextMenu_Basic_ZIP = "$ZIP_Shell_Registry_Key\$ZiP_Basic_Run"
 																		$ZIP_Basic_Run = "Extract ZIP in Sandbox"						
 																		$ContextMenu_Basic_ZIP = "$ZIP_Shell_Registry_Key\$ZIP_Basic_Run"				
 

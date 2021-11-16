@@ -105,14 +105,21 @@ If(test-path $Sandbox_Folder)
 						If(test-path $HKCU_Classes)
 						{
 							$Default_PS1_HKCU = "$HKCU_Classes\.ps1"
-							$Get_Default_Value = (Get-Item "$Default_PS1_HKCU\rOpenWithProgids").Property
-
-							$Default_HKCU_PS1_Shell_Registry_Key = "$HKCU_Classes\$Get_Default_Value\Shell"
+							$Get_rOpenWithProgids_Default_Value = (Get-Item "$Default_PS1_HKCU\rOpenWithProgids").Property
+							$Default_HKCU_PS1_Shell_Registry_Key = "$HKCU_Classes\$Get_rOpenWithProgids_Default_Value\Shell"
 							If(test-path $Default_HKCU_PS1_Shell_Registry_Key)
 								{
 									$Main_Menu_Path = "$Default_HKCU_PS1_Shell_Registry_Key\$PS1_Main_Menu"
 									Remove_Reg_Item -Reg_Path "$Main_Menu_Path"									
-								}																																												
+								}		
+
+							$Get_OpenWithProgids_Default_Value = (Get-Item "$Default_PS1_HKCU\OpenWithProgids").Property
+							$Default_HKCU_PS1_Shell_Registry_Key = "$HKCU_Classes\$Get_OpenWithProgids_Default_Value\Shell"
+							If(test-path $Default_HKCU_PS1_Shell_Registry_Key)
+								{
+									$Main_Menu_Path = "$Default_HKCU_PS1_Shell_Registry_Key\$PS1_Main_Menu"
+									Remove_Reg_Item -Reg_Path "$Main_Menu_Path"									
+								}									
 						}
 					}				
 			}
@@ -157,6 +164,7 @@ If(test-path $Sandbox_Folder)
 			
 		If($Add_MSIX -eq $True)	
 			{
+				write-host "Removing context menu for MSIX"	
 				$MSIX_Key_Label = "Run MSIX file in Sandbox"																					
 				# REMOVE RUN ON REG from HKCR
 				$MSIX_Shell_Registry_Key = "HKCR_SD:\.msix\OpenWithProgids"
@@ -169,7 +177,8 @@ If(test-path $Sandbox_Folder)
 								$MSIX_Key_Label_Path = "$MSIX_Shell_Registry\$MSIX_Key_Label"
 								If(test-path $MSIX_Key_Label_Path)
 									{
-										Remove_Reg_Item -Reg_Path "$MSIX_Key_Label_Path"														
+										Remove_Reg_Item -Reg_Path $MSIX_Key_Label_Path		
+										Remove_Reg_Item -Reg_Path "$MSIX_Shell_Registry\$MSIX_Key_Label"										
 									}
 							}						
 					}

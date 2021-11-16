@@ -105,21 +105,32 @@ If(test-path $Sandbox_Folder)
 						If(test-path $HKCU_Classes)
 						{
 							$Default_PS1_HKCU = "$HKCU_Classes\.ps1"
-							$Get_rOpenWithProgids_Default_Value = (Get-Item "$Default_PS1_HKCU\rOpenWithProgids").Property
-							$Default_HKCU_PS1_Shell_Registry_Key = "$HKCU_Classes\$Get_rOpenWithProgids_Default_Value\Shell"
-							If(test-path $Default_HKCU_PS1_Shell_Registry_Key)
+							$rOpenWithProgids_Key = "$Default_PS1_HKCU\rOpenWithProgids"
+							If(test-path $rOpenWithProgids_Key)
 								{
-									$Main_Menu_Path = "$Default_HKCU_PS1_Shell_Registry_Key\$PS1_Main_Menu"
-									Remove_Reg_Item -Reg_Path "$Main_Menu_Path"									
-								}		
+									$Get_rOpenWithProgids_Default_Value = (Get-Item "$Default_PS1_HKCU\rOpenWithProgids").Property
+									$Default_HKCU_PS1_Shell_Registry_Key = "$HKCU_Classes\$Get_rOpenWithProgids_Default_Value\Shell"
+									If(test-path $Default_HKCU_PS1_Shell_Registry_Key)
+										{
+											$Main_Menu_Path = "$Default_HKCU_PS1_Shell_Registry_Key\$PS1_Main_Menu"
+											Remove_Reg_Item -Reg_Path "$Main_Menu_Path"									
+										}									
+								}
 
-							$Get_OpenWithProgids_Default_Value = (Get-Item "$Default_PS1_HKCU\OpenWithProgids").Property
-							$Default_HKCU_PS1_Shell_Registry_Key = "$HKCU_Classes\$Get_OpenWithProgids_Default_Value\Shell"
-							If(test-path $Default_HKCU_PS1_Shell_Registry_Key)
+							$OpenWithProgids_Key = "$Default_PS1_HKCU\OpenWithProgids"
+							If(test-path $OpenWithProgids_Key)
 								{
-									$Main_Menu_Path = "$Default_HKCU_PS1_Shell_Registry_Key\$PS1_Main_Menu"
-									Remove_Reg_Item -Reg_Path "$Main_Menu_Path"									
-								}									
+									$Get_OpenWithProgids_Default_Value = (Get-Item $OpenWithProgids_Key).Property
+									ForEach($Prop in $Get_OpenWithProgids_Default_Value)
+										{
+											$Default_HKCU_PS1_Shell_Registry_Key = "$HKCU_Classes\$Prop\Shell"
+											If(test-path $Default_HKCU_PS1_Shell_Registry_Key)
+												{
+													$Main_Menu_Path = "$Default_HKCU_PS1_Shell_Registry_Key\$PS1_Main_Menu"
+													Remove_Reg_Item -Reg_Path "$Main_Menu_Path"									
+												}											
+										}							
+								}								
 						}
 					}				
 			}

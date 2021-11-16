@@ -109,12 +109,15 @@ If(test-path $Sandbox_Folder)
 							If(test-path $rOpenWithProgids_Key)
 								{
 									$Get_rOpenWithProgids_Default_Value = (Get-Item "$Default_PS1_HKCU\rOpenWithProgids").Property
-									$Default_HKCU_PS1_Shell_Registry_Key = "$HKCU_Classes\$Get_rOpenWithProgids_Default_Value\Shell"
-									If(test-path $Default_HKCU_PS1_Shell_Registry_Key)
+									ForEach($Prop in $Get_OpenWithProgids_Default_Value)
 										{
-											$Main_Menu_Path = "$Default_HKCU_PS1_Shell_Registry_Key\$PS1_Main_Menu"
-											Remove_Reg_Item -Reg_Path "$Main_Menu_Path"									
-										}									
+											$Default_HKCU_PS1_Shell_Registry_Key = "$HKCU_Classes\$Prop\Shell"
+											If(test-path $Default_HKCU_PS1_Shell_Registry_Key)
+												{
+													$Main_Menu_Path = "$Default_HKCU_PS1_Shell_Registry_Key\$PS1_Main_Menu"
+													Remove_Reg_Item -Reg_Path "$Main_Menu_Path"									
+												}											
+										}								
 								}
 
 							$OpenWithProgids_Key = "$Default_PS1_HKCU\OpenWithProgids"

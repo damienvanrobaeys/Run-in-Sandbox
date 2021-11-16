@@ -36,11 +36,13 @@ TitleCaps="False"
 						This part allows you to run a silent install of your EXE 
 						or MSI.
 						</TextBlock>
-						<TextBlock/>
 						<TextBlock TextWrapping="Wrap">					
 						For that, type the appropriate silent switch in the textbox, 
 						then click on the <Run FontWeight="Bold">+</Run> button.
 						</TextBlock>
+						<TextBlock TextWrapping="Wrap">					
+						You can bypass this by clicking on the <Run FontWeight="Bold">close</Run> button
+						</TextBlock>							
 					</StackPanel>
 					</Label>									
 				</StackPanel>

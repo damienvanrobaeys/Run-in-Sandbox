@@ -19,4 +19,8 @@
 	<ContextMenu_Intunewin>True</ContextMenu_Intunewin> <!-- Choose to add or not context menu to run Intunewin in Sandbox. True or False -->
 	<ContextMenu_MultipleApp>True</ContextMenu_MultipleApp> <!-- Choose to add or not context menu to run Intunewin in Sandbox. True or False -->
 	<ContextMenu_Reg>True</ContextMenu_Reg> <!-- Choose to add or not context menu to run Intunewin in Sandbox. True or False -->	
+	<ContextMenu_ISO>True</ContextMenu_ISO> <!-- Choose to add or not context menu to extract ISO in Sandbox. True or False -->	
+	<ContextMenu_PPKG>True</ContextMenu_PPKG> <!-- Choose to add or not context menu to run PPKG in Sandbox. True or False -->	
+	<ContextMenu_HTML>True</ContextMenu_HTML> <!-- Choose to add or not context menu to run HTML in Sandbox. True or False -->		
+	<ContextMenu_MSIX>True</ContextMenu_MSIX> <!-- Choose to add or not context menu to run HTML in Sandbox. True or False -->			
 </Configuration>

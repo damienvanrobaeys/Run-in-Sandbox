@@ -1,0 +1,99 @@
+<Controls:MetroWindow 
+xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks" 						
+Title="RunInSandbox - context menus selection" 
+Width="400" 
+Height="400"  
+ResizeMode="CanMinimize"
+BorderThickness="0.5"
+BorderBrush="{DynamicResource AccentColorBrush}"
+Topmost="True"
+TitleCaps="False"
+WindowStartupLocation="CenterScreen" 
+>
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colors.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/Cobalt.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
+
+   <Controls:MetroWindow.LeftWindowCommands>
+        <Controls:WindowCommands>
+            <Button>
+				<iconPacks:PackIconMaterial Kind="menu" Margin="0,0,0,0"/>																				
+				
+            </Button>				
+        </Controls:WindowCommands>	
+    </Controls:MetroWindow.LeftWindowCommands>		
+
+
+    <Grid>
+        <StackPanel Orientation="Vertical" HorizontalAlignment="Center"  Margin="0,10,0,0">			
+            <GroupBox Header="What is it ?" Height="125" Margin="0,0,0,0" Width="380">	
+				<StackPanel Orientation="Horizontal" Margin="0,0,0,0" >					
+					<Label  FontSize="14" Width="380" Foreground="#037AC2">
+					<StackPanel Orientation="Vertical">
+						<TextBlock TextWrapping="Wrap" >
+						This part allows you to choose for which extension you want to add a context menu.
+						</TextBlock>
+						<TextBlock TextWrapping="Wrap">					
+						Each selected extension will have a new context menu to run/extract/share content in Windows Sandbox.
+						</TextBlock>				
+					</StackPanel>
+					</Label>									
+				</StackPanel>
+			</GroupBox>			
+		
+            <GroupBox Header="Choose which extension needs a context menu" Height="225" Margin="0,5,0,0" Width="380">	
+				<StackPanel Orientation="Vertical" Margin="0,0,0,0" HorizontalAlignment="Center">		
+					<StackPanel Orientation="Horizontal" Margin="0,0,0,0">
+						<CheckBox Content="Check all extensions" Name="Check_Uncheck_All" Width="150"/>
+						<CheckBox Content="Run MSIX" Width="150" Name="Run_MSIX"/>									
+					</StackPanel>
+					
+					<StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+						<CheckBox Content="Run EXE" Width="150" Name="Run_EXE"/>
+						<CheckBox Content="Run MSI" Width="150" Name="Run_MSI"/>			
+					</StackPanel>			
+
+					<StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+						<CheckBox Content="Run PS1" Width="150" Name="Run_PS1"/>
+						<CheckBox Content="Run VBS" Width="150" Name="Run_VBS"/>			
+					</StackPanel>
+					
+					<StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+						<CheckBox Content="Extract ZIP" Width="150" Name="Extract_ZIP"/>
+						<CheckBox Content="Extract ISO" Width="150" Name="Extract_ISO"/>			
+					</StackPanel>
+
+					<StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+						<CheckBox Content="Share folder" Width="150" Name="Share_Folder"/>
+						<CheckBox Content="Run Reg" Width="150" Name="Run_Reg"/>			
+					</StackPanel>
+					
+					<StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+						<CheckBox Content="Run PPKG" Width="150" Name="Run_PPKG"/>
+						<CheckBox Content="Open HTML file" Width="150" Name="Run_HTML"/>			
+					</StackPanel>							
+
+					<StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+						<CheckBox Content="Test Intunewin" Width="150" Name="Run_Intunewin"/>
+						<CheckBox Content="Install multiple apps" Width="150" Name="Multiple_Apps"/>			
+					</StackPanel>						
+
+					<Button Height="22" x:Name="Apply_install" Content="Apply and install"  Margin="0,5,0,0"  Foreground="White" Background="#07B18C" BorderThickness="0" Width="120"/>
+				</StackPanel>
+			</GroupBox>		
+        </StackPanel>
+    </Grid>
+</Controls:MetroWindow>

@@ -5,7 +5,7 @@ xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
 xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks" 						
 Title="Intunewin install command" 
 Width="400" 
-Height="290"  
+Height="330"  
 ResizeMode="NoResize"
 BorderThickness="0.5"
 BorderBrush="{DynamicResource AccentColorBrush}"
@@ -29,7 +29,7 @@ WindowStartupLocation="CenterScreen"
 
     <Grid>
         <StackPanel Orientation="Vertical" HorizontalAlignment="Center"  Margin="0,10,0,0">			
-            <GroupBox Header="What is it ?" Height="150" Margin="0,0,0,0" Width="380">	
+            <GroupBox Header="What is it ?" Height="197" Margin="0,0,0,0" Width="380">	
 				<StackPanel Orientation="Horizontal" Margin="0,0,0,0" >					
 					<Label  FontSize="14" Width="380" Foreground="#037AC2">
 					<StackPanel Orientation="Vertical">
@@ -40,6 +40,12 @@ WindowStartupLocation="CenterScreen"
 						<TextBlock TextWrapping="Wrap">					
 						For that, type the appropriate command in the textbox, 
 						then click on the <Run FontWeight="Bold">+</Run> button.
+						</TextBlock>
+						
+						<TextBlock/>						
+						
+						<TextBlock TextWrapping="Wrap">					
+						If you use a simple file and not a command add <Run FontWeight="Bold">.\</Run> before the file
 						</TextBlock>
 						<TextBlock TextWrapping="Wrap">					
 						You can bypass this by clicking on the <Run FontWeight="Bold">close</Run> button

@@ -265,9 +265,8 @@ Else
 																				If(test-path $HKCU_Classes)
 																				{
 																					$Default_PS1_HKCU = "$HKCU_Classes\.ps1"
-																					$Get_Default_Value = (Get-Item "$Default_PS1_HKCU\rOpenWithProgids").Property
-
-																					$Default_HKCU_PS1_Shell_Registry_Key = "$HKCU_Classes\$Get_Default_Value\Shell"
+																					$Get_rOpenWithProgids_Default_Value = (Get-Item "$Default_PS1_HKCU\rOpenWithProgids").Property
+																					$Default_HKCU_PS1_Shell_Registry_Key = "$HKCU_Classes\$Get_rOpenWithProgids_Default_Value\Shell"
 																					If(test-path $Default_HKCU_PS1_Shell_Registry_Key)
 																						{
 																							$Main_Menu_Path = "$Default_HKCU_PS1_Shell_Registry_Key\$PS1_Main_Menu"
@@ -294,7 +293,38 @@ Else
 																							New-ItemProperty -Path "$Main_Menu_Shell_Path\$PS1_SubMenu_RunwithParams" -Name "icon" -PropertyType String -Value $Sandbox_Icon | out-null
 																							New-ItemProperty -Path "$Main_Menu_Shell_Path\$PS1_SubMenu_RunAsUser" -Name "icon" -PropertyType String -Value $Sandbox_Icon | out-null
 																							New-ItemProperty -Path "$Main_Menu_Shell_Path\$PS1_SubMenu_RunAsSystem" -Name "icon" -PropertyType String -Value $Sandbox_Icon | out-null	
-																						}																																												
+																						}	
+
+
+																					$Get_OpenWithProgids_Default_Value = (Get-Item "$Default_PS1_HKCU\OpenWithProgids").Property
+																					$Default_HKCU_PS1_Shell_Registry_Key = "$HKCU_Classes\$Get_OpenWithProgids_Default_Value\Shell"
+																					If(test-path $Default_HKCU_PS1_Shell_Registry_Key)
+																						{
+																							$Main_Menu_Path = "$Default_HKCU_PS1_Shell_Registry_Key\$PS1_Main_Menu"
+																							New-Item -Path $Default_HKCU_PS1_Shell_Registry_Key -Name $PS1_Main_Menu -force | out-null
+																							New-ItemProperty -Path $Main_Menu_Path -Name "subcommands" -PropertyType String | out-null
+
+																							New-Item -Path $Main_Menu_Path -Name "Shell" -force | out-null
+																							$Main_Menu_Shell_Path = "$Main_Menu_Path\Shell"
+
+																							New-Item -Path $Main_Menu_Shell_Path -Name $PS1_SubMenu_RunAsUser -force | out-null
+																							New-Item -Path $Main_Menu_Shell_Path -Name $PS1_SubMenu_RunAsSystem -force | out-null
+																							New-Item -Path $Main_Menu_Shell_Path -Name $PS1_SubMenu_RunwithParams -force | out-null
+
+																							New-Item -Path "$Main_Menu_Shell_Path\$PS1_SubMenu_RunAsUser" -Name "Command" -force | out-null
+																							New-Item -Path "$Main_Menu_Shell_Path\$PS1_SubMenu_RunAsSystem" -Name "Command" -force | out-null
+																							New-Item -Path "$Main_Menu_Shell_Path\$PS1_SubMenu_RunwithParams" -Name "Command" -force | out-null
+
+																							Set-Item -Path "$Main_Menu_Shell_Path\$PS1_SubMenu_RunAsUser\command" -Value $Command_For_Basic_PS1 -force | out-null
+																							Set-Item -Path "$Main_Menu_Shell_Path\$PS1_SubMenu_RunwithParams\command" -Value $Command_For_Params_PS1 -force | out-null
+																							Set-Item -Path "$Main_Menu_Shell_Path\$PS1_SubMenu_RunAsSystem\command" -Value $Command_For_System_PS1 -force | out-null
+
+																							# Add Sandbox Icon
+																							New-ItemProperty -Path "$Main_Menu_Path" -Name "icon" -PropertyType String -Value $Sandbox_Icon | out-null
+																							New-ItemProperty -Path "$Main_Menu_Shell_Path\$PS1_SubMenu_RunwithParams" -Name "icon" -PropertyType String -Value $Sandbox_Icon | out-null
+																							New-ItemProperty -Path "$Main_Menu_Shell_Path\$PS1_SubMenu_RunAsUser" -Name "icon" -PropertyType String -Value $Sandbox_Icon | out-null
+																							New-ItemProperty -Path "$Main_Menu_Shell_Path\$PS1_SubMenu_RunAsSystem" -Name "icon" -PropertyType String -Value $Sandbox_Icon | out-null	
+																						}																							
 																				}
 																			}																			
 																		Write_Log -Message_Type "INFO" -Message "Context menus for PS1 have been added"																		
@@ -672,14 +702,17 @@ Else
 																				If(test-path $MSIX_Shell_Registry)
 																					{
 																						$MSIX_Key_Label_Path = "$MSIX_Shell_Registry\$MSIX_Key_Label"
-																						$MSIX_Command_Path = "$MSIX_Key_Label_Path\Command"
-																						new-item $MSIX_Key_Label_Path | out-null
-																						new-item $MSIX_Command_Path | out-null	
-																						# Set the command path
-																						Set-Item -Path $MSIX_Command_Path -Value $Command_for_MSIX -force | out-null	
-																						# Add Sandbox Icons
-																						New-ItemProperty -Path $MSIX_Key_Label_Path -Name "icon" -PropertyType String -Value $Sandbox_Icon | out-null			
-																						Write_Log -Message_Type "INFO" -Message "Context menu for MSIX has been added"																									
+																						If(!(test-path $MSIX_Key_Label_Path))
+																							{
+																								$MSIX_Command_Path = "$MSIX_Key_Label_Path\Command"
+																								new-item $MSIX_Key_Label_Path | out-null
+																								new-item $MSIX_Command_Path | out-null	
+																								# Set the command path
+																								Set-Item -Path $MSIX_Command_Path -Value $Command_for_MSIX -force | out-null	
+																								# Add Sandbox Icons
+																								New-ItemProperty -Path $MSIX_Key_Label_Path -Name "icon" -PropertyType String -Value $Sandbox_Icon | out-null			
+																								Write_Log -Message_Type "INFO" -Message "Context menu for MSIX has been added"																									
+																							}																							
 																					}
 																			}
 

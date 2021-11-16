@@ -1,8 +1,14 @@
-# Run in Sandbox: a quick way to test EXE, PS1, VBS, MSI, REG, Intunewin in Windows Sandbox
+# Run in Sandbox: a quick way to test EXE, PS1, VBS, MSI, REG, Intunewin, PPKG, MSIX, URL in Windows Sandbox
 This allows you to do the below things in Windows Sandbox **just from a right-click** by adding context menus:
-- Run PS1, VBS, EXE, MSI in the Sandbox
-- Extract ZIP directly in the Sandbox
-- Share a specific folder in the Sandbox
+- Run PS1 as user or system in Sandbox
+- Run VBS, EXE, MSI in Sandbox
+- Run Intunewin file
+- Open URL or HTML file in Sandbox
+- Extract ZIP file directly in Sandbox
+- Extract 7z file directly in Sandbox
+- Extract ISO directly in Sandbox
+- Share a specific folder in Sandbox
+- Run multiple applis/scripts in the same Sandbox session
 
 > *View the full blog post here*
 http://www.systanddeploy.com/2019/06/run-file-in-windows-sandbox-from-right.html
@@ -19,6 +25,15 @@ http://www.systanddeploy.com/2019/06/run-file-in-windows-sandbox-from-right.html
 - Once you have downloaded the folder structure, **check if files have not be blocked after download**
 - Do a right-click on Add_Structure.ps1 and check if needed check Unblocked
 - Run Add_Structure.ps1 **with admin rights**
+
+**Update (11/16/21): Run reg file and multiple apps in the same sandbox session**
+- Add a context menu for running PS1 as system in Sandbox
+- Fix a bug where context menu for PS1 does not appear on Windows 11
+- Add a context menu for running MSIX in Sandbox
+- Add a context menu for running PPKG in Sandbox
+- Add a context menu for opening URL in Sandbox
+- Add a context menu for extracting ISO in Sandbox
+- Add a context menu for extracting 7z file in Sandbox
 
 **Update (09/21/21): Run reg file and multiple apps in the same sandbox session**
 - Add a context menu for reg file, to run them in Sandbox

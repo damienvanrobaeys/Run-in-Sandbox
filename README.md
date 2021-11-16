@@ -1,4 +1,4 @@
-# Run in Sandbox: a quick way to test files in Windows Sandbox from a right-click
+# Run in Sandbox: a quick way to run/extract files in Windows Sandbox from a right-click
 This allows you to do the below things in Windows Sandbox **just from a right-click** by adding context menus:
 - Run PS1 as user or system in Sandbox
 - Run VBS, EXE, MSI in Sandbox

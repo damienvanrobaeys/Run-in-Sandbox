@@ -11,7 +11,7 @@ This allows you to do the below things in Windows Sandbox **just from a right-cl
 - Run multiple applis/scripts in the same Sandbox session
 
 > *View the full blog post here*
-http://www.systanddeploy.com/2019/06/run-file-in-windows-sandbox-from-right.html
+https://www.systanddeploy.com/2021/11/run-in-sandbox-quick-way-to-runextract.html
 
 
 **Note that this project has been build on personal time, it's not a professional project. Use it at your own risk, and please read How to install it before running it.**

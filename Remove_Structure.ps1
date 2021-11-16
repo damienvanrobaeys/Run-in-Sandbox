@@ -166,10 +166,52 @@ If(test-path $Sandbox_Folder)
 			{
 				$ISO_Key_Label = "Extract ISO file in Sandbox"				
 			
-				# REMOVE RUN ON REG from HKCR
+				# REMOVE RUN ON REG from HKCR under Windows.IsoFile
 				write-host "Removing context menu for ISO"		
 				$ISO_Shell_Registry_Key = "HKCR_SD:\Windows.IsoFile\Shell"
-				Remove_Reg_Item -Reg_Path "$ISO_Shell_Registry_Key\$ISO_Key_Label"
+				If(test-path "$ISO_Shell_Registry_Key\$ISO_Key_Label")
+					{
+						Remove_Reg_Item -Reg_Path "$ISO_Shell_Registry_Key\$ISO_Key_Label"
+					}
+				
+				$ISO_Key = "HKCR_SD:\.ISO"
+				If(test-path $ISO_Key)
+					{
+						Write_Log -Message_Type "INFO" -Message "The key HKCR\.ISO exists"	
+						$Get_ISO_Keys = Get-Item $ISO_Key
+						ForEach($Key in $Get_ISO_Keys)
+						{
+							$Get_Properties = $Key.Property
+							Write_Log -Message_Type "INFO" -Message "Following subkeys found: $Get_Properties"	
+							foreach($Property in $Get_Properties)
+								{
+									$Prop = (Get-ItemProperty $ISO_Key)."$Property"
+									Write_Log -Message_Type "INFO" -Message "Following property found: $Prop"	
+									$ISO_Property_Key = "$HKCR_SD\$Prop"
+									Write_Log -Message_Type "INFO" -Message "Reg path to test: $ISO_Property_Key"	
+									If(test-path $ISO_Property_Key)
+										{
+											Write_Log -Message_Type "INFO" -Message "The following reg path exists: $ISO_Property_Key"
+											$ISO_Property_Shell = "$ISO_Property_Key\Shell"
+											If(test-path $ISO_Property_Shell)
+												{
+													Write_Log -Message_Type "INFO" -Message "The following reg path exists: $ISO_Property_Shell"
+													$ISO_Key_Label_Path = "$ISO_Property_Shell\$ISO_Key_Label"
+													If(test-path $ISO_Key_Label_Path)
+														{
+															Remove_Reg_Item -Reg_Path $ISO_Key_Label_Path
+														}																										
+												}
+										}
+									Else
+										{
+											Write_Log -Message_Type "INFO" -Message "The following reg path does not exist: $ISO_Property_Key"
+										}
+								}																					
+						}																				
+					}				
+				
+
 				
 				# REMOVE RUN ON REG from HKCU if 7zip exists
 				$ISO_Shell_HKCU_Registry_Key = "Registry::HKEY_USERS\$Current_User_SID"				

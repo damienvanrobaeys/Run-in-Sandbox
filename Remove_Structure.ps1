@@ -97,6 +97,16 @@ If(test-path $Sandbox_Folder)
 						$PS1_Shell_Registry_Key = "HKCR_SD:\Microsoft.PowerShellScript.1\Shell"
 						$PS1_Basic_Run = "Run PS1 in Sandbox"
 						Remove_Reg_Item -Reg_Path "$PS1_Shell_Registry_Key\$PS1_Basic_Run"
+						
+						If(test-path "$PS1_Shell_Registry_Key\Run the PS1 in Sandbox")	
+							{
+								Remove_Reg_Item -Reg_Path "$PS1_Shell_Registry_Key\Run the PS1 in Sandbox"
+							}
+							
+						If(test-path "$PS1_Shell_Registry_Key\Run the PS1 in Sandbox with parameters")	
+							{
+								Remove_Reg_Item -Reg_Path "$PS1_Shell_Registry_Key\Run the PS1 in Sandbox with parameters"
+							}							
 					}
 				ElseIf($Windows_Version -like "*Windows 11*")
 					{
@@ -145,6 +155,11 @@ If(test-path $Sandbox_Folder)
 				$Reg_Shell_Registry_Key = "HKCR_SD:\regfile\Shell"
 				$Reg_Key_Label = "Test reg file in Sandbox"
 				Remove_Reg_Item -Reg_Path "$REG_Shell_Registry_Key\$Reg_Key_Label"
+				
+				If(test-path "$REG_Shell_Registry_Key\Test the reg file in Sandbox")	
+					{
+						Remove_Reg_Item -Reg_Path "$REG_Shell_Registry_Key\Test the reg file in Sandbox"
+					}					
 			}	
 
 		If($Add_ISO -eq $True)
@@ -252,6 +267,11 @@ If(test-path $Sandbox_Folder)
 				$EXE_Shell_Registry_Key = "HKCR_SD:\exefile\Shell"
 				$EXE_Basic_Run = "Run EXE in Sandbox"
 				Remove_Reg_Item -Reg_Path "$EXE_Shell_Registry_Key\$EXE_Basic_Run"			
+				
+				If(test-path "$EXE_Shell_Registry_Key\Run the EXE in Sandbox")	
+					{
+						Remove_Reg_Item -Reg_Path "$EXE_Shell_Registry_Key\Run the EXE in Sandbox"
+					}				
 			}
 
 		If($Add_MSI -eq $True)
@@ -260,7 +280,12 @@ If(test-path $Sandbox_Folder)
 				write-host "Removing context menu for MSI"				
 				$MSI_Shell_Registry_Key = "HKCR_SD:\Msi.Package\Shell"
 				$MSI_Basic_Run = "Run MSI in Sandbox"	
-				Remove_Reg_Item -Reg_Path "$MSI_Shell_Registry_Key\$MSI_Basic_Run"				
+				Remove_Reg_Item -Reg_Path "$MSI_Shell_Registry_Key\$MSI_Basic_Run"	
+
+				If(test-path "$MSI_Shell_Registry_Key\Run the MSI in Sandbox")	
+					{
+						Remove_Reg_Item -Reg_Path "$MSI_Shell_Registry_Key\Run the MSI in Sandbox"
+					}					
 			}
 			
 		If($Add_Folder -eq $True)
@@ -299,7 +324,17 @@ If(test-path $Sandbox_Folder)
 				$VBS_Basic_Run = "Run VBS in Sandbox"
 				$VBS_Parameter_Run = "Run VBS in Sandbox with parameters"			
 				Remove_Reg_Item -Reg_Path "$VBS_Shell_Registry_Key\$VBS_Basic_Run"
-				Remove_Reg_Item -Reg_Path "$VBS_Shell_Registry_Key\$VBS_Parameter_Run"				
+				Remove_Reg_Item -Reg_Path "$VBS_Shell_Registry_Key\$VBS_Parameter_Run"		
+
+				If(test-path "$VBS_Shell_Registry_Key\Run the VBS in Sandbox")	
+					{
+						Remove_Reg_Item -Reg_Path "$VBS_Shell_Registry_Key\Run the VBS in Sandbox"
+					}	
+					
+				If(test-path "$VBS_Shell_Registry_Key\Run the VBS in Sandbox")	
+					{
+						Remove_Reg_Item -Reg_Path "$VBS_Shell_Registry_Key\Run the VBS in Sandbox with parameters"
+					}										
 			}
 
 		If($Add_ZIP -eq $True)
@@ -309,6 +344,11 @@ If(test-path $Sandbox_Folder)
 				$ZIP_Shell_Registry_Key = "HKCR_SD:\CompressedFolder\Shell"
 				$ZIP_Basic_Run = "Extract ZIP in Sandbox"	
 				Remove_Reg_Item -Reg_Path "$ZIP_Shell_Registry_Key\$ZIP_Basic_Run"		
+
+				If(test-path "$ZIP_Shell_Registry_Key\Extract the ZIP in Sandbox")	
+					{
+						Remove_Reg_Item -Reg_Path "$ZIP_Shell_Registry_Key\Extract the ZIP in Sandbox"
+					}	
 
 				# RUN ON ZIP if WinRAR is installed
 				If(test-path "HKCR_SD:\WinRAR.ZIP\Shell")

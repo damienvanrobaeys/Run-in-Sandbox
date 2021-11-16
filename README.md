@@ -1,4 +1,4 @@
-# Run in Sandbox: a quick way to test EXE, PS1, VBS, MSI, REG, Intunewin, PPKG, MSIX, URL in Windows Sandbox
+# Run in Sandbox: a quick way to test in Windows Sandbox from a right-click
 This allows you to do the below things in Windows Sandbox **just from a right-click** by adding context menus:
 - Run PS1 as user or system in Sandbox
 - Run VBS, EXE, MSI in Sandbox

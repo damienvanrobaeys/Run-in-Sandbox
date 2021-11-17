@@ -429,28 +429,29 @@ Else
 																							{
 																								$Prop = (Get-ItemProperty $ISO_Key)."$Property"
 																								Write_Log -Message_Type "INFO" -Message "Following property found: $Prop"	
-																								$ISO_Property_Key = "$HKCR_SD\$Prop"
+																								$ISO_Property_Key = "HKCR_SD:\$Prop"
 																								Write_Log -Message_Type "INFO" -Message "Reg path to test: $ISO_Property_Key"	
 																								If(test-path $ISO_Property_Key)
 																									{
 																										Write_Log -Message_Type "INFO" -Message "The following reg path exists: $ISO_Property_Key"
 																										$ISO_Property_Shell = "$ISO_Property_Key\Shell"
-																										If(test-path $ISO_Property_Shell)
+																										If(!(test-path $ISO_Property_Shell))
 																											{
-																												Write_Log -Message_Type "INFO" -Message "The following reg path exists: $ISO_Property_Shell"
-																												$ISO_Key_Label_Path = "$ISO_Property_Shell\$ISO_Key_Label"
-																												$ISO_Command_Path = "$ISO_Key_Label_Path\Command"
-																												new-item $ISO_Key_Label_Path | out-null
-																												new-item $ISO_Command_Path | out-null	
-																												# Set the command path
-																												Set-Item -Path $ISO_Command_Path -Value $Command_for_ISO -force | out-null	
-																												# Add Sandbox Icons
-																												New-ItemProperty -Path $ISO_Key_Label_Path -Name "icon" -PropertyType String -Value $Sandbox_Icon | out-null			
-																												Write_Log -Message_Type "INFO" -Message "Creating following context menu for ISO under: $ISO_Key_Label_Path"																																																					
-																											}
-																									}Else
+																												new-item $ISO_Property_Shell | out-null
+																											}	
+																										$ISO_Key_Label_Path = "$ISO_Property_Shell\$ISO_Key_Label"
+																										$ISO_Command_Path = "$ISO_Key_Label_Path\Command"
+																										new-item $ISO_Key_Label_Path | out-null
+																										new-item $ISO_Command_Path | out-null	
+																										# Set the command path
+																										Set-Item -Path $ISO_Command_Path -Value $Command_for_ISO -force | out-null	
+																										# Add Sandbox Icons
+																										New-ItemProperty -Path $ISO_Key_Label_Path -Name "icon" -PropertyType String -Value $Sandbox_Icon | out-null			
+																										Write_Log -Message_Type "INFO" -Message "Creating following context menu for ISO under: $ISO_Key_Label_Path"																																																					
+																									}
+																									Else
 																									{
-																										Write_Log -Message_Type "INFO" -Message "The following reg path does not exist: $ISO_Property_Key"
+																										Write_Log -Message_Type "INFO" -Message "The following reg path does not exist: $ISO_Property_Shell"
 																									}
 																							}																					
 																					}																				

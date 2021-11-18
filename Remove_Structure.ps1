@@ -143,7 +143,27 @@ If(test-path $Sandbox_Folder)
 													Remove_Reg_Item -Reg_Path "$Main_Menu_Path"									
 												}											
 										}							
-								}								
+								}	
+
+							# RE%OVING CONTEXT MENU DEPENDING OF THE USERCHOICE
+							$Current_User_SID = (Get-ChildItem Registry::\HKEY_USERS | Where-Object { Test-Path "$($_.pspath)\Volatile Environment" } | ForEach-Object { (Get-ItemProperty "$($_.pspath)\Volatile Environment")}).PSParentPath.split("\")[-1]																			# RUN ON ISO
+							$HKCU = "Registry::HKEY_USERS\$Current_User_SID" 
+							$HKCU_Classes = "Registry::HKEY_USERS\$Current_User_SID" + "_Classes"
+							If(test-path $HKCU)
+							{
+								$PS1_UserChoice = "$HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.ps1\UserChoice"
+								$Get_UserChoice = (Get-ItemProperty $PS1_UserChoice).ProgID
+								$HKCR_UserChoice_Key = "HKCR_SD:\$Get_UserChoice"
+								$HKCR_UserChoice_Shell = "$HKCR_UserChoice_Key\Shell"
+								If(test-path $HKCR_UserChoice_Shell)
+									{
+										$HKCR_UserChoice_Label = "$HKCR_UserChoice_Shell\$PS1_Main_Menu"
+										If(test-path $HKCR_UserChoice_Label)
+											{
+												Remove_Reg_Item -Reg_Path $HKCR_UserChoice_Label
+											}
+									}
+							}		
 						}
 					}				
 			}

@@ -241,7 +241,6 @@ Else
 																				New-Item -Path $Main_Menu_Path -Name "Shell" -force | out-null
 																				$Main_Menu_Shell_Path = "$Main_Menu_Path\Shell"
 
-																				# New-Item -Path $Main_Menu_Shell_Path -Name "Shell" -force | out-null
 																				New-Item -Path $Main_Menu_Shell_Path -Name $PS1_SubMenu_RunAsUser -force | out-null
 																				New-Item -Path $Main_Menu_Shell_Path -Name $PS1_SubMenu_RunAsSystem -force | out-null
 																				New-Item -Path $Main_Menu_Shell_Path -Name $PS1_SubMenu_RunwithParams -force | out-null
@@ -340,6 +339,51 @@ Else
 																								}																						
 																						}																						
 																				}
+
+																				
+																				# ADDING CONTEXT MENU DEPENDING OF THE USERCHOICE
+																				# The userchoice for PS1 is located in: HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.ps1\UserChoice
+																				$Current_User_SID = (Get-ChildItem Registry::\HKEY_USERS | Where-Object { Test-Path "$($_.pspath)\Volatile Environment" } | ForEach-Object { (Get-ItemProperty "$($_.pspath)\Volatile Environment")}).PSParentPath.split("\")[-1]																			# RUN ON ISO
+																				$HKCU = "Registry::HKEY_USERS\$Current_User_SID" 
+																				$HKCU_Classes = "Registry::HKEY_USERS\$Current_User_SID" + "_Classes"
+																				If(test-path $HKCU)
+																				{
+																					$PS1_UserChoice = "$HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.ps1\UserChoice"
+																					$Get_UserChoice = (Get-ItemProperty $PS1_UserChoice).ProgID
+																					$HKCR_UserChoice_Key = "HKCR_SD:\$Get_UserChoice"
+																					$HKCR_UserChoice_Shell = "$HKCR_UserChoice_Key\Shell"
+																					If(test-path $HKCR_UserChoice_Shell)
+																						{
+																							$HKCR_UserChoice_Label = "$HKCR_UserChoice_Shell\$PS1_Main_Menu"
+																							If(!(test-path $HKCR_UserChoice_Label))
+																								{
+																									New-Item -Path $HKCR_UserChoice_Label -force | out-null
+																									New-ItemProperty -Path $HKCR_UserChoice_Label -Name "subcommands" -PropertyType String | out-null
+
+																									New-Item -Path $HKCR_UserChoice_Label -Name "Shell" -force | out-null
+																									$Main_Menu_Shell_Path = "$HKCR_UserChoice_Label\Shell"
+
+																									New-Item -Path $Main_Menu_Shell_Path -Name $PS1_SubMenu_RunAsUser -force | out-null
+																									New-Item -Path $Main_Menu_Shell_Path -Name $PS1_SubMenu_RunAsSystem -force | out-null
+																									New-Item -Path $Main_Menu_Shell_Path -Name $PS1_SubMenu_RunwithParams -force | out-null
+
+																									New-Item -Path "$Main_Menu_Shell_Path\$PS1_SubMenu_RunAsUser" -Name "Command" -force | out-null
+																									New-Item -Path "$Main_Menu_Shell_Path\$PS1_SubMenu_RunAsSystem" -Name "Command" -force | out-null
+																									New-Item -Path "$Main_Menu_Shell_Path\$PS1_SubMenu_RunwithParams" -Name "Command" -force | out-null
+
+																									Set-Item -Path "$Main_Menu_Shell_Path\$PS1_SubMenu_RunAsUser\command" -Value $Command_For_Basic_PS1 -force | out-null
+																									Set-Item -Path "$Main_Menu_Shell_Path\$PS1_SubMenu_RunwithParams\command" -Value $Command_For_Params_PS1 -force | out-null
+																									Set-Item -Path "$Main_Menu_Shell_Path\$PS1_SubMenu_RunAsSystem\command" -Value $Command_For_System_PS1 -force | out-null
+
+																									# Add Sandbox Icon
+																									New-ItemProperty -Path "$HKCR_UserChoice_Label" -Name "icon" -PropertyType String -Value $Sandbox_Icon | out-null
+																									New-ItemProperty -Path "$Main_Menu_Shell_Path\$PS1_SubMenu_RunwithParams" -Name "icon" -PropertyType String -Value $Sandbox_Icon | out-null
+																									New-ItemProperty -Path "$Main_Menu_Shell_Path\$PS1_SubMenu_RunAsUser" -Name "icon" -PropertyType String -Value $Sandbox_Icon | out-null
+																									New-ItemProperty -Path "$Main_Menu_Shell_Path\$PS1_SubMenu_RunAsSystem" -Name "icon" -PropertyType String -Value $Sandbox_Icon | out-null	
+																								
+																								}
+																						}
+																				}																					
 																			}																			
 																		Write_Log -Message_Type "INFO" -Message "Context menus for PS1 have been added"																		
 																	}
@@ -401,19 +445,19 @@ Else
 																			$Command_for_ISO = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -executionpolicy bypass -sta -windowstyle hidden -file C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type ISO -LiteralPath "%V" -ScriptPath "%V"'																			
 																			
 																			# Modify value from HKCR
-																			$ISO_Shell_Registry_Key = "HKCR_SD:\Windows.IsoFile\Shell"
-																			$ISO_Key_Label_Path = "$ISO_Shell_Registry_Key\$ISO_Key_Label"
-																			$ISO_Command_Path = "$ISO_Key_Label_Path\Command"
-																			If(test-path $ISO_Shell_Registry_Key)
-																			{
-																				new-item $ISO_Key_Label_Path | out-null
-																				new-item $ISO_Command_Path | out-null	
+																			# $ISO_Shell_Registry_Key = "HKCR_SD:\Windows.IsoFile\Shell"
+																			# $ISO_Key_Label_Path = "$ISO_Shell_Registry_Key\$ISO_Key_Label"
+																			# $ISO_Command_Path = "$ISO_Key_Label_Path\Command"
+																			# If(test-path $ISO_Shell_Registry_Key)
+																			# {
+																				# new-item $ISO_Key_Label_Path | out-null
+																				# new-item $ISO_Command_Path | out-null	
 																				# Set the command path
-																				Set-Item -Path $ISO_Command_Path -Value $Command_for_ISO -force | out-null	
+																				# Set-Item -Path $ISO_Command_Path -Value $Command_for_ISO -force | out-null	
 																				# Add Sandbox Icons
-																				New-ItemProperty -Path $ISO_Key_Label_Path -Name "icon" -PropertyType String -Value $Sandbox_Icon | out-null			
-																				Write_Log -Message_Type "INFO" -Message "Context menu for ISO has been added"																															
-																			}			
+																				# New-ItemProperty -Path $ISO_Key_Label_Path -Name "icon" -PropertyType String -Value $Sandbox_Icon | out-null			
+																				# Write_Log -Message_Type "INFO" -Message "Context menu for ISO has been added"																															
+																			# }			
 																			
 																			Write_Log -Message_Type "INFO" -Message "Checking content of HKCR\.ISO"																																																		
 																			$ISO_Key = "HKCR_SD:\.ISO"
@@ -440,14 +484,17 @@ Else
 																												new-item $ISO_Property_Shell | out-null
 																											}	
 																										$ISO_Key_Label_Path = "$ISO_Property_Shell\$ISO_Key_Label"
-																										$ISO_Command_Path = "$ISO_Key_Label_Path\Command"
-																										new-item $ISO_Key_Label_Path | out-null
-																										new-item $ISO_Command_Path | out-null	
-																										# Set the command path
-																										Set-Item -Path $ISO_Command_Path -Value $Command_for_ISO -force | out-null	
-																										# Add Sandbox Icons
-																										New-ItemProperty -Path $ISO_Key_Label_Path -Name "icon" -PropertyType String -Value $Sandbox_Icon | out-null			
-																										Write_Log -Message_Type "INFO" -Message "Creating following context menu for ISO under: $ISO_Key_Label_Path"																																																					
+																										If(!(test-path $ISO_Key_Label_Path))
+																											{																
+																												$ISO_Command_Path = "$ISO_Key_Label_Path\Command"
+																												new-item $ISO_Key_Label_Path | out-null
+																												new-item $ISO_Command_Path | out-null	
+																												# Set the command path
+																												Set-Item -Path $ISO_Command_Path -Value $Command_for_ISO -force | out-null	
+																												# Add Sandbox Icons
+																												New-ItemProperty -Path $ISO_Key_Label_Path -Name "icon" -PropertyType String -Value $Sandbox_Icon | out-null			
+																												Write_Log -Message_Type "INFO" -Message "Creating following context menu for ISO under: $ISO_Key_Label_Path"																																																																																																											
+																											}
 																									}
 																									Else
 																									{
@@ -459,7 +506,7 @@ Else
 
 																			
 
-																			# Modify value from HKCU if 7zip exists
+																			# Modify value from HKCU
 																			$HKCU_Classes = "Registry::HKEY_USERS\$Current_User_SID" + "_Classes"
 																			If(test-path $HKCU_Classes)
 																			{
@@ -578,6 +625,35 @@ Else
 																					New-ItemProperty -Path $URL_Key_Label_Path -Name "icon" -PropertyType String -Value $Sandbox_Icon | out-null			
 																					Write_Log -Message_Type "INFO" -Message "Context menu for URL has been added"																									
 																				}
+																				
+																				
+																			# ADD CONTEXT MENU FOR HTML ISING USERCHOICE
+																			$Current_User_SID = (Get-ChildItem Registry::\HKEY_USERS | Where-Object { Test-Path "$($_.pspath)\Volatile Environment" } | ForEach-Object { (Get-ItemProperty "$($_.pspath)\Volatile Environment")}).PSParentPath.split("\")[-1]																			# RUN ON ISO
+																			$HKCU = "Registry::HKEY_USERS\$Current_User_SID" 
+																			$HKCU_Classes = "Registry::HKEY_USERS\$Current_User_SID" + "_Classes"
+																			If(test-path $HKCU)
+																			{
+																				$HTML_UserChoice = "$HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.html\UserChoice"
+																				$Get_UserChoice = (Get-ItemProperty $HTML_UserChoice).ProgID
+																				$HKCR_UserChoice_Key = "HKCR_SD:\$Get_UserChoice"
+																				$HKCR_UserChoice_Shell = "$HKCR_UserChoice_Key\Shell"
+																				If(test-path $HKCR_UserChoice_Shell)
+																					{
+																						$HKCR_UserChoice_Label = "$HKCR_UserChoice_Shell\$HTML_Key_Label"
+																						If(!(test-path $HKCR_UserChoice_Label))
+																							{
+																								$HTML_UserChoice_Command_Path = "$HKCR_UserChoice_Label\Command"
+																								$Command_for_HTML = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -executionpolicy bypass -sta -windowstyle hidden -file C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type HTML -LiteralPath "%V" -ScriptPath "%V"'
+																								new-item $HKCR_UserChoice_Label | out-null
+																								new-item $HTML_UserChoice_Command_Path | out-null	
+																								# Set the command path
+																								Set-Item -Path $HTML_UserChoice_Command_Path -Value $Command_for_HTML -force | out-null	
+																								# Add Sandbox Icons
+																								New-ItemProperty -Path $HKCR_UserChoice_Label -Name "icon" -PropertyType String -Value $Sandbox_Icon | out-null			
+																								Write_Log -Message_Type "INFO" -Message "Context menu for HTML has been added"																																																																								
+																							}
+																					}
+																			}																																						
 																		}
 
 																write-progress -activity $Progress_Activity  -percentcomplete 45;		

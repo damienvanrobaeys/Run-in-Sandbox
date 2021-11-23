@@ -434,7 +434,31 @@ If(test-path $Sandbox_Folder)
 									Remove_Reg_Item -Reg_Path "$Default_ZIP_Shell_Registry_Key\$7z_Key_Label"
 								}																						
 							}
-					}					
+					}
+
+				# Checking default zip from HKCU
+				$Current_User_SID = (Get-ChildItem Registry::\HKEY_USERS | Where-Object { Test-Path "$($_.pspath)\Volatile Environment" } | ForEach-Object { (Get-ItemProperty "$($_.pspath)\Volatile Environment")}).PSParentPath.split("\")[-1]																			# RUN ON ISO
+				$HKCU = "Registry::HKEY_USERS\$Current_User_SID" 
+				$HKCU_Classes = "Registry::HKEY_USERS\$Current_User_SID" + "_Classes"
+				If(test-path $HKCU)
+				{
+					$ZIP_UserChoice = "$HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.zip\OpenWithProgids"
+					$Get_Properties = (get-item $ZIP_UserChoice).property
+					ForEach($Prop in $Get_Properties)
+						{
+							$HKCR_UserChoice_Key = "HKCR_SD:\$Prop"
+							$HKCR_UserChoice_Key
+							$HKCR_UserChoice_Shell = "$HKCR_UserChoice_Key\Shell"
+							If(test-path $HKCR_UserChoice_Shell)
+								{
+									$HKCR_UserChoice_Label = "$HKCR_UserChoice_Shell\$ZIP_Basic_Run"
+									If(!(test-path $HKCR_UserChoice_Label))
+										{
+											Remove_Reg_Item -Reg_Path $HKCR_UserChoice_Label																																																																						
+										}
+								}																					
+						}
+				}	
 			}
 
 		If($List_Drive -ne $null){Remove-PSDrive $List_Drive}

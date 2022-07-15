@@ -192,8 +192,7 @@ Else {
 								# $Language_File = (Get-Childitem "$Current_Folder\Sources\Run_in_Sandbox\Languages_XML" | Where {$_.Basename -like "*$Get_lang_to_install*"}).fullname
 								# $Get_Language_File_Content = ([xml](get-content $Language_File)).Configuration
 
-								write-progress -activity $Progress_Activity -percentcomplete 20; o
-
+								write-progress -activity $Progress_Activity -percentcomplete 20;
 								If ($Add_PS1 -eq $True) {
 									# ADD CONTEXT MENUS FOR PS1
 									$PS1_Main_Menu = "Run PS1 in Sandbox"

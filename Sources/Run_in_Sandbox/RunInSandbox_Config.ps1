@@ -1,15 +1,14 @@
 [System.Reflection.Assembly]::LoadWithPartialName('presentationframework') 	| out-null	
 [System.Reflection.Assembly]::LoadFrom(".\assembly\MahApps.Metro.dll") | out-null 
 [System.Reflection.Assembly]::LoadFrom(".\assembly\MahApps.Metro.IconPacks.dll") | out-null  	
-function LoadXml ($global:file1)
-{
-	$XamlLoader=(New-Object System.Xml.XmlDocument)
+function LoadXml ($global:file1) {
+	$XamlLoader = (New-Object System.Xml.XmlDocument)
 	$XamlLoader.Load($file1)
 	return $XamlLoader
 }
 
-$XamlMainWindow=LoadXml(".\RunInSandbox_Config.xaml")
-$Reader=(New-Object System.Xml.XmlNodeReader $XamlMainWindow)
+$XamlMainWindow = LoadXml(".\RunInSandbox_Config.xaml")
+$Reader = (New-Object System.Xml.XmlNodeReader $XamlMainWindow)
 $Form_PS1 = [Windows.Markup.XamlReader]::Load($Reader)		
 	
 $Check_Uncheck_All = $Form_PS1.findname("Check_Uncheck_All") 			
@@ -29,8 +28,7 @@ $Multiple_Apps = $Form_PS1.findname("Multiple_Apps")
 $Apply_install = $Form_PS1.findname("Apply_install") 
 
 $Check_Uncheck_All.add_click({	
-	If($Check_Uncheck_All.IsChecked -eq $True)
-		{
+		If ($Check_Uncheck_All.IsChecked -eq $True) {
 			$Run_EXE.IsChecked = $True
 			$Run_MSI.IsChecked = $True
 			$Run_PS1.IsChecked = $True
@@ -45,8 +43,7 @@ $Check_Uncheck_All.add_click({
 			$Run_Intunewin.IsChecked = $True
 			$Multiple_Apps.IsChecked = $True								
 		}
-	Else
-		{
+		Else {
 			$Run_EXE.IsChecked = $False
 			$Run_MSI.IsChecked = $False
 			$Run_PS1.IsChecked = $False
@@ -61,43 +58,43 @@ $Check_Uncheck_All.add_click({
 			$Run_Intunewin.IsChecked = $False
 			$Multiple_Apps.IsChecked = $False										
 		}			
-})
+	})
 
 $Apply_install.add_click({
-	$Run_in_Sandbox_Folder = "C:\ProgramData\Run_in_Sandbox"
-	$XML_Config = "$Run_in_Sandbox_Folder\Sandbox_Config.xml"																							
-	$Get_XML_Content = [xml] (Get-Content $XML_Config)
+		$Run_in_Sandbox_Folder = "C:\ProgramData\Run_in_Sandbox"
+		$XML_Config = "$Run_in_Sandbox_Folder\Sandbox_Config.xml"																							
+		$Get_XML_Content = [xml] (Get-Content $XML_Config)
 
-	$EXE_Status = ($Run_EXE.IsChecked).ToString()
-	$MSI_Status = ($Run_MSI.IsChecked).ToString()
-	$PS1_Status = ($Run_PS1.IsChecked).ToString()
-	$VBS_Status = ($Run_VBS.IsChecked).ToString()
-	$PPKG_Status = ($Run_PPKG.IsChecked).ToString()	
-	$HTML_Status = ($Run_HTML.IsChecked).ToString()		
-	$MSIX_Status = ($Run_MSIX.IsChecked).ToString()			
-	$ZIP_Status = ($Extract_ZIP.IsChecked).ToString()
-	$ISO_Status = ($Extract_ISO.IsChecked).ToString()
-	$Folder_Status = ($Share_Folder.IsChecked).ToString()
-	$Reg_Status = ($Run_Reg.IsChecked).ToString()
-	$Intunewin_Status = ($Run_Intunewin.IsChecked).ToString()
-	$MultipleApp_Status = ($Multiple_Apps.IsChecked).ToString()
+		$EXE_Status = ($Run_EXE.IsChecked).ToString()
+		$MSI_Status = ($Run_MSI.IsChecked).ToString()
+		$PS1_Status = ($Run_PS1.IsChecked).ToString()
+		$VBS_Status = ($Run_VBS.IsChecked).ToString()
+		$PPKG_Status = ($Run_PPKG.IsChecked).ToString()	
+		$HTML_Status = ($Run_HTML.IsChecked).ToString()		
+		$MSIX_Status = ($Run_MSIX.IsChecked).ToString()			
+		$ZIP_Status = ($Extract_ZIP.IsChecked).ToString()
+		$ISO_Status = ($Extract_ISO.IsChecked).ToString()
+		$Folder_Status = ($Share_Folder.IsChecked).ToString()
+		$Reg_Status = ($Run_Reg.IsChecked).ToString()
+		$Intunewin_Status = ($Run_Intunewin.IsChecked).ToString()
+		$MultipleApp_Status = ($Multiple_Apps.IsChecked).ToString()
 
-	$Get_XML_Content.Configuration.ContextMenu_EXE         = $EXE_Status
-	$Get_XML_Content.Configuration.ContextMenu_MSI         = $MSI_Status
-	$Get_XML_Content.Configuration.ContextMenu_PS1         = $PS1_Status
-	$Get_XML_Content.Configuration.ContextMenu_VBS         = $VBS_Status
-	$Get_XML_Content.Configuration.ContextMenu_PPKG        = $PPKG_Status	
-	$Get_XML_Content.Configuration.ContextMenu_HTML        = $HTML_Status	
-	$Get_XML_Content.Configuration.ContextMenu_MSIX        = $MSIX_Status															
-	$Get_XML_Content.Configuration.ContextMenu_ZIP         = $ZIP_Status
-	$Get_XML_Content.Configuration.ContextMenu_ISO         = $ISO_Status							
-	$Get_XML_Content.Configuration.ContextMenu_Folder      = $Folder_Status
-	$Get_XML_Content.Configuration.ContextMenu_Reg         = $Reg_Status			
-	$Get_XML_Content.Configuration.ContextMenu_Intunewin   = $Intunewin_Status
-	$Get_XML_Content.Configuration.ContextMenu_MultipleApp = $MultipleApp_Status
+		$Get_XML_Content.Configuration.ContextMenu_EXE = $EXE_Status
+		$Get_XML_Content.Configuration.ContextMenu_MSI = $MSI_Status
+		$Get_XML_Content.Configuration.ContextMenu_PS1 = $PS1_Status
+		$Get_XML_Content.Configuration.ContextMenu_VBS = $VBS_Status
+		$Get_XML_Content.Configuration.ContextMenu_PPKG = $PPKG_Status	
+		$Get_XML_Content.Configuration.ContextMenu_HTML = $HTML_Status	
+		$Get_XML_Content.Configuration.ContextMenu_MSIX = $MSIX_Status															
+		$Get_XML_Content.Configuration.ContextMenu_ZIP = $ZIP_Status
+		$Get_XML_Content.Configuration.ContextMenu_ISO = $ISO_Status							
+		$Get_XML_Content.Configuration.ContextMenu_Folder = $Folder_Status
+		$Get_XML_Content.Configuration.ContextMenu_Reg = $Reg_Status			
+		$Get_XML_Content.Configuration.ContextMenu_Intunewin = $Intunewin_Status
+		$Get_XML_Content.Configuration.ContextMenu_MultipleApp = $MultipleApp_Status
 	
-	$Get_XML_Content.Save($XML_Config)					
-	$Form_PS1.Close()
-})							
+		$Get_XML_Content.Save($XML_Config)					
+		$Form_PS1.Close()
+	})							
 
 $Form_PS1.ShowDialog() | Out-Null	

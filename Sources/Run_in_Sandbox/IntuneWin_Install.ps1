@@ -13,7 +13,7 @@ $New_Intunewin_Path = "$Intunewin_Extracted_Folder\$FileName.intunewin"
 
 set-location $Sandbox_Folder
 & .\IntuneWinAppUtilDecoder.exe $New_Intunewin_Path -s	
-$IntuneWinDecoded_File_Name = "$Intunewin_Extracted_Folder\$FileName.Intunewin.decoded"	
+$IntuneWinDecoded_File_Name = "$Intunewin_Extracted_Folder\$FileName.decoded.zip"	
 	
 new-item "$Intunewin_Extracted_Folder\$FileName" -Type Directory -Force | out-null
 
@@ -25,7 +25,7 @@ $Extract_Path = "$Intunewin_Extracted_Folder\$FileName"
 Expand-Archive -LiteralPath "$Intunewin_Extracted_Folder\$IntuneWin_Rename" -DestinationPath $Extract_Path -Force
 
 Remove-Item "$Intunewin_Extracted_Folder\$IntuneWin_Rename" -force
-sleep 1
+Start-Sleep 1
 
 set-location "$Intunewin_Extracted_Folder\$FileName"
 $file = "$Sandbox_Folder\Intunewin_Install_Command.txt"

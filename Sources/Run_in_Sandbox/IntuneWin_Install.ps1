@@ -6,6 +6,8 @@ $FolderPath = Split-Path (Split-Path "$ScriptPath" -Parent) -Leaf
 $DirectoryName = (get-item $ScriptPath).DirectoryName
 $FileName = (get-item $ScriptPath).BaseName
 
+New-item "C:\ProgramData\Microsoft\IntuneManagementExtension\Logs" -Force -Type Directory
+
 $Intunewin_Extracted_Folder = "C:\Windows\Temp\intunewin"
 new-item $Intunewin_Extracted_Folder -Type Directory -Force
 copy-item $ScriptPath $Intunewin_Extracted_Folder -Force

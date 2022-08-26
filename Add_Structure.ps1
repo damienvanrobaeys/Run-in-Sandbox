@@ -89,7 +89,7 @@ Else
 						write-progress -activity $Progress_Activity -percentcomplete 1;
 								
 						$Check_Sources_Files_Count = (get-childitem "$Current_Folder\Sources\Run_in_Sandbox" -recurse).count
-						If($Check_Sources_Files_Count -eq 38)																			
+						If($Check_Sources_Files_Count -eq 39)																			
 							{	
 								$Sources_Copied = $False
 								$ProgData = $env:ProgramData

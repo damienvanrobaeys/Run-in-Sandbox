@@ -32,10 +32,13 @@ sleep 1
 $PSexec = "c:\pstools\PSexec.exe"
 $WorkDir = "$Intunewin_Extracted_Folder\$FileName"
 $ServiceUI = "$Workdir\ServiceUI.exe"
-$file = "$Sandbox_Folder\Intunewin_Install_Command.txt"
-$Command = Get-Content -Raw $File
+$File = "$Sandbox_Folder\Intunewin_Install_Command.txt"
+$File = Get-Content -Raw $File
 
-$cmd = "$psexec -w `"$workdir`" -si -accepteula `"$serviceui`" -Process:explorer.exe $command"
+$command = "$workdir\$File"
+
+#$cmd = "$psexec -w `"$workdir`" -si -accepteula `"$serviceui`" -Process:explorer.exe $command"
+$cmd = "$psexec -w `"$workdir`" -si -accepteula $command"
 
 set-location "$Intunewin_Extracted_Folder\$FileName"
 

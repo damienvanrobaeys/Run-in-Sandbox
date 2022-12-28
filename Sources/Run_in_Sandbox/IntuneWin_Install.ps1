@@ -1,4 +1,4 @@
-$Sandbox_Folder = "C:\Users\WDAGUtilityAccount\Desktop\Run_in_Sandbox"
+$Sandbox_Folder = "C:\Run_in_Sandbox"
 $Intunewin_Content_File = "$Sandbox_Folder\Intunewin_Folder.txt"
 $ScriptPath = get-content $Intunewin_Content_File
 
@@ -29,7 +29,15 @@ Expand-Archive -LiteralPath "$Intunewin_Extracted_Folder\$IntuneWin_Rename" -Des
 Remove-Item "$Intunewin_Extracted_Folder\$IntuneWin_Rename" -force
 sleep 1
 
-set-location "$Intunewin_Extracted_Folder\$FileName"
+$PSexec = "c:\pstools\PSexec.exe"
+$WorkDir = "$Intunewin_Extracted_Folder\$FileName"
+$ServiceUI = "$Workdir\ServiceUI.exe"
 $file = "$Sandbox_Folder\Intunewin_Install_Command.txt"
-& { Invoke-Expression (Get-Content -Raw $file) }
+$Command = Get-Content -Raw $File
+
+$cmd = "$psexec -w `"$workdir`" -si -accepteula `"$serviceui`" -Process:explorer.exe $command"
+
+set-location "$Intunewin_Extracted_Folder\$FileName"
+
+& { Invoke-Expression $cmd}
 

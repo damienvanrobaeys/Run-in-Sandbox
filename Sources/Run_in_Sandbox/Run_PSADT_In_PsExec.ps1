@@ -1,10 +1,10 @@
-﻿Param(
+﻿Param (
     [Parameter(Mandatory = $False)]
     [string]$WorkDir
-) 
+)
 
-if (!($WorkDirk)){
-$WorkDir = Read-Host "Enter the path for workdir"
+if (-not ($WorkDirk) ) {
+    $WorkDir = Read-Host "Enter the path for workdir"
 }
 
 $PSexec = "c:\pstools\PSexec.exe"
@@ -14,4 +14,4 @@ $command = "$workdir\$ServiceUI"
 
 $cmd = "$psexec -w `"$workdir`" -si -accepteula $command"
 
-& { Invoke-Expression $cmd}
+& { Invoke-Expression $cmd }

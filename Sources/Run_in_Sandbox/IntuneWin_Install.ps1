@@ -1,4 +1,4 @@
-$Sandbox_Folder = "C:\Users\WDAGUtilityAccount\Desktop\Run_in_Sandbox"
+$Sandbox_Folder = "C:\Run_in_Sandbox"
 $Intunewin_Content_File = "$Sandbox_Folder\Intunewin_Folder.txt"
 $ScriptPath = get-content $Intunewin_Content_File
 
@@ -14,9 +14,9 @@ copy-item $ScriptPath $Intunewin_Extracted_Folder -Force
 $New_Intunewin_Path = "$Intunewin_Extracted_Folder\$FileName.intunewin"
 
 set-location $Sandbox_Folder
-& .\IntuneWinAppUtilDecoder.exe $New_Intunewin_Path -s	
-$IntuneWinDecoded_File_Name = "$Intunewin_Extracted_Folder\$FileName.Intunewin.decoded"	
-	
+& .\IntuneWinAppUtilDecoder.exe $New_Intunewin_Path -s
+$IntuneWinDecoded_File_Name = "$Intunewin_Extracted_Folder\$FileName.Intunewin.decoded"
+
 new-item "$Intunewin_Extracted_Folder\$FileName" -Type Directory -Force | out-null
 
 $IntuneWin_Rename = "$FileName.zip"
@@ -27,9 +27,18 @@ $Extract_Path = "$Intunewin_Extracted_Folder\$FileName"
 Expand-Archive -LiteralPath "$Intunewin_Extracted_Folder\$IntuneWin_Rename" -DestinationPath $Extract_Path -Force
 
 Remove-Item "$Intunewin_Extracted_Folder\$IntuneWin_Rename" -force
-sleep 1
+Start-Sleep 1
+
+$PSexec = "c:\pstools\PSexec.exe"
+$WorkDir = "$Intunewin_Extracted_Folder\$FileName"
+$File = "$Sandbox_Folder\Intunewin_Install_Command.txt"
+$File = Get-Content -Raw $File
+
+$command = "$workdir\$File"
+
+$cmd = "$psexec -w `"$workdir`" -si -accepteula $command"
 
 set-location "$Intunewin_Extracted_Folder\$FileName"
-$file = "$Sandbox_Folder\Intunewin_Install_Command.txt"
-& { Invoke-Expression (Get-Content -Raw $file) }
+
+& { Invoke-Expression $cmd}
 

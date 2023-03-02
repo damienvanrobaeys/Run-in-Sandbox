@@ -877,5 +877,3 @@ If ($null -ne $List_Drive) {Remove-PSDrive $List_Drive}
 
 write-progress -activity $Progress_Activity  -percentcomplete 100;
 copy-item $Log_File $Destination_folder -Force
-
-Export-ModuleMember -Function 'Export_Reg_Config'

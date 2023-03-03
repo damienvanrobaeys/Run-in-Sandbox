@@ -12,7 +12,7 @@ Function Write_Log {
 	)
 
 	$MyDate = "[{0:MM/dd/yy} {0:HH:mm:ss}]" -f (Get-Date)
-	write-host "$MyDate - $Message_Type : $Message"
+	Write-Output "$MyDate - $Message_Type : $Message"
 }
 
 Function Remove_Reg_Item {
@@ -64,30 +64,25 @@ $Add_PPKG = $Get_XML_Content.Configuration.ContextMenu_PPKG
 $Add_HTML = $Get_XML_Content.Configuration.ContextMenu_HTML
 $Add_MSIX = $Get_XML_Content.Configuration.ContextMenu_MSIX
 
-$List_Drive = get-psdrive | Where-Object {$_.Name -eq "HKCR_SD"}
-If ($null -ne $List_Drive) {Remove-PSDrive $List_Drive}
-New-PSDrive -PSProvider registry -Root HKEY_CLASSES_ROOT -Name HKCR_SD | out-null
+$List_Drive = Get-PSDrive | Where-Object { $_.Name -eq "HKCR_SD" }
+If ($null -ne $List_Drive) { Remove-PSDrive $List_Drive }
+New-PSDrive -PSProvider registry -Root HKEY_CLASSES_ROOT -Name HKCR_SD | Out-Null
 
 If ($Add_PS1 -eq $True) {
 	# REMOVE RUN ON PS1
-	write-host "Removing context menu for PS1"
+	Write-Output "Removing context menu for PS1"
 
 	$PS1_Main_Menu = "Run PS1 in Sandbox"
 	$Windows_Version = (Get-CimInstance -class Win32_OperatingSystem).Caption
 	If ($Windows_Version -like "*Windows 10*") {
-		$PS1_Shell_Registry_Key = "HKCR_SD:\Microsoft.PowerShellScript.1\Shell"
-		Remove_Reg_Item -Reg_Path "$PS1_Shell_Registry_Key\$PS1PS1_Shell_Registry_Key_Basic_Run"
+		$PS1_Shell_Registry_Key = "HKCR_SD:\SystemFileAssociations\.ps1\Shell"
 
-		If (Test-Path "$PS1_Shell_Registry_Key\Run the PS1 in Sandbox") {
-			Remove_Reg_Item -Reg_Path "$PS1_Shell_Registry_Key\Run the PS1 in Sandbox"
-		}
-
-		If (Test-Path "$PS1_Shell_Registry_Key\Run the PS1 in Sandbox with parameters") {
-			Remove_Reg_Item -Reg_Path "$PS1_Shell_Registry_Key\Run the PS1 in Sandbox with parameters"
+		If (Test-Path "$PS1_Shell_Registry_Key\$PS1_Main_Menu") {
+			Remove_Reg_Item -Reg_Path "$PS1_Shell_Registry_Key\$PS1_Main_Menu"
 		}
 	}
 	If ($Windows_Version -like "*Windows 11*") {
-		$Current_User_SID = (Get-ChildItem Registry::\HKEY_USERS | Where-Object { Test-Path "$($_.pspath)\Volatile Environment" } | ForEach-Object { (Get-ItemProperty "$($_.pspath)\Volatile Environment")}).PSParentPath.split("\")[-1]																			# RUN ON ISO
+		$Current_User_SID = (Get-ChildItem Registry::\HKEY_USERS | Where-Object { Test-Path "$($_.pspath)\Volatile Environment" } | ForEach-Object { (Get-ItemProperty "$($_.pspath)\Volatile Environment") }).PSParentPath.split("\")[-1]																			# RUN ON ISO
 		$HKCU_Classes = "Registry::HKEY_USERS\$Current_User_SID" + "_Classes"
 		If (Test-Path $HKCU_Classes) {
 			$Default_PS1_HKCU = "$HKCU_Classes\.ps1"
@@ -116,7 +111,7 @@ If ($Add_PS1 -eq $True) {
 			}
 
 			# RE%OVING CONTEXT MENU DEPENDING OF THE USERCHOICE
-			$Current_User_SID = (Get-ChildItem Registry::\HKEY_USERS | Where-Object { Test-Path "$($_.pspath)\Volatile Environment" } | ForEach-Object { (Get-ItemProperty "$($_.pspath)\Volatile Environment")}).PSParentPath.split("\")[-1]																			# RUN ON ISO
+			$Current_User_SID = (Get-ChildItem Registry::\HKEY_USERS | Where-Object { Test-Path "$($_.pspath)\Volatile Environment" } | ForEach-Object { (Get-ItemProperty "$($_.pspath)\Volatile Environment") }).PSParentPath.split("\")[-1]																			# RUN ON ISO
 			$HKCU = "Registry::HKEY_USERS\$Current_User_SID"
 			$HKCU_Classes = "Registry::HKEY_USERS\$Current_User_SID" + "_Classes"
 			If (Test-Path $HKCU) {
@@ -137,7 +132,7 @@ If ($Add_PS1 -eq $True) {
 
 If ($Add_Reg -eq $True) {
 	# REMOVE RUN ON REG
-	write-host "Removing context menu for REG"
+	Write-Output "Removing context menu for REG"
 	$Reg_Shell_Registry_Key = "HKCR_SD:\regfile\Shell"
 	$Reg_Key_Label = "Test reg file in Sandbox"
 	Remove_Reg_Item -Reg_Path "$REG_Shell_Registry_Key\$Reg_Key_Label"
@@ -151,7 +146,7 @@ If ($Add_ISO -eq $True) {
 	$ISO_Key_Label = "Extract ISO file in Sandbox"
 
 	# REMOVE RUN ON REG from HKCR under Windows.IsoFile
-	write-host "Removing context menu for ISO"
+	Write-Output "Removing context menu for ISO"
 	$ISO_Shell_Registry_Key = "HKCR_SD:\Windows.IsoFile\Shell"
 	If (Test-Path "$ISO_Shell_Registry_Key\$ISO_Key_Label") {
 		Remove_Reg_Item -Reg_Path "$ISO_Shell_Registry_Key\$ISO_Key_Label"
@@ -207,7 +202,7 @@ If ($Add_ISO -eq $True) {
 
 
 If ($Add_MSIX -eq $True) {
-	write-host "Removing context menu for MSIX"
+	Write-Output "Removing context menu for MSIX"
 	$MSIX_Key_Label = "Run MSIX file in Sandbox"
 	# REMOVE RUN ON REG from HKCR
 	$MSIX_Shell_Registry_Key = "HKCR_SD:\.msix\OpenWithProgids"
@@ -224,7 +219,7 @@ If ($Add_MSIX -eq $True) {
 	}
 
 	# Modify value from HKCU
-	$Current_User_SID = (Get-ChildItem Registry::\HKEY_USERS | Where-Object { Test-Path "$($_.pspath)\Volatile Environment" } | ForEach-Object { (Get-ItemProperty "$($_.pspath)\Volatile Environment")}).PSParentPath.split("\")[-1]																			# RUN ON ISO
+	$Current_User_SID = (Get-ChildItem Registry::\HKEY_USERS | Where-Object { Test-Path "$($_.pspath)\Volatile Environment" } | ForEach-Object { (Get-ItemProperty "$($_.pspath)\Volatile Environment") }).PSParentPath.split("\")[-1]																			# RUN ON ISO
 	$HKCU_Classes = "Registry::HKEY_USERS\$Current_User_SID" + "_Classes"
 	If (Test-Path $HKCU_Classes) {
 		$Default_MSIX_HKCU = "$HKCU_Classes\.msix"
@@ -239,7 +234,7 @@ If ($Add_MSIX -eq $True) {
 
 If ($Add_PPKG -eq $True) {
 	# REMOVE RUN ON PPKG
-	write-host "Removing context menu for PPKG"
+	Write-Output "Removing context menu for PPKG"
 	$PPKG_Shell_Registry_Key = "HKCR_SD:\Microsoft.ProvTool.Provisioning.1\Shell"
 	$PPKG_Key_Label = "Run PPKG file in Sandbox"
 	Remove_Reg_Item -Reg_Path "$PPKG_Shell_Registry_Key\$PPKG_Key_Label"
@@ -269,7 +264,7 @@ If ($Add_HTML -eq $True) {
 
 If ($Add_EXE -eq $True) {
 	# REMOVE RUN ON EXE
-	write-host "Removing context menu for PS1"
+	Write-Output "Removing context menu for PS1"
 	$EXE_Shell_Registry_Key = "HKCR_SD:\exefile\Shell"
 	$EXE_Basic_Run = "Run EXE in Sandbox"
 	Remove_Reg_Item -Reg_Path "$EXE_Shell_Registry_Key\$EXE_Basic_Run"
@@ -281,19 +276,18 @@ If ($Add_EXE -eq $True) {
 
 If ($Add_MSI -eq $True) {
 	# RUN ON MSI
-	write-host "Removing context menu for MSI"
+	Write-Output "Removing context menu for MSI"
 	$MSI_Shell_Registry_Key = "HKCR_SD:\Msi.Package\Shell"
 	$MSI_Basic_Run = "Run MSI in Sandbox"
 	Remove_Reg_Item -Reg_Path "$MSI_Shell_Registry_Key\$MSI_Basic_Run"
 
-	If(Test-Path "$MSI_Shell_Registry_Key\Run the MSI in Sandbox")
-		{
-			Remove_Reg_Item -Reg_Path "$MSI_Shell_Registry_Key\Run the MSI in Sandbox"
-		}
+	If (Test-Path "$MSI_Shell_Registry_Key\Run the MSI in Sandbox") {
+		Remove_Reg_Item -Reg_Path "$MSI_Shell_Registry_Key\Run the MSI in Sandbox"
+	}
 }
 
 If ($Add_Folder -eq $True) {
-	write-host "Removing context menu for folder"
+	Write-Output "Removing context menu for folder"
 	# Share this folder - Inside the folder
 	$Folder_Inside_Shell_Registry_Key = "HKCR_SD:\Directory\Background\shell"
 	$Folder_Inside_Basic_Run = "Share this folder in a Sandbox"
@@ -307,19 +301,19 @@ If ($Add_Folder -eq $True) {
 
 If ($Add_Intunewin -eq $True) {
 	# RUN ON Intunewin
-	write-host "Removing context menu for intunewin"
+	Write-Output "Removing context menu for intunewin"
 	Remove_Reg_Item -Reg_Path "HKCR_SD:\.intunewin"
 }
 
 If ($Add_MultipleApp -eq $True) {
 	# RUN ON multiple app context menu
-	write-host "Removing context menu for multiple app"
+	Write-Output "Removing context menu for multiple app"
 	Remove_Reg_Item -Reg_Path "HKCR_SD:\.sdbapp"
 }
 
 If ($Add_VBS -eq $True) {
 	# REMOVE RUN ON VBS
-	write-host "Removing context menu for VBS"
+	Write-Output "Removing context menu for VBS"
 	$VBS_Shell_Registry_Key = "HKCR_SD:\VBSFile\Shell"
 	$VBS_Basic_Run = "Run VBS in Sandbox"
 	$VBS_Parameter_Run = "Run VBS in Sandbox with parameters"
@@ -336,7 +330,7 @@ If ($Add_VBS -eq $True) {
 }
 
 If ($Add_ZIP -eq $True) {
-	write-host "Removing context menu for ZIP"
+	Write-Output "Removing context menu for ZIP"
 	# RUN ON ZIP
 	$ZIP_Shell_Registry_Key = "HKCR_SD:\CompressedFolder\Shell"
 	$ZIP_Basic_Run = "Extract ZIP in Sandbox"
@@ -367,12 +361,12 @@ If ($Add_ZIP -eq $True) {
 	}
 
 	# Checking default zip from HKCU
-	$Current_User_SID = (Get-ChildItem Registry::\HKEY_USERS | Where-Object { Test-Path "$($_.pspath)\Volatile Environment" } | ForEach-Object { (Get-ItemProperty "$($_.pspath)\Volatile Environment")}).PSParentPath.split("\")[-1]																			# RUN ON ISO
+	$Current_User_SID = (Get-ChildItem Registry::\HKEY_USERS | Where-Object { Test-Path "$($_.pspath)\Volatile Environment" } | ForEach-Object { (Get-ItemProperty "$($_.pspath)\Volatile Environment") }).PSParentPath.split("\")[-1]																			# RUN ON ISO
 	$HKCU = "Registry::HKEY_USERS\$Current_User_SID"
 	$HKCU_Classes = "Registry::HKEY_USERS\$Current_User_SID" + "_Classes"
 	If (Test-Path $HKCU) {
 		$ZIP_UserChoice = "$HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.zip\OpenWithProgids"
-		$Get_Properties = (get-item $ZIP_UserChoice).property
+		$Get_Properties = (Get-Item $ZIP_UserChoice).property
 		ForEach ($Prop in $Get_Properties) {
 			$HKCR_UserChoice_Key = "HKCR_SD:\$Prop"
 			$HKCR_UserChoice_Key
@@ -387,6 +381,6 @@ If ($Add_ZIP -eq $True) {
 	}
 }
 
-If ($null -ne $List_Drive) {Remove-PSDrive $List_Drive}
+If ($null -ne $List_Drive) { Remove-PSDrive $List_Drive }
 
-Remove-item $Sandbox_Folder -recurse -force
+Remove-Item $Sandbox_Folder -Recurse -Force

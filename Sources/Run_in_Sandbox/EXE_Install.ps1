@@ -1,11 +1,9 @@
 $Sandbox_Folder = "C:\Users\WDAGUtilityAccount\Desktop\Run_in_Sandbox"
 
-$FolderPath = Split-Path (Split-Path "$ScriptPath" -Parent) -Leaf
-$DirectoryName = (get-item $ScriptPath).DirectoryName
-$FileName = (get-item $ScriptPath).BaseName
+$FileName = (Get-Item $ScriptPath).BaseName
 
-New-item "C:\ProgramData\Microsoft\IntuneManagementExtension\Logs" -Force -Type Directory
+New-Item "C:\ProgramData\Microsoft\IntuneManagementExtension\Logs" -Force -Type Directory
 
-set-location "$Intunewin_Extracted_Folder\$FileName"
+Set-Location "$Intunewin_Extracted_Folder\$FileName"
 $file = "$Sandbox_Folder\EXE_Command_File.txt"
 & { Invoke-Expression (Get-Content -Raw $file) }

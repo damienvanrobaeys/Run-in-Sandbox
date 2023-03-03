@@ -1,7 +1,7 @@
-[System.Reflection.Assembly]::LoadWithPartialName('presentationframework') 	| out-null
-[System.Reflection.Assembly]::LoadFrom(".\assembly\MahApps.Metro.dll") | out-null
-[System.Reflection.Assembly]::LoadFrom(".\assembly\MahApps.Metro.IconPacks.dll") | out-null
-function LoadXml ($global:file1) {
+[System.Reflection.Assembly]::LoadWithPartialName('presentationframework') | Out-Null
+[System.Reflection.Assembly]::LoadFrom(".\assembly\MahApps.Metro.dll") | Out-Null
+[System.Reflection.Assembly]::LoadFrom(".\assembly\MahApps.Metro.IconPacks.dll") | Out-Null
+function LoadXml ($Script:file1) {
 	$XamlLoader = (New-Object System.Xml.XmlDocument)
 	$XamlLoader.Load($file1)
 	return $XamlLoader
@@ -79,18 +79,18 @@ $Apply_install.add_click({
 	$Intunewin_Status = ($Run_Intunewin.IsChecked).ToString()
 	$MultipleApp_Status = ($Multiple_Apps.IsChecked).ToString()
 
-	$Get_XML_Content.Configuration.ContextMenu_EXE         = $EXE_Status
-	$Get_XML_Content.Configuration.ContextMenu_MSI         = $MSI_Status
-	$Get_XML_Content.Configuration.ContextMenu_PS1         = $PS1_Status
-	$Get_XML_Content.Configuration.ContextMenu_VBS         = $VBS_Status
-	$Get_XML_Content.Configuration.ContextMenu_PPKG        = $PPKG_Status
-	$Get_XML_Content.Configuration.ContextMenu_HTML        = $HTML_Status
-	$Get_XML_Content.Configuration.ContextMenu_MSIX        = $MSIX_Status
-	$Get_XML_Content.Configuration.ContextMenu_ZIP         = $ZIP_Status
-	$Get_XML_Content.Configuration.ContextMenu_ISO         = $ISO_Status
-	$Get_XML_Content.Configuration.ContextMenu_Folder      = $Folder_Status
-	$Get_XML_Content.Configuration.ContextMenu_Reg         = $Reg_Status
-	$Get_XML_Content.Configuration.ContextMenu_Intunewin   = $Intunewin_Status
+	$Get_XML_Content.Configuration.ContextMenu_EXE = $EXE_Status
+	$Get_XML_Content.Configuration.ContextMenu_MSI = $MSI_Status
+	$Get_XML_Content.Configuration.ContextMenu_PS1 = $PS1_Status
+	$Get_XML_Content.Configuration.ContextMenu_VBS = $VBS_Status
+	$Get_XML_Content.Configuration.ContextMenu_PPKG = $PPKG_Status
+	$Get_XML_Content.Configuration.ContextMenu_HTML = $HTML_Status
+	$Get_XML_Content.Configuration.ContextMenu_MSIX = $MSIX_Status
+	$Get_XML_Content.Configuration.ContextMenu_ZIP = $ZIP_Status
+	$Get_XML_Content.Configuration.ContextMenu_ISO = $ISO_Status
+	$Get_XML_Content.Configuration.ContextMenu_Folder = $Folder_Status
+	$Get_XML_Content.Configuration.ContextMenu_Reg = $Reg_Status
+	$Get_XML_Content.Configuration.ContextMenu_Intunewin = $Intunewin_Status
 	$Get_XML_Content.Configuration.ContextMenu_MultipleApp = $MultipleApp_Status
 
 	$Get_XML_Content.Save($XML_Config)

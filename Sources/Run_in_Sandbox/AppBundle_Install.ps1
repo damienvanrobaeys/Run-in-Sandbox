@@ -19,7 +19,7 @@ ForEach ($App in $Apps_to_install) {
 	$App_Full_Path = "$App_Folder\$App_File"
 
 	If ($App_CommandLine -ne "") {
-		set-location $App_Path
+		Set-Location $App_Path
 		& { Invoke-Expression (Get-Content -Raw $file) }
 		& { Invoke-Expression ($App_CommandLine) }
 	}
@@ -28,10 +28,10 @@ ForEach ($App in $Apps_to_install) {
 		# & $App_Full_Path -wait
 		If ( ($App_File -like "*.exe*") -or ($App_File -like "*.msi*") ) {
 			If ($App_SilentSwitch -ne "") {
-				start-process $App_Full_Path -ArgumentList "$App_SilentSwitch" -wait
+				Start-Process $App_Full_Path -ArgumentList "$App_SilentSwitch" -Wait
 			}
 			Else {
-				start-process $App_Full_Path -wait
+				Start-Process $App_Full_Path -Wait
 			}
 		}
 		If ( ($App_File -like "*.ps1*") -or ($App_File -like "*.vbs*") ) {

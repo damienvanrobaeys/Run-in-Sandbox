@@ -221,9 +221,9 @@ If ($Add_PS1 -eq $True) {
 	$PS1_SubMenu_RunAsSystem = "Run PS1 as system"
 	$PS1_SubMenu_RunwithParams = "Run PS1 with parameters"
 
-	$Command_For_Basic_PS1 = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -executionpolicy bypass -sta -file C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type PS1Basic -LiteralPath "%V" -ScriptPath "%V"'
-	$Command_For_Params_PS1 = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -executionpolicy bypass -sta -file C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type PS1Params -LiteralPath "%V" -ScriptPath "%V"'
-	$Command_For_System_PS1 = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -executionpolicy bypass -sta -file C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type PS1System -LiteralPath "%V" -ScriptPath "%V"'
+	$Command_For_Basic_PS1 = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -ExecutionPolicy Unrestricted -sta -File C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type PS1Basic -LiteralPath "%V" -ScriptPath "%V"'
+	$Command_For_Params_PS1 = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -ExecutionPolicy Unrestricted -sta -File C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type PS1Params -LiteralPath "%V" -ScriptPath "%V"'
+	$Command_For_System_PS1 = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -ExecutionPolicy Unrestricted -sta -File C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type PS1System -LiteralPath "%V" -ScriptPath "%V"'
 
 	$Windows_Version = (Get-CimInstance -class Win32_OperatingSystem).Caption
 	If ($Windows_Version -like "*Windows 10*") {
@@ -389,7 +389,7 @@ If ($Add_Intunewin -eq $True) {
 	$Intunewin_Key_Label = "Test intunewin in Sandbox"
 	$Intunewin_Key_Label_Path = "$Intunewin_Shell_Registry_Key\Shell\$Intunewin_Key_Label"
 	$Intunewin_Command_Path = "$Intunewin_Key_Label_Path\Command"
-	$Command_for_Intunewin = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -executionpolicy bypass -sta -windowstyle hidden -file C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type Intunewin -LiteralPath "%V" -ScriptPath "%V"'
+	$Command_for_Intunewin = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -ExecutionPolicy Unrestricted -sta -WindowStyle Hidden -File C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type Intunewin -LiteralPath "%V" -ScriptPath "%V"'
 	If (-not (Test-Path $Intunewin_Shell_Registry_Key) ) {
 		New-Item $Intunewin_Shell_Registry_Key -Force | Out-Null
 		New-Item "$Intunewin_Shell_Registry_Key\Shell" -Force | Out-Null
@@ -413,7 +413,7 @@ If ($Add_Reg -eq $True) {
 	$Reg_Key_Label = "Test reg file in Sandbox"
 	$Reg_Key_Label_Path = "$Reg_Shell_Registry_Key\$Reg_Key_Label"
 	$Reg_Command_Path = "$Reg_Key_Label_Path\Command"
-	$Command_for_Reg = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -executionpolicy bypass -sta -windowstyle hidden -file C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type REG -LiteralPath "%V" -ScriptPath "%V"'
+	$Command_for_Reg = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -ExecutionPolicy Unrestricted -sta -WindowStyle Hidden -File C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type REG -LiteralPath "%V" -ScriptPath "%V"'
 	If (Test-Path $Reg_Shell_Registry_Key) {
 		New-Item $Reg_Key_Label_Path | Out-Null
 		New-Item $Reg_Command_Path | Out-Null
@@ -431,7 +431,7 @@ Write-Progress -Activity $Progress_Activity -PercentComplete 35
 If ($Add_ISO -eq $True) {
 	# ADDING CONTEXT MENU FOR ISO
 	$ISO_Key_Label = "Extract ISO file in Sandbox"
-	$Command_for_ISO = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -executionpolicy bypass -sta -windowstyle hidden -file C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type ISO -LiteralPath "%V" -ScriptPath "%V"'
+	$Command_for_ISO = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -ExecutionPolicy Unrestricted -sta -WindowStyle Hidden -File C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type ISO -LiteralPath "%V" -ScriptPath "%V"'
 
 	Write_Log -Message_Type "INFO" -Message "Checking content of HKCR\.ISO"
 	$ISO_Key = "HKCR_SD:\.ISO"
@@ -504,7 +504,7 @@ If ($Add_PPKG -eq $True) {
 	$PPKG_Key_Label = "Run PPKG file in Sandbox"
 	$PPKG_Key_Label_Path = "$PPKG_Shell_Registry_Key\$PPKG_Key_Label"
 	$PPKG_Command_Path = "$PPKG_Key_Label_Path\Command"
-	$Command_for_PPKG = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -executionpolicy bypass -sta -windowstyle hidden -file C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type PPKG -LiteralPath "%V" -ScriptPath "%V"'
+	$Command_for_PPKG = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -ExecutionPolicy Unrestricted -sta -WindowStyle Hidden -File C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type PPKG -LiteralPath "%V" -ScriptPath "%V"'
 	If (Test-Path $PPKG_Shell_Registry_Key) {
 		New-Item $PPKG_Key_Label_Path | Out-Null
 		New-Item $PPKG_Command_Path | Out-Null
@@ -528,7 +528,7 @@ If ($Add_HTML -eq $True) {
 		$HTML_Edge_Key_Label_Path = "$HTML_Edge_Shell_Registry_Key\$HTML_Key_Label"
 		If (-not (Test-Path $HTML_Edge_Key_Label_Path) ) {
 			$HTML_Edge_Command_Path = "$HTML_Edge_Key_Label_Path\Command"
-			$Command_for_HTML = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -executionpolicy bypass -sta -windowstyle hidden -file C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type HTML -LiteralPath "%V" -ScriptPath "%V"'
+			$Command_for_HTML = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -ExecutionPolicy Unrestricted -sta -WindowStyle Hidden -File C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type HTML -LiteralPath "%V" -ScriptPath "%V"'
 			New-Item $HTML_Edge_Key_Label_Path | Out-Null
 			New-Item $HTML_Edge_Command_Path | Out-Null
 			# Set the command path
@@ -545,7 +545,7 @@ If ($Add_HTML -eq $True) {
 		$HTML_Chrome_Key_Label_Path = "$HTML_Chrome_Shell_Registry_Key\$HTML_Key_Label"
 		If (-not (Test-Path $HTML_Chrome_Key_Label_Path) ) {
 			$HTML_Chrome_Command_Path = "$HTML_Chrome_Key_Label_Path\Command"
-			$Command_for_HTML = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -executionpolicy bypass -sta -windowstyle hidden -file C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type HTML -LiteralPath "%V" -ScriptPath "%V"'
+			$Command_for_HTML = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -ExecutionPolicy Unrestricted -sta -WindowStyle Hidden -File C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type HTML -LiteralPath "%V" -ScriptPath "%V"'
 
 			New-Item $HTML_Chrome_Key_Label_Path | Out-Null
 			New-Item $HTML_Chrome_Command_Path | Out-Null
@@ -563,7 +563,7 @@ If ($Add_HTML -eq $True) {
 		$HTML_IE_Key_Label_Path = "$HTML_IE_Shell_Registry_Key\$HTML_Key_Label"
 		If (-not (Test-Path $HTML_IE_Key_Label_Path) ) {
 			$HTML_IE_Command_Path = "$HTML_IE_Key_Label_Path\Command"
-			$Command_for_HTML = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -executionpolicy bypass -sta -windowstyle hidden -file C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type HTML -LiteralPath "%V" -ScriptPath "%V"'
+			$Command_for_HTML = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -ExecutionPolicy Unrestricted -sta -WindowStyle Hidden -File C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type HTML -LiteralPath "%V" -ScriptPath "%V"'
 			New-Item $HTML_IE_Key_Label_Path | Out-Null
 			New-Item $HTML_IE_Command_Path | Out-Null
 			# Set the command path
@@ -579,7 +579,7 @@ If ($Add_HTML -eq $True) {
 		$URL_Key_Label_Path = "$URL_Shell_Registry_Key\Run this URL in Sandbox"
 		If (-not (Test-Path $URL_Key_Label_Path) ) {
 			$URL_Command_Path = "$URL_Key_Label_Path\Command"
-			$Command_for_URL = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -executionpolicy bypass -sta -windowstyle hidden -file C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type URL -LiteralPath "%V" -ScriptPath "%V"'
+			$Command_for_URL = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -ExecutionPolicy Unrestricted -sta -WindowStyle Hidden -File C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type URL -LiteralPath "%V" -ScriptPath "%V"'
 			New-Item $URL_Key_Label_Path | Out-Null
 			New-Item $URL_Command_Path | Out-Null
 			# Set the command path
@@ -604,7 +604,7 @@ If ($Add_HTML -eq $True) {
 			$HKCR_UserChoice_Label = "$HKCR_UserChoice_Shell\$HTML_Key_Label"
 			If (-not (Test-Path $HKCR_UserChoice_Label) ) {
 				$HTML_UserChoice_Command_Path = "$HKCR_UserChoice_Label\Command"
-				$Command_for_HTML = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -executionpolicy bypass -sta -windowstyle hidden -file C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type HTML -LiteralPath "%V" -ScriptPath "%V"'
+				$Command_for_HTML = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -ExecutionPolicy Unrestricted -sta -WindowStyle Hidden -File C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type HTML -LiteralPath "%V" -ScriptPath "%V"'
 				New-Item $HKCR_UserChoice_Label | Out-Null
 				New-Item $HTML_UserChoice_Command_Path | Out-Null
 				# Set the command path
@@ -625,7 +625,7 @@ If ($Add_MultipleApp -eq $True) {
 	$MultipleApps_Key_Label = "Test application bundle in Sandbox"
 	$MultipleApps_Key_Label_Path = "$MultipleApps_Shell_Registry_Key\Shell\$MultipleApps_Key_Label"
 	$MultipleApps_Command_Path = "$MultipleApps_Key_Label_Path\Command"
-	$Command_for_MultipleApps = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -executionpolicy bypass -sta -windowstyle hidden -file C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type SDBApp -LiteralPath "%V" -ScriptPath "%V"'
+	$Command_for_MultipleApps = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -ExecutionPolicy Unrestricted -sta -WindowStyle Hidden -File C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type SDBApp -LiteralPath "%V" -ScriptPath "%V"'
 	If (-not (Test-Path $MultipleApps_Shell_Registry_Key) ) {
 		New-Item $MultipleApps_Shell_Registry_Key | Out-Null
 		New-Item "$MultipleApps_Shell_Registry_Key\Shell" | Out-Null
@@ -654,8 +654,8 @@ If ($Add_VBS -eq $True) {
 	New-Item -Path $VBS_Shell_Registry_Key -Name $VBS_Parameter_Run -Force | Out-Null
 	New-Item -Path $ContextMenu_Basic_VBS -Name "Command" -Force | Out-Null
 	New-Item -Path $ContextMenu_Parameters_VBS -Name "Command" -Force | Out-Null
-	$Command_For_Basic_VBS = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -executionpolicy bypass -sta -file C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type VBSBasic -LiteralPath "%V" -ScriptPath "%V"'
-	$Command_For_Params_VBS = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -executionpolicy bypass -sta -file C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type VBSParams -LiteralPath "%V" -ScriptPath "%V"'
+	$Command_For_Basic_VBS = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -ExecutionPolicy Unrestricted -sta -File C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type VBSBasic -LiteralPath "%V" -ScriptPath "%V"'
+	$Command_For_Params_VBS = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -ExecutionPolicy Unrestricted -sta -File C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type VBSParams -LiteralPath "%V" -ScriptPath "%V"'
 	# Set the command path
 	Set-Item -Path "$ContextMenu_Basic_VBS\command" -Value $Command_For_Basic_VBS -Force | Out-Null
 	Set-Item -Path "$ContextMenu_Parameters_VBS\command" -Value $Command_For_Params_VBS -Force | Out-Null
@@ -677,7 +677,7 @@ If ($Add_EXE -eq $True) {
 	New-Item -Path $ContextMenu_Basic_EXE -Name "Command" -Force | Out-Null
 	# Add Sandbox Icons
 	New-ItemProperty -Path $ContextMenu_Basic_EXE -Name "icon" -PropertyType String -Value $Sandbox_Icon | Out-Null
-	$Command_For_EXE = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -executionpolicy bypass -sta -file C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type EXE -LiteralPath "%V" -ScriptPath "%V"'
+	$Command_For_EXE = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -ExecutionPolicy Unrestricted -sta -File C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type EXE -LiteralPath "%V" -ScriptPath "%V"'
 	# Set the command path
 	Set-Item -Path "$ContextMenu_Basic_EXE\command" -Value $Command_For_EXE -Force | Out-Null
 	Write_Log -Message_Type "INFO" -Message "Context menus for EXE have been added"
@@ -695,7 +695,7 @@ If ($Add_MSI -eq $True) {
 	New-Item -Path $ContextMenu_Basic_MSI -Name "Command" -Force | Out-Null
 	# Add Sandbox Icons
 	New-ItemProperty -Path $ContextMenu_Basic_MSI -Name "icon" -PropertyType String -Value $Sandbox_Icon | Out-Null
-	$Command_For_MSI = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -executionpolicy bypass -sta -file C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type MSI -LiteralPath "%V" -ScriptPath "%V"'
+	$Command_For_MSI = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -ExecutionPolicy Unrestricted -sta -File C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type MSI -LiteralPath "%V" -ScriptPath "%V"'
 	# Set the command path
 	Set-Item -Path "$ContextMenu_Basic_MSI\command" -Value $Command_For_MSI -Force | Out-Null
 	Write_Log -Message_Type "INFO" -Message "Context menu for MSI has been added"
@@ -714,7 +714,7 @@ If ($Add_ZIP -eq $True) {
 	New-Item -Path $ContextMenu_Basic_ZIP -Name "Command" -Force | Out-Null
 	# Add Sandbox Icons
 	New-ItemProperty -Path $ContextMenu_Basic_ZIP -Name "icon" -PropertyType String -Value $Sandbox_Icon | Out-Null
-	$Command_For_ZIP = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -executionpolicy bypass -sta -file C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type ZIP -LiteralPath "%V" -ScriptPath "%V"'
+	$Command_For_ZIP = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -ExecutionPolicy Unrestricted -sta -File C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type ZIP -LiteralPath "%V" -ScriptPath "%V"'
 	# Set the command path
 	Set-Item -Path "$ContextMenu_Basic_ZIP\command" -Value $Command_For_ZIP -Force | Out-Null
 	Write_Log -Message_Type "INFO" -Message "Context menu for ZIP has been added"
@@ -731,7 +731,7 @@ If ($Add_ZIP -eq $True) {
 		New-Item -Path $ContextMenu_Basic_ZIP_RAR -Name "Command" -Force | Out-Null
 		# Add Sandbox Icons
 		New-ItemProperty -Path $ContextMenu_Basic_ZIP_RAR -Name "icon" -PropertyType String -Value $Sandbox_Icon | Out-Null
-		$Command_For_ZIP = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -executionpolicy bypass -sta -file C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type ZIP -LiteralPath "%V" -ScriptPath "%V"'
+		$Command_For_ZIP = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -ExecutionPolicy Unrestricted -sta -File C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type ZIP -LiteralPath "%V" -ScriptPath "%V"'
 		# Set the command path
 		Set-Item -Path "$ContextMenu_Basic_ZIP_RAR\command" -Value $Command_For_ZIP -Force | Out-Null
 	}
@@ -745,7 +745,7 @@ If ($Add_ZIP -eq $True) {
 		If (Test-Path $Default_ZIP_Shell_Registry_Key) {
 			$Default_ZIP_Key_Label_Path = "$Default_ZIP_Shell_Registry_Key\$7z_Key_Label"
 			$Default_ZIP_Command_Path = "$Default_ZIP_Key_Label_Path\Command"
-			$Command_for_Default_ZIP = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -executionpolicy bypass -sta -windowstyle hidden -file C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type 7Z -LiteralPath "%V" -ScriptPath "%V"'
+			$Command_for_Default_ZIP = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -ExecutionPolicy Unrestricted -sta -WindowStyle Hidden -File C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type 7Z -LiteralPath "%V" -ScriptPath "%V"'
 			If (Test-Path $Default_ZIP_Shell_Registry_Key) {
 				New-Item $Default_ZIP_Key_Label_Path | Out-Null
 				New-Item $Default_ZIP_Command_Path | Out-Null
@@ -772,7 +772,7 @@ If ($Add_ZIP -eq $True) {
 				$HKCR_UserChoice_Label = "$HKCR_UserChoice_Shell\$ZIP_Basic_Run"
 				If (-not (Test-Path $HKCR_UserChoice_Label) ) {
 					$HTML_UserChoice_Command_Path = "$HKCR_UserChoice_Label\Command"
-					$Command_for_HTML = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -executionpolicy bypass -sta -windowstyle hidden -file C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type HTML -LiteralPath "%V" -ScriptPath "%V"'
+					$Command_for_HTML = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -ExecutionPolicy Unrestricted -sta -WindowStyle Hidden -File C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type HTML -LiteralPath "%V" -ScriptPath "%V"'
 					New-Item $HKCR_UserChoice_Label | Out-Null
 					New-Item $HTML_UserChoice_Command_Path | Out-Null
 					# Set the command path
@@ -791,7 +791,7 @@ Write-Progress -Activity $Progress_Activity -PercentComplete 75
 # RUN ON MSIX
 If ($Add_MSIX -eq $True) {
 	$MSIX_Key_Label = "Run MSIX file in Sandbox"
-	$Command_for_MSIX = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -executionpolicy bypass -sta -windowstyle hidden -file C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type MSIX -LiteralPath "%V" -ScriptPath "%V"'
+	$Command_for_MSIX = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -ExecutionPolicy Unrestricted -sta -WindowStyle Hidden -File C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type MSIX -LiteralPath "%V" -ScriptPath "%V"'
 
 	$MSIX_Shell_Registry_Key = "HKCR_SD:\.msix\OpenWithProgids"
 	If (Test-Path $MSIX_Shell_Registry_Key) {
@@ -848,7 +848,7 @@ If ($Add_Folder -eq $True) {
 	New-Item -Path $ContextMenu_Folder_Inside -Name "Command" -Force | Out-Null
 	# Add Sandbox Icons
 	New-ItemProperty -Path $ContextMenu_Folder_Inside -Name "icon" -PropertyType String -Value $Sandbox_Icon | Out-Null
-	$Command_For_Folder_Inside = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -executionpolicy bypass -sta -file C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type Folder_Inside -LiteralPath "%V" -ScriptPath "%V"'
+	$Command_For_Folder_Inside = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -ExecutionPolicy Unrestricted -sta -File C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type Folder_Inside -LiteralPath "%V" -ScriptPath "%V"'
 	# Set the command path
 	Set-Item -Path "$ContextMenu_Folder_Inside\command" -Value $Command_For_Folder_Inside -Force | Out-Null
 	Write_Log -Message_Type "INFO" -Message "Context menus for folder have been added"
@@ -868,7 +868,7 @@ If ($Add_Folder -eq $True) {
 	New-Item -Path $ContextMenu_Folder_On -Name "Command" -Force | Out-Null
 	# Add Sandbox Icons
 	New-ItemProperty -Path $ContextMenu_Folder_On -Name "icon" -PropertyType String -Value $Sandbox_Icon | Out-Null
-	$Command_For_Folder_On = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -executionpolicy bypass -sta -file C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type Folder_On -LiteralPath "%V" -ScriptPath "%V"'
+	$Command_For_Folder_On = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -ExecutionPolicy Unrestricted -sta -File C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -NoExit -Command Set-Location -Type Folder_On -LiteralPath "%V" -ScriptPath "%V"'
 	# Set the command path
 	Set-Item -Path "$ContextMenu_Folder_On\command" -Value $Command_For_Folder_On -Force | Out-Null
 }

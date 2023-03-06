@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Unreleased
 
 
+## 2023-03-06
+### Added
+- Added option to Sandbox_Config.xml to cleanup leftover .wsb file afterwards (default is true)
+### Changed
+- .wsb is not executed by the "Start-Process"-cmdlet with -wait parameter
+
+
 ## 2023-03-03
 ### Added
 - Added -noprofile to powershell commands to improve performance

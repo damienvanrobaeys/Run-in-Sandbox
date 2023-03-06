@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## 2023-03-03
-###
+### Added
 - Added -noprofile to powershell commands to improve performance
 ### Changed
 - Applied formatting of scripts and applied best practices

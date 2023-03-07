@@ -8,6 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Unreleased
 
 
+## 2023-03-07
+### Added
+- Added ServiceUI
+### Changed
+- Replaced PSexec with ServiceUI for intunewin sandbox
+### Removed
+- Removed psexec in favor of ServiceUI
+
 ## 2023-03-06
 ### Added
 - Added option to Sandbox_Config.xml to cleanup leftover .wsb file afterwards (default is true)

@@ -85,7 +85,7 @@ $Progress_Activity = "Enabling Run in Sandbox context menus"
 Write-Progress -Activity $Progress_Activity -PercentComplete 1
 
 $Check_Sources_Files_Count = (Get-ChildItem "$Current_Folder\Sources\Run_in_Sandbox" -Recurse).count
-If ($Check_Sources_Files_Count -ne 58) {
+If ($Check_Sources_Files_Count -ne 39) {
 	Write_Log -Message_Type "ERROR" -Message "Some contents are missing"
 	[System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
 	[System.Windows.Forms.MessageBox]::Show("It seems you don't have dowloaded all the folder structure !!!")

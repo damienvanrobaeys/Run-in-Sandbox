@@ -27,14 +27,14 @@ Expand-Archive -LiteralPath "$Intunewin_Extracted_Folder\$IntuneWin_Rename" -Des
 Remove-Item "$Intunewin_Extracted_Folder\$IntuneWin_Rename" -Force
 Start-Sleep 1
 
-$PSexec = "c:\pstools\PSexec.exe"
+$ServiceUI = "C:\RunInSandbox\ServiceUI.exe"
 $WorkDir = "$Intunewin_Extracted_Folder\$FileName"
 $File = "$Sandbox_Folder\Intunewin_Install_Command.txt"
 $command = Get-Content -Raw $File
 
-$cmd = "$psexec -w `"$workdir`" -si -accepteula $command"
+
+$cmd = "$ServiceUI -process:explorer.exe $command"
 
 Set-Location "$Intunewin_Extracted_Folder\$FileName"
 
 & { Invoke-Expression $cmd }
-

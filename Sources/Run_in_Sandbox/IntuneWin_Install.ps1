@@ -27,13 +27,13 @@ Expand-Archive -LiteralPath "$Intunewin_Extracted_Folder\$IntuneWin_Rename" -Des
 Remove-Item "$Intunewin_Extracted_Folder\$IntuneWin_Rename" -Force
 Start-Sleep 1
 
-$ServiceUI = "C:\RunInSandbox\ServiceUI.exe"
+$ServiceUI = "C:\Run_in_Sandbox\ServiceUI.exe"
 $WorkDir = "$Intunewin_Extracted_Folder\$FileName"
 $File = "$Sandbox_Folder\Intunewin_Install_Command.txt"
 $command = Get-Content -Raw $File
 
 
-$cmd = "$ServiceUI -process:explorer.exe $command"
+$cmd = "$ServiceUI -process:explorer.exe C:\Windows\System32\WindowsPowershell\v1.0\powershell.exe -ExecutionPolicy Unrestricted -NoProfile -WindowStyle Hidden -Command `"$command`""
 
 Set-Location "$Intunewin_Extracted_Folder\$FileName"
 

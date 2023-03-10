@@ -44,6 +44,14 @@ If (-not (Test-Path $Sandbox_Folder) ) {
 	[System.Windows.Forms.MessageBox]::Show("Can not find the folder $Sandbox_Folder")
 	break
 }
+[System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms") | Out-Null
+$Run_As_Admin = ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+If ($Run_As_Admin -eq $False) {
+	Write_Log -Message_Type "ERROR" -Message "The script has not been lauched with admin rights"
+	[System.Windows.Forms.MessageBox]::Show("Please run the tool with admin rights :-)")
+	break
+}
+Write_Log -Message_Type "INFO" -Message "The script has been launched with admin rights"
 
 
 $XML_Config = "$Sandbox_Folder\Sandbox_Config.xml"

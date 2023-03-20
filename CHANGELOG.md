@@ -8,6 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Unreleased
 
 
+## 2023-03-20
+### Changed
+- Completly refactored RunInSandbox.ps1 to use switch instead of ifelse and rearranged alot of code
+### Fixed
+- Fixed some issues with loading iso´s, exe´s and zip´s
+### Removed
+- Removed 7z part of RunInSandbox.ps1 because non-functional
+
+
 ## 2023-03-07
 ### Added
 - Added ServiceUI

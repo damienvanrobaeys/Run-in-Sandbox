@@ -84,7 +84,7 @@ Function Generate_WSB {
 	Add-Content $Sandbox_File_Path "	<MemoryInMB>$Sandbox_MemoryInMB</MemoryInMB>"
 
 	Add-Content $Sandbox_File_Path "	<MappedFolders>"
-	If ( ($Type -eq "Intunewin") -or ($Type -eq "ISO") -or ($Type -eq "PS1System") -or ($Type -eq "SDBApp") ) {
+	If ( ($Type -eq "Intunewin") -or ($Type -eq "ISO") -or ($Type -eq "7z")  -or ($Type -eq "PS1System") -or ($Type -eq "SDBApp") ) {
 		Add-Content $Sandbox_File_Path "		<MappedFolder>"
 		Add-Content $Sandbox_File_Path "			<HostFolder>C:\ProgramData\Run_in_Sandbox</HostFolder>"
 		Add-Content $Sandbox_File_Path "			<SandboxFolder>C:\Run_in_Sandbox</SandboxFolder>"
@@ -121,6 +121,10 @@ Function Generate_WSB {
 }
 
 switch ($Type) {
+	"7Z" {
+		$Script:Startup_Command = "$Sandbox_Root_Path\7z\7z.exe" + " " + "x" + " " + "$Full_Startup_Path" + " " + "-y" + " " + "-o" + "C:\Users\WDAGUtilityAccount\Desktop\Extracted_File"
+		Generate_WSB -Command_to_Run $Startup_Command
+	}
 	"EXE" {
 		$Full_Startup_Path = $Full_Startup_Path.Replace('"', '')
 

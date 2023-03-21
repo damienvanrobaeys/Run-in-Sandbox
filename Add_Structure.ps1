@@ -738,10 +738,9 @@ If ($Add_ZIP -eq $True) {
 
 	$7z_Key_Label = "Extract 7z file in Sandbox"
 	# RUN ON 7z
-	$7z_Shell_Registry_Key = "HKCR_SD:\.7z"
+	$7z_Shell_Registry_Key = "HKCR_SD:\Applications\7zFM.exe"
 	If (Test-Path $7z_Shell_Registry_Key) {
-		$Get_Default_Value = (Get-ItemProperty "HKCR_SD:\.7z")."(default)"
-		$Default_ZIP_Shell_Registry_Key = "HKCR_SD:\$Get_Default_Value\Shell"
+		$Default_ZIP_Shell_Registry_Key = "$7z_Shell_Registry_Key\Shell"
 		If (Test-Path $Default_ZIP_Shell_Registry_Key) {
 			$Default_ZIP_Key_Label_Path = "$Default_ZIP_Shell_Registry_Key\$7z_Key_Label"
 			$Default_ZIP_Command_Path = "$Default_ZIP_Key_Label_Path\Command"

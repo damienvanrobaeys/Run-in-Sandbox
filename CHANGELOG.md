@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Unreleased
 
 
+## 2023-03-21
+### Changed
+- Readded 7z part and adjusted 7z reg key path
+
+
 ## 2023-03-20
 ### Changed
 - Completly refactored RunInSandbox.ps1 to use switch instead of ifelse and rearranged alot of code

@@ -362,9 +362,14 @@ If ($Add_ZIP -eq $True) {
 		$Get_Default_Value = (Get-ItemProperty "HKCR_SD:\.7z")."(default)"
 		$Default_ZIP_Shell_Registry_Key = "HKCR_SD:\$Get_Default_Value\Shell"
 		If (Test-Path $Default_ZIP_Shell_Registry_Key) {
-			If (Test-Path $Default_ZIP_Shell_Registry_Key) {
-				Remove_Reg_Item -Reg_Path "$Default_ZIP_Shell_Registry_Key\$7z_Key_Label"
-			}
+			Remove_Reg_Item -Reg_Path "$Default_ZIP_Shell_Registry_Key\$7z_Key_Label"
+		}
+	}
+	$7z_Shell_Registry_Key = "HKCR_SD:\Applications\7zFM.exe"
+	If (Test-Path $7z_Shell_Registry_Key) {
+		$Default_ZIP_Shell_Registry_Key = "$7z_Shell_Registry_Key\Shell"
+		If (Test-Path $Default_ZIP_Shell_Registry_Key) {
+			Remove_Reg_Item -Reg_Path "$Default_ZIP_Shell_Registry_Key\$7z_Key_Label"
 		}
 	}
 

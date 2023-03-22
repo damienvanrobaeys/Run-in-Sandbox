@@ -125,6 +125,10 @@ switch ($Type) {
 		$Script:Startup_Command = "$Sandbox_Root_Path\7z\7z.exe" + " " + "x" + " " + "$Full_Startup_Path" + " " + "-y" + " " + "-o" + "C:\Users\WDAGUtilityAccount\Desktop\Extracted_File"
 		Generate_WSB -Command_to_Run $Startup_Command
 	}
+	"CMD" {
+		$Script:Startup_Command = $PSRun_Command + " " + "Start-Process $Full_Startup_Path"
+		Generate_WSB -Command_to_Run $Startup_Command
+	}
 	"EXE" {
 		$Full_Startup_Path = $Full_Startup_Path.Replace('"', '')
 

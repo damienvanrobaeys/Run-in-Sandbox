@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Unreleased
 
 
+## 2023-03-22
+### Added
+- Added context menu entry for running CMD/BAT in Sandbox
+
+
 ## 2023-03-21
 ### Changed
 - Readded 7z part and adjusted 7z reg key path

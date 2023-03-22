@@ -71,6 +71,7 @@ $Add_ISO = $Get_XML_Content.Configuration.ContextMenu_ISO
 $Add_PPKG = $Get_XML_Content.Configuration.ContextMenu_PPKG
 $Add_HTML = $Get_XML_Content.Configuration.ContextMenu_HTML
 $Add_MSIX = $Get_XML_Content.Configuration.ContextMenu_MSIX
+$Add_CMD = $Get_XML_Content.Configuration.ContextMenu_CMD
 
 $List_Drive = Get-PSDrive | Where-Object { $_.Name -eq "HKCR_SD" }
 If ($null -ne $List_Drive) { Remove-PSDrive $List_Drive }
@@ -143,10 +144,9 @@ If ($Add_Reg -eq $True) {
 	Write-Output "Removing context menu for REG"
 	$Reg_Shell_Registry_Key = "HKCR_SD:\regfile\Shell"
 	$Reg_Key_Label = "Test reg file in Sandbox"
-	Remove_Reg_Item -Reg_Path "$REG_Shell_Registry_Key\$Reg_Key_Label"
 
-	If (Test-Path "$REG_Shell_Registry_Key\Test the reg file in Sandbox") {
-		Remove_Reg_Item -Reg_Path "$REG_Shell_Registry_Key\Test the reg file in Sandbox"
+	If (Test-Path "$REG_Shell_Registry_Key\$Reg_Key_Label") {
+		Remove_Reg_Item -Reg_Path "$REG_Shell_Registry_Key\$Reg_Key_Label"
 	}
 }
 
@@ -275,10 +275,9 @@ If ($Add_EXE -eq $True) {
 	Write-Output "Removing context menu for PS1"
 	$EXE_Shell_Registry_Key = "HKCR_SD:\exefile\Shell"
 	$EXE_Basic_Run = "Run EXE in Sandbox"
-	Remove_Reg_Item -Reg_Path "$EXE_Shell_Registry_Key\$EXE_Basic_Run"
 
-	If (Test-Path "$EXE_Shell_Registry_Key\Run the EXE in Sandbox") {
-		Remove_Reg_Item -Reg_Path "$EXE_Shell_Registry_Key\Run the EXE in Sandbox"
+	If (Test-Path "$EXE_Shell_Registry_Key\$EXE_Basic_Run") {
+		Remove_Reg_Item -Reg_Path "$EXE_Shell_Registry_Key\$EXE_Basic_Run"
 	}
 }
 
@@ -287,10 +286,9 @@ If ($Add_MSI -eq $True) {
 	Write-Output "Removing context menu for MSI"
 	$MSI_Shell_Registry_Key = "HKCR_SD:\Msi.Package\Shell"
 	$MSI_Basic_Run = "Run MSI in Sandbox"
-	Remove_Reg_Item -Reg_Path "$MSI_Shell_Registry_Key\$MSI_Basic_Run"
 
-	If (Test-Path "$MSI_Shell_Registry_Key\Run the MSI in Sandbox") {
-		Remove_Reg_Item -Reg_Path "$MSI_Shell_Registry_Key\Run the MSI in Sandbox"
+	If (Test-Path "$MSI_Shell_Registry_Key\$MSI_Basic_Run") {
+		Remove_Reg_Item -Reg_Path "$MSI_Shell_Registry_Key\$MSI_Basic_Run"
 	}
 }
 
@@ -325,15 +323,13 @@ If ($Add_VBS -eq $True) {
 	$VBS_Shell_Registry_Key = "HKCR_SD:\VBSFile\Shell"
 	$VBS_Basic_Run = "Run VBS in Sandbox"
 	$VBS_Parameter_Run = "Run VBS in Sandbox with parameters"
-	Remove_Reg_Item -Reg_Path "$VBS_Shell_Registry_Key\$VBS_Basic_Run"
-	Remove_Reg_Item -Reg_Path "$VBS_Shell_Registry_Key\$VBS_Parameter_Run"
 
-	If (Test-Path "$VBS_Shell_Registry_Key\Run the VBS in Sandbox") {
-		Remove_Reg_Item -Reg_Path "$VBS_Shell_Registry_Key\Run the VBS in Sandbox"
+	If (Test-Path "$VBS_Shell_Registry_Key\$VBS_Basic_Run") {
+		Remove_Reg_Item -Reg_Path "$VBS_Shell_Registry_Key\$VBS_Basic_Run"
 	}
 
-	If (Test-Path "$VBS_Shell_Registry_Key\Run the VBS in Sandbox") {
-		Remove_Reg_Item -Reg_Path "$VBS_Shell_Registry_Key\Run the VBS in Sandbox with parameters"
+	If (Test-Path "$VBS_Shell_Registry_Key\$VBS_Parameter_Run") {
+		Remove_Reg_Item -Reg_Path "$VBS_Shell_Registry_Key\$VBS_Parameter_Run"
 	}
 }
 
@@ -342,10 +338,9 @@ If ($Add_ZIP -eq $True) {
 	# RUN ON ZIP
 	$ZIP_Shell_Registry_Key = "HKCR_SD:\CompressedFolder\Shell"
 	$ZIP_Basic_Run = "Extract ZIP in Sandbox"
-	Remove_Reg_Item -Reg_Path "$ZIP_Shell_Registry_Key\$ZIP_Basic_Run"
 
-	If (Test-Path "$ZIP_Shell_Registry_Key\Extract the ZIP in Sandbox") {
-		Remove_Reg_Item -Reg_Path "$ZIP_Shell_Registry_Key\Extract the ZIP in Sandbox"
+	If (Test-Path "$ZIP_Shell_Registry_Key\$ZIP_Basic_Run") {
+		Remove_Reg_Item -Reg_Path "$ZIP_Shell_Registry_Key\$ZIP_Basic_Run"
 	}
 
 	# RUN ON ZIP if WinRAR is installed
@@ -391,6 +386,26 @@ If ($Add_ZIP -eq $True) {
 				}
 			}
 		}
+	}
+}
+
+If ($Add_CMD -eq $True) {
+	# REMOVE RUN ON CMD
+	Write-Output "Removing context menu for CMD"
+	$CMD_Shell_Registry_Key = "HKCR_SD:\cmdfile\Shell"
+	$CMD_Key_Label = "Run CMD in Sandbox"
+
+	If (Test-Path "$CMD_Shell_Registry_Key\$CMD_Key_Label") {
+		Remove_Reg_Item -Reg_Path "$CMD_Shell_Registry_Key\$CMD_Key_Label"
+	}
+
+	# REMOVE RUN ON BAT
+	Write-Output "Removing context menu for BAT"
+	$BAT_Shell_Registry_Key = "HKCR_SD:\batfile\Shell"
+	$BAT_Key_Label = "Run BAT in Sandbox"
+
+	If (Test-Path "$BAT_Shell_Registry_Key\$BAT_Key_Label") {
+		Remove_Reg_Item -Reg_Path "$BAT_Shell_Registry_Key\$BAT_Key_Label"
 	}
 }
 

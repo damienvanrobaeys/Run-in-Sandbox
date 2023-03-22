@@ -148,6 +148,7 @@ $Add_ISO = $Get_XML_Content.Configuration.ContextMenu_ISO
 $Add_PPKG = $Get_XML_Content.Configuration.ContextMenu_PPKG
 $Add_HTML = $Get_XML_Content.Configuration.ContextMenu_HTML
 $Add_MSIX = $Get_XML_Content.Configuration.ContextMenu_MSIX
+$Add_CMD = $Get_XML_Content.Configuration.ContextMenu_CMD
 
 If (-not (Test-Path "$ProgData\Run_in_Sandbox\RunInSandbox.ps1") ) {
 	Write_Log -Message_Type "ERROR" -Message "File RunInSandbox.ps1 is missing"
@@ -187,6 +188,7 @@ Write-Progress -Activity $Progress_Activity -PercentComplete 10
 
 
 Export_Reg_Config -Reg_Path "exefile" -Backup_Path "$Backup_Folder\Backup_HKRoot_EXEFile.reg"
+Export_Reg_Config -Reg_Path "cmdfile" -Backup_Path "$Backup_Folder\Backup_HKRoot_CMDFILE.reg"
 Export_Reg_Config -Reg_Path "Microsoft.PowerShellScript.1" -Backup_Path "$Backup_Folder\Backup_HKRoot_PowerShellScript.reg"
 Export_Reg_Config -Reg_Path "VBSFile" -Backup_Path "$Backup_Folder\Backup_HKRoot_VBSFile.reg"
 Export_Reg_Config -Reg_Path "Msi.Package" -Backup_Path "$Backup_Folder\Backup_HKRoot_Msi.reg"
@@ -765,7 +767,6 @@ If ($Add_ZIP -eq $True) {
 		$Get_Properties = (Get-Item $ZIP_UserChoice).property
 		ForEach ($Prop in $Get_Properties) {
 			$HKCR_UserChoice_Key = "HKCR_SD:\$Prop"
-			$HKCR_UserChoice_Key
 			$HKCR_UserChoice_Shell = "$HKCR_UserChoice_Key\Shell"
 			If (Test-Path $HKCR_UserChoice_Shell) {
 				$HKCR_UserChoice_Label = "$HKCR_UserChoice_Shell\$ZIP_Basic_Run"
@@ -852,9 +853,7 @@ If ($Add_Folder -eq $True) {
 	Set-Item -Path "$ContextMenu_Folder_Inside\command" -Value $Command_For_Folder_Inside -Force | Out-Null
 	Write_Log -Message_Type "INFO" -Message "Context menus for folder have been added"
 
-
 	Write-Progress -Activity $Progress_Activity -PercentComplete 85
-
 
 	# Share this folder - Right-click on the folder
 	$Folder_On_Shell_Registry_Key = "HKCR_SD:\Directory\shell"
@@ -870,6 +869,38 @@ If ($Add_Folder -eq $True) {
 	$Command_For_Folder_On = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -WindowStyle Hidden -NoProfile -ExecutionPolicy Unrestricted -sta -File C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -Type Folder_On -ScriptPath "%V"'
 	# Set the command path
 	Set-Item -Path "$ContextMenu_Folder_On\command" -Value $Command_For_Folder_On -Force | Out-Null
+}
+
+If ($Add_CMD -eq $True) {
+	# RUN ON CMD
+	$CMD_Shell_Registry_Key = "HKCR_SD:\cmdfile\Shell"
+	$CMD_Basic_Run = "Run CMD in Sandbox"
+	$ContextMenu_Basic_CMD = "$CMD_Shell_Registry_Key\$CMD_Basic_Run"
+
+	New-Item -Path $CMD_Shell_Registry_Key -Name $CMD_Basic_Run -Force | Out-Null
+	New-Item -Path $ContextMenu_Basic_CMD -Name "Command" -Force | Out-Null
+	# Add Sandbox Icons
+	New-ItemProperty -Path $ContextMenu_Basic_CMD -Name "icon" -PropertyType String -Value $Sandbox_Icon | Out-Null
+	$Command_For_CMD = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -WindowStyle Hidden -NoProfile -ExecutionPolicy Unrestricted -sta -File C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -Type CMD -ScriptPath "%V"'
+	# Set the command path
+	Set-Item -Path "$ContextMenu_Basic_CMD\command" -Value $Command_For_CMD -Force | Out-Null
+	Write_Log -Message_Type "INFO" -Message "Context menus for CMD have been added"
+
+	Write-Progress -Activity $Progress_Activity -PercentComplete 95
+
+	# RUN ON BAT
+	$BAT_Shell_Registry_Key = "HKCR_SD:\batfile\Shell"
+	$BAT_Basic_Run = "Run BAT in Sandbox"
+	$ContextMenu_Basic_BAT = "$BAT_Shell_Registry_Key\$BAT_Basic_Run"
+
+	New-Item -Path $BAT_Shell_Registry_Key -Name $BAT_Basic_Run -Force | Out-Null
+	New-Item -Path $ContextMenu_Basic_BAT -Name "Command" -Force | Out-Null
+	# Add Sandbox Icons
+	New-ItemProperty -Path $ContextMenu_Basic_BAT -Name "icon" -PropertyType String -Value $Sandbox_Icon | Out-Null
+	$Command_For_BAT = 'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -WindowStyle Hidden -NoProfile -ExecutionPolicy Unrestricted -sta -File C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -Type CMD -ScriptPath "%V"'
+	# Set the command path
+	Set-Item -Path "$ContextMenu_Basic_BAT\command" -Value $Command_For_BAT -Force | Out-Null
+	Write_Log -Message_Type "INFO" -Message "Context menus for BAT have been added"
 }
 
 If ($null -ne $List_Drive) { Remove-PSDrive $List_Drive }

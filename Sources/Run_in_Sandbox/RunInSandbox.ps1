@@ -175,7 +175,8 @@ switch ($Type) {
 		Generate_WSB
 	}
 	"HTML" {
-		$Script:Startup_Command = $PSRun_Command + " " + "Start-Process $Full_Startup_Path"
+		$Full_Startup_Path = $Full_Startup_Path.Replace('"', '')
+		$Script:Startup_Command = $PSRun_Command + " " + "`"Invoke-Item -Path `'$Full_Startup_Path`'`""
 		Generate_WSB -Command_to_Run $Startup_Command
 	}
 	"Intunewin" {
@@ -260,6 +261,11 @@ switch ($Type) {
 	}
 	"MSIX" {
 		$Script:Startup_Command = $PSRun_Command + " " + "Add-AppPackage -Path $Full_Startup_Path"
+		Generate_WSB -Command_to_Run $Startup_Command
+	}
+	"PDF" {
+		$Full_Startup_Path = $Full_Startup_Path.Replace('"', '')
+		$Script:Startup_Command = $PSRun_Command + " " + "`"Invoke-Item -Path `'$Full_Startup_Path`'`""
 		Generate_WSB -Command_to_Run $Startup_Command
 	}
 	"PPKG" {

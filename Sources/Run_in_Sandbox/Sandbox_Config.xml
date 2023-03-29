@@ -24,5 +24,6 @@
 	<ContextMenu_HTML>True</ContextMenu_HTML> <!-- Choose to add or not context menu to run HTML in Sandbox. True or False -->
 	<ContextMenu_MSIX>True</ContextMenu_MSIX> <!-- Choose to add or not context menu to run MSIX/MSIXBundle in Sandbox. True or False -->
 	<ContextMenu_CMD>True</ContextMenu_CMD> <!-- Choose to add or not context menu to run CMD in Sandbox. True or False -->
+	<ContextMenu_PDF>True</ContextMenu_PDF> <!-- Choose to add or not context menu to run PDF in Sandbox. True or False -->
 	<WSB_Cleanup>True</WSB_Cleanup> <!-- Choose to cleanup left-over files after sandbox has been closed. True or False -->
 </Configuration>

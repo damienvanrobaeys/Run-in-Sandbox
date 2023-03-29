@@ -72,6 +72,7 @@ $Add_PPKG = $Get_XML_Content.Configuration.ContextMenu_PPKG
 $Add_HTML = $Get_XML_Content.Configuration.ContextMenu_HTML
 $Add_MSIX = $Get_XML_Content.Configuration.ContextMenu_MSIX
 $Add_CMD = $Get_XML_Content.Configuration.ContextMenu_CMD
+$Add_PDF = $Get_XML_Content.Configuration.ContextMenu_PDF
 
 $List_Drive = Get-PSDrive | Where-Object { $_.Name -eq "HKCR_SD" }
 If ($null -ne $List_Drive) { Remove-PSDrive $List_Drive }
@@ -212,6 +213,7 @@ If ($Add_ISO -eq $True) {
 If ($Add_MSIX -eq $True) {
 	Write-Output "Removing context menu for MSIX"
 	$MSIX_Key_Label = "Run MSIX file in Sandbox"
+	$MSIX_Key_Label_new = "Run MSIX in Sandbox"
 	# REMOVE RUN ON REG from HKCR
 	$MSIX_Shell_Registry_Key = "HKCR_SD:\.msix\OpenWithProgids"
 	If (Test-Path $MSIX_Shell_Registry_Key) {
@@ -222,6 +224,7 @@ If ($Add_MSIX -eq $True) {
 			If (Test-Path $MSIX_Key_Label_Path) {
 				Remove_Reg_Item -Reg_Path $MSIX_Key_Label_Path
 				Remove_Reg_Item -Reg_Path "$MSIX_Shell_Registry\$MSIX_Key_Label"
+				Remove_Reg_Item -Reg_Path "$MSIX_Shell_Registry\$MSIX_Key_Label_new"
 			}
 		}
 	}
@@ -406,6 +409,17 @@ If ($Add_CMD -eq $True) {
 
 	If (Test-Path "$BAT_Shell_Registry_Key\$BAT_Key_Label") {
 		Remove_Reg_Item -Reg_Path "$BAT_Shell_Registry_Key\$BAT_Key_Label"
+	}
+}
+
+If ($Add_PDF -eq $True) {
+	# REMOVE RUN ON CMD
+	Write-Output "Removing context menu for PDF"
+	$PDF_Shell_Registry_Key = "HKCR_SD:\SystemFileAssociations\.pdf\Shell"
+	$PDF_Key_Label = "Open PDF in Sandbox"
+
+	If (Test-Path "$PDF_Shell_Registry_Key\$PDF_Key_Label") {
+		Remove_Reg_Item -Reg_Path "$PDF_Shell_Registry_Key\$PDF_Key_Label"
 	}
 }
 

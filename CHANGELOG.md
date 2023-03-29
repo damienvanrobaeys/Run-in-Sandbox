@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Unreleased
 
 
+## 2023-03-29
+### Added
+- Added context menu entry for opening PDF in Sandbox
+### Changed
+- Completely rewrote alot of code in Add_Structure.ps1
+
+
 ## 2023-03-22
 ### Added
 - Added context menu entry for running CMD/BAT in Sandbox

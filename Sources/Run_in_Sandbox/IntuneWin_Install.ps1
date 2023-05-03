@@ -1,6 +1,16 @@
+Param (
+	[String]$Intunewin_Content_File = "C:\Run_in_Sandbox\Intunewin_Folder.txt",
+	[String]$Intunewin_Command_File = "C:\Run_in_Sandbox\Intunewin_Install_Command.txt"
+)
+if (-not (Test-Path $Intunewin_Content_File) ){
+	EXIT
+}
+if (-not (Test-Path $Intunewin_Command_File) ){
+	EXIT
+}
 $Sandbox_Folder = "C:\Run_in_Sandbox"
-$Intunewin_Content_File = "$Sandbox_Folder\Intunewin_Folder.txt"
-$ScriptPath = Get-Content $Intunewin_Content_File
+$ScriptPath = Get-Content -Raw $Intunewin_Content_File
+$Command = Get-Content -Raw $Intunewin_Command_File
 
 $FileName = (Get-Item $ScriptPath).BaseName
 
@@ -29,11 +39,9 @@ Start-Sleep 1
 
 $ServiceUI = "C:\Run_in_Sandbox\ServiceUI.exe"
 $WorkDir = "$Intunewin_Extracted_Folder\$FileName"
-$File = "$Sandbox_Folder\Intunewin_Install_Command.txt"
-$command = Get-Content -Raw $File
 
 
-$cmd = "$ServiceUI -process:explorer.exe C:\Windows\System32\WindowsPowershell\v1.0\powershell.exe -ExecutionPolicy Unrestricted -NoProfile -WindowStyle Hidden -Command `"$command`""
+$cmd = "$ServiceUI -process:explorer.exe C:\Windows\System32\WindowsPowershell\v1.0\powershell.exe -ExecutionPolicy Unrestricted -NoProfile -WindowStyle Hidden -Command `"$Command`""
 
 Set-Location "$Intunewin_Extracted_Folder\$FileName"
 

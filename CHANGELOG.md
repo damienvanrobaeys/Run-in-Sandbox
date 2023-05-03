@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Unreleased
 
 
+## 2023-05-03
+### Added
+- Added option to run .intunewin via sdbapp
+### Changed
+- Changed Intunewin_Content_File and Intunewin_Command_File to be parameters for IntuneWin_Install.ps1
+
+
 ## 2023-03-29
 ### Added
 - Added context menu entry for opening PDF in Sandbox

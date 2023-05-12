@@ -50,8 +50,8 @@ TitleCaps="False"
 		
             <GroupBox Header="Type swicthes to add" Height="80" Margin="0,5,0,0" Width="380">	
 				<StackPanel Orientation="Horizontal" Margin="0,0,0,0" HorizontalAlignment="Center">										
-					<TextBox FontSize="14" x:Name="swicthes_for_exe" Width="340" Height="22"></TextBox>
-					<Button Height="22" x:Name="add_swicthes" BorderThickness="0" Margin="0,0,0,0" 
+					<TextBox FontSize="14" x:Name="switches_for_exe" Width="340" Height="22"></TextBox>
+					<Button Height="22" x:Name="add_switches" BorderThickness="0" Margin="0,0,0,0" 
 						Style="{DynamicResource SquareButtonStyle}" Cursor="Hand" Background="#2196f3">
 						<iconPacks:PackIconModern Width="15" Height="15" Foreground="white" Kind="add" Margin="0,0,0,0"/>							
 					</Button>					

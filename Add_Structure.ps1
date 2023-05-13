@@ -1,4 +1,6 @@
-﻿Param (
+﻿#Requires -PSEdition Desktop
+
+Param (
 	[Switch]$NoSilent
 )
 

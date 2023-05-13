@@ -1,3 +1,5 @@
+#Requires -PSEdition Desktop
+
 #***************************************************************************************************************
 # Author: Damien VAN ROBAEYS
 # Website: http://www.systanddeploy.com

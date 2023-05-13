@@ -1,5 +1,6 @@
 ﻿Param (
 	[Switch]$NoSilent
+	[Switch]$NoCheckpoint
 )
 
 $TEMP_Folder = $env:temp
@@ -177,14 +178,16 @@ Write-Progress -Activity $Progress_Activity -PercentComplete 10
 
 Add-Content $log_file ""
 
-Try {
-	Write-Log -Message_Type "INFO" -Message "Creating a restore point"
-	Checkpoint-Computer -Description "Add Windows Sandbox Context menus" -RestorePointType "MODIFY_SETTINGS" -ErrorAction Stop
-	Write-Log -Message_Type "SUCCESS" -Message "Creation of restore point `"Add Windows Sandbox Context menus`""
-}
-Catch {
-	Write-Log -Message_Type "ERROR" -Message "Creation of restore point `"Add Windows Sandbox Context menus`""
-	Write-Log -Message_Type "ERROR" -Message "$($_.Exception.Message)"
+If (-not $NoCheckpoint) {
+	Try {
+		Write-Log -Message_Type "INFO" -Message "Creating a restore point"
+		Checkpoint-Computer -Description "Add Windows Sandbox Context menus" -RestorePointType "MODIFY_SETTINGS" -ErrorAction Stop
+		Write-Log -Message_Type "SUCCESS" -Message "Creation of restore point `"Add Windows Sandbox Context menus`""
+	}
+	Catch {
+		Write-Log -Message_Type "ERROR" -Message "Creation of restore point `"Add Windows Sandbox Context menus`""
+		Write-Log -Message_Type "ERROR" -Message "$($_.Exception.Message)"
+	}
 }
 
 Write-Progress -Activity $Progress_Activity -PercentComplete 15

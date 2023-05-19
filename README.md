@@ -4,9 +4,10 @@
 
 This allows you to do the below things in Windows Sandbox **just from a right-click** by adding context menus:
 - Run PS1 as user or system in Sandbox
-- Run VBS, EXE, MSI in Sandbox
+- Run CMD, VBS, EXE, MSI in Sandbox
 - Run Intunewin file
 - Open URL or HTML file in Sandbox
+- Open PDF file in Sandbox
 - Extract ZIP file directly in Sandbox
 - Extract 7z file directly in Sandbox
 - Extract ISO directly in Sandbox

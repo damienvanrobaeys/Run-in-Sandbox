@@ -1,9 +1,25 @@
-$Intunewin_Extracted_Folder = "C:\Windows\Temp\intunewin"
-$Sandbox_Folder = "C:\Users\WDAGUtilityAccount\Desktop\Run_in_Sandbox"
+Param (
+	[String]$Intunewin_Content_File = "C:\Run_in_Sandbox\Intunewin_Folder.txt",
+	[String]$Intunewin_Command_File = "C:\Run_in_Sandbox\Intunewin_Install_Command.txt"
+)
+if (-not (Test-Path $Intunewin_Content_File) ){
+	EXIT
+}
+if (-not (Test-Path $Intunewin_Command_File) ){
+	EXIT
+}
 
-New-Item $Intunewin_Extracted_Folder -Type Directory -Force
-New-item "C:\ProgramData\Microsoft\IntuneManagementExtension\Logs" -Force -Type Directory
-set-location $Sandbox_Folder
+$Sandbox_Folder = "C:\Run_in_Sandbox"
+$ScriptPath = Get-Content -Raw $Intunewin_Content_File
+$Command = Get-Content -Raw $Intunewin_Command_File
+$Command = $Command.replace('"','')
+
+$FileName = (Get-Item $ScriptPath).BaseName
+
+$Intunewin_Extracted_Folder = "C:\Windows\Temp\intunewin"
+New-Item $Intunewin_Extracted_Folder -Type Directory -Force | Out-Null
+Copy-Item $ScriptPath $Intunewin_Extracted_Folder -Force
+$New_Intunewin_Path = "$Intunewin_Extracted_Folder\$FileName.intunewin"
 
 $Intunewin_Content_File = "$Sandbox_Folder\Intunewin_Folder.txt"
 $Intunewin_FilePath = get-content $Intunewin_Content_File
@@ -23,8 +39,10 @@ $Extract_DirectoryName = (get-item $Intunewin_New_path).DirectoryName
 
 Expand-Archive -LiteralPath $IntuneWinDecoded_File -DestinationPath "$Extract_DirectoryName\$Extract_Folder" -Force
 
-Remove-Item $IntuneWinDecoded_File
+$ServiceUI = "$Sandbox_Folder\ServiceUI.exe"
+$PsExec = "$Sandbox_Folder\PSTools\PsExec64.exe"
 
-set-location "$Intunewin_Extracted_Folder\$Extract_Folder"
-$file = "$Sandbox_Folder\Intunewin_Install_Command.txt"
-& { Invoke-Expression (Get-Content -Raw $file)}
+$cmd = "$PsExec \\localhost -w $Extract_Path -nobanner -accepteula -i -s C:\Windows\System32\WindowsPowershell\v1.0\powershell.exe -ExecutionPolicy Unrestricted -NoProfile -Command '$Command'"
+$cmd = "Write-Host `"Installing....`"; $cmd"
+
+& $ServiceUI -process:explorer.exe C:\Windows\System32\WindowsPowershell\v1.0\powershell.exe -Command $cmd

@@ -1,4 +1,4 @@
-﻿<#
+<#
 # Author & creator: Damien VAN ROBAEYS
 # Website: http://www.systanddeploy.com
 # Twitter: https://twitter.com/syst_and_deploy
@@ -342,13 +342,12 @@ If($Add_PS1 -eq $True)
 						$PS1_UserChoice = "$HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.ps1\UserChoice"
 						$Get_UserChoice = (Get-ItemProperty $PS1_UserChoice).ProgID
 
-						$HKCR_UserChoice_Key = "Registry::HKEY_CLASSES_ROOT\$Get_UserChoice"
-						$PS1_Shell_Registry_Key = "$HKCR_UserChoice_Key\Shell"
-						If (Test-Path $PS1_Shell_Registry_Key) 
-							{
-								$Main_Menu_Path = "$PS1_Shell_Registry_Key\$PS1_Main_Menu"
-								New-Item -Path $PS1_Shell_Registry_Key -Name $PS1_Main_Menu -Force | Out-Null
-								New-ItemProperty -Path $Main_Menu_Path -Name "subcommands" -PropertyType String | Out-Null
+			$HKCR_UserChoice_Key = "Registry::HKEY_CLASSES_ROOT\$Get_UserChoice"
+			$PS1_Shell_Registry_Key = "$HKCR_UserChoice_Key\Shell"
+			If (Test-Path $PS1_Shell_Registry_Key) {
+	            $Main_Menu_Path = "$PS1_Shell_Registry_Key\$PS1_Main_Menu"
+	            New-Item -Path $PS1_Shell_Registry_Key -Name $PS1_Main_Menu -Force | Out-Null
+                New-ItemProperty -Path $Main_Menu_Path -Name "subcommands" -PropertyType String | Out-Null
 
 								Add-RegKeys -Reg_Path "$PS1_Shell_Registry_Key" -Sub_Reg_Path "$PS1_Main_Menu" -Type "PS1Basic" -Entry_Name "PS1 as user"
 								Add-RegKeys -Reg_Path "$PS1_Shell_Registry_Key" -Sub_Reg_Path "$PS1_Main_Menu" -Type "PS1Params" -Entry_Name "PS1 as system"

@@ -293,7 +293,7 @@ If ($Add_PS1 -eq $True){
 
 			$HKCR_UserChoice_Key = "Registry::HKEY_CLASSES_ROOT\$Get_UserChoice"
 			$PS1_Shell_Registry_Key = "$HKCR_UserChoice_Key\Shell"
-			If (Test-Path $HKCR_UserChoice_Shell) {
+			If (Test-Path $PS1_Shell_Registry_Key) {
 	            $Main_Menu_Path = "$PS1_Shell_Registry_Key\$PS1_Main_Menu"
 	            New-Item -Path $PS1_Shell_Registry_Key -Name $PS1_Main_Menu -Force | Out-Null
                 New-ItemProperty -Path $Main_Menu_Path -Name "subcommands" -PropertyType String | Out-Null

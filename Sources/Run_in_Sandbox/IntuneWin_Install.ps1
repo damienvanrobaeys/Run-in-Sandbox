@@ -8,16 +8,16 @@ if (-not (Test-Path $Intunewin_Content_File) ){
 if (-not (Test-Path $Intunewin_Command_File) ){
 	EXIT
 }
+
 $Sandbox_Folder = "C:\Run_in_Sandbox"
 $ScriptPath = Get-Content -Raw $Intunewin_Content_File
 $Command = Get-Content -Raw $Intunewin_Command_File
+$Command = $Command.replace('"','')
 
 $FileName = (Get-Item $ScriptPath).BaseName
 
-New-Item "C:\ProgramData\Microsoft\IntuneManagementExtension\Logs" -Force -Type Directory
-
 $Intunewin_Extracted_Folder = "C:\Windows\Temp\intunewin"
-New-Item $Intunewin_Extracted_Folder -Type Directory -Force
+New-Item $Intunewin_Extracted_Folder -Type Directory -Force | Out-Null
 Copy-Item $ScriptPath $Intunewin_Extracted_Folder -Force
 $New_Intunewin_Path = "$Intunewin_Extracted_Folder\$FileName.intunewin"
 
@@ -37,12 +37,10 @@ Expand-Archive -LiteralPath "$Intunewin_Extracted_Folder\$IntuneWin_Rename" -Des
 Remove-Item "$Intunewin_Extracted_Folder\$IntuneWin_Rename" -Force
 Start-Sleep 1
 
-$ServiceUI = "C:\Run_in_Sandbox\ServiceUI.exe"
-$WorkDir = "$Intunewin_Extracted_Folder\$FileName"
+$ServiceUI = "$Sandbox_Folder\ServiceUI.exe"
+$PsExec = "$Sandbox_Folder\PSTools\PsExec64.exe"
 
+$cmd = "$PsExec \\localhost -w $Extract_Path -nobanner -accepteula -i -s C:\Windows\System32\WindowsPowershell\v1.0\powershell.exe -ExecutionPolicy Unrestricted -NoProfile -Command '$Command'"
+$cmd = "Write-Host `"Installing....`"; $cmd"
 
-$cmd = "$ServiceUI -process:explorer.exe C:\Windows\System32\WindowsPowershell\v1.0\powershell.exe -ExecutionPolicy Unrestricted -NoProfile -WindowStyle Hidden -Command `"$Command`""
-
-Set-Location "$Intunewin_Extracted_Folder\$FileName"
-
-& { Invoke-Expression $cmd }
+& $ServiceUI -process:explorer.exe C:\Windows\System32\WindowsPowershell\v1.0\powershell.exe -Command $cmd

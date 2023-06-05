@@ -5,7 +5,7 @@ xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
 xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks" 						
 Title="RunInSandbox - context menus selection" 
 Width="400" 
-Height="400"  
+Height="425"  
 ResizeMode="CanMinimize"
 BorderThickness="0.5"
 BorderBrush="{DynamicResource AccentColorBrush}"
@@ -54,7 +54,7 @@ WindowStartupLocation="CenterScreen"
 				</StackPanel>
 			</GroupBox>			
 		
-            <GroupBox Header="Choose which extension needs a context menu" Height="225" Margin="0,5,0,0" Width="380">	
+            <GroupBox Header="Choose which extension needs a context menu" Height="245" Margin="0,5,0,0" Width="380">	
 				<StackPanel Orientation="Vertical" Margin="0,0,0,0" HorizontalAlignment="Center">		
 					<StackPanel Orientation="Horizontal" Margin="0,0,0,0">
 						<CheckBox Content="Check all extensions" Name="Check_Uncheck_All" Width="150"/>
@@ -89,7 +89,12 @@ WindowStartupLocation="CenterScreen"
 					<StackPanel Orientation="Horizontal" Margin="0,5,0,0">
 						<CheckBox Content="Test Intunewin" Width="150" Name="Run_Intunewin"/>
 						<CheckBox Content="Install multiple apps" Width="150" Name="Multiple_Apps"/>			
-					</StackPanel>						
+					</StackPanel>				
+
+					<StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+						<CheckBox Content="Run CMD" Width="150" Name="Run_CMD"/>
+						<CheckBox Content="Open PDF file" Width="150" Name="Open_PDF"/>			
+					</StackPanel>													
 
 					<Button Height="22" x:Name="Apply_install" Content="Apply and install"  Margin="0,5,0,0"  Foreground="White" Background="#07B18C" BorderThickness="0" Width="120"/>
 				</StackPanel>

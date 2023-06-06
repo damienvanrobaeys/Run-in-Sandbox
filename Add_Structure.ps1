@@ -119,7 +119,7 @@ write-progress -activity $Progress_Activity -percentcomplete 1;
 		
 $Check_Sources_Files_Count = (get-childitem "$Current_Folder\Sources\Run_in_Sandbox" -recurse).count
 
-If($Check_Sources_Files_Count -ne 39) 
+If($Check_Sources_Files_Count -ne 40) 
 	{
 		Write_Log -Message_Type "ERROR" -Message "Some contents are missing"
 		[System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")

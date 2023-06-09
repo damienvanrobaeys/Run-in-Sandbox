@@ -391,18 +391,42 @@ If($Add_ZIP -eq $True)
 		$ZIP_Basic_Run = "Extract ZIP in Sandbox"	
 		Remove_Reg_Item -Reg_Path "$ZIP_Shell_Registry_Key\$ZIP_Basic_Run"		
 
-		If(test-path "$ZIP_Shell_Registry_Key\Extract the ZIP in Sandbox")	
+		If(test-path "$ZIP_Shell_Registry_Key\Extract ZIP in Sandbox")	
 			{
-				Remove_Reg_Item -Reg_Path "$ZIP_Shell_Registry_Key\Extract the ZIP in Sandbox"
+				Remove_Reg_Item -Reg_Path "$ZIP_Shell_Registry_Key\Extract ZIP in Sandbox"
 			}	
 
 		# RUN ON ZIP if WinRAR is installed
-		If(test-path "HKCR_SD:\WinRAR.ZIP\Shell")
+		If(test-path "HKCR_SD:\WinRAR.ZIP\Shell\Extract RAR file in Sandbox")
 			{
 				$ZIP_WinRAR_Shell_Registry_Key = "HKCR_SD:\WinRAR.ZIP\Shell"
-				# $ZIP_WinRAR_Basic_Run = "Extract ZIP in Sandbox"					
-				Remove_Reg_Item -Reg_Path "$ZIP_WinRAR_Shell_Registry_Key\$ZIP_Basic_Run"								
+				# Remove_Reg_Item -Reg_Path "$ZIP_WinRAR_Shell_Registry_Key\$ZIP_Basic_Run"	
+				Remove_Reg_Item -Reg_Path "$ZIP_WinRAR_Shell_Registry_Key\Extract RAR file in Sandbox"												
 			}
+
+
+		# 7z
+		If(test-path "HKCR_SD:\WinRAR.ZIP\Shell\Extract 7z file in Sandbox")
+			{
+				$Shell_Registry_Key = "HKCR_SD:\Applications\7zFM.exe\Shell"
+				# Remove_Reg_Item -Reg_Path "$ZIP_WinRAR_Shell_Registry_Key\$ZIP_Basic_Run"	
+				Remove_Reg_Item -Reg_Path "$Shell_Registry_Key\Extract 7z file in Sandbox"												
+			}
+			
+		If(test-path "HKCR_SD:\WinRAR.ZIP\Shell\Extract 7z file in Sandbox")
+			{
+				$Shell_Registry_Key = "HKCR_SD:\7-Zip.7z\Shell"
+				# Remove_Reg_Item -Reg_Path "$ZIP_WinRAR_Shell_Registry_Key\$ZIP_Basic_Run"	
+				Remove_Reg_Item -Reg_Path "$Shell_Registry_Key\Extract 7z file in Sandbox"												
+			}	
+		
+		# RAR with 7z
+		If(test-path "HKCR_SD:\WinRAR.ZIP\Shell\Extract RAR file in Sandbox")
+			{
+				$Shell_Registry_Key = "HKCR_SD:\7-Zip.rar\Shell"
+				# Remove_Reg_Item -Reg_Path "$ZIP_WinRAR_Shell_Registry_Key\$ZIP_Basic_Run"	
+				Remove_Reg_Item -Reg_Path "$Shell_Registry_Key\Extract RAR file in Sandbox"												
+			}				
 
 		# REMOVE RUN ON 7Z
 		$7z_Key_Label = "Extract 7z file in Sandbox"

@@ -20,8 +20,6 @@ Contributor: Harm Veenstra with below GitHub PR
 Formatting and noprofile addition to all powershell commands being started
 #>
 
-#Requires -PSEdition Desktop
-
 Param
 (
 	[Switch]$NoSilent,
@@ -214,15 +212,17 @@ Export_Reg_Config -Reg_Path "Directory" -Backup_Path "$Backup_Folder\Backup_HKRo
 Write-Progress -Activity $Progress_Activity -PercentComplete 10
 
 If(-not $NoCheckpoint) 
-	{
-		Try {
-			Checkpoint-Computer -Description "Add Windows Sandbox Context menus" -RestorePointType "MODIFY_SETTINGS" -ErrorAction Stop
-			Write_Log -Message_Type "SUCCESS" -Message "Creation of restore point `"Add Windows Sandbox Context menus`""
-		}
-		Catch {
-			Write_Log -Message_Type "ERROR" -Message "Creation of restore point `"Add Windows Sandbox Context menus`""
-			Write_Log -Message_Type "ERROR" -Message "$($_.Exception.Message)"
-		}
+	{	
+		$Checkpoint_Command = 'Checkpoint-Computer -Description "Windows_Sandbox_Context_menus" -RestorePointType "MODIFY_SETTINGS" -ErrorAction Stop'
+		$retValue = Start-Process powershell -WindowStyle Hidden -ArgumentList $Checkpoint_Command -wait -PassThru
+		If($retValue.ExitCode -eq 0)
+			{
+				Write_Log -Message_Type "SUCCESS" -Message "Creation of restore point `"Add Windows Sandbox Context menus`""
+			}
+		Else
+			{  
+				Write_Log -Message_Type "ERROR" -Message "Creation of restore point `"Add Windows Sandbox Context menus`""
+			}
 	}
 
 Function Add-RegKeys 
@@ -360,30 +360,6 @@ If($Add_PS1 -eq $True)
 	}
 Write-Progress -Activity $Progress_Activity -PercentComplete 25
 
-If($Add_PSD1 -eq $True)
-	{
-		$PSD1_Main_Menu = "Import PowerShell module in Sandbox"
-		
-		# If($Windows_Version -like "*Windows 10*") 
-			# {
-				Write_Log -Message_Type "INFO" -Message "Running on Windows 10"
-				$PS1_Shell_Registry_Key = "Registry::HKEY_CLASSES_ROOT\SystemFileAssociations\.ps1\Shell"
-				$Main_Menu_Path = "$PS1_Shell_Registry_Key\$PSD1_Main_Menu"
-				New-Item -Path $PS1_Shell_Registry_Key -Name $PSD1_Main_Menu -Force | Out-Null
-				New-ItemProperty -Path $Main_Menu_Path -Name "subcommands" -PropertyType String | Out-Null
-				New-Item -Path $Main_Menu_Path -Name "Shell" -Force | Out-Null
-
-				Add-RegKeys -Sub_Reg_Path "SystemFileAssociations\.ps1\Shell\Run PS1 in Sandbox" -Type "PS1Basic" -Entry_Name "PS1 as user"
-				Add-RegKeys -Sub_Reg_Path "SystemFileAssociations\.ps1\Shell\Run PS1 in Sandbox" -Type "PS1System" -Entry_Name "PS1 as system"
-				Add-RegKeys -Sub_Reg_Path "SystemFileAssociations\.ps1\Shell\Run PS1 in Sandbox" -Type "PS1Params" -Entry_Name "PS1 with parameters"
-				Add-RegKeys -Sub_Reg_Path "SystemFileAssociations\.ps1\Shell\Run PS1 in Sandbox" -Type "PS1SystemUser" -Entry_Name "PS1 as user in SYSTEM context"
-
-				New-ItemProperty -Path "$Main_Menu_Path" -Name "icon" -PropertyType String -Value $Sandbox_Icon | out-null		
-			# }
-	}
-Write-Progress -Activity $Progress_Activity -PercentComplete 25
-
-
 If($Add_Intunewin -eq $True)
 	{
 		Add-RegKeys -Sub_Reg_Path ".intunewin" -Type "Intunewin"
@@ -457,18 +433,24 @@ Write-Progress -Activity $Progress_Activity -PercentComplete 70
 
 If($Add_ZIP -eq $True)
 	{
-		#Run on ZIP
+		# Run on ZIP
 		Add-RegKeys -Sub_Reg_Path "CompressedFolder" -Type "ZIP" -Key_Label "Extract ZIP in Sandbox"
 
 		# Run on ZIP if WinRAR is installed
-		If (Test-Path "Registry::HKEY_CLASSES_ROOT\WinRAR.ZIP") {
-			Add-RegKeys -Sub_Reg_Path "WinRAR.ZIP" -Type "ZIP" -Key_Label "Extract ZIP in Sandbox"
+		If (Test-Path "Registry::HKEY_CLASSES_ROOT\WinRAR.ZIP"){
+			Add-RegKeys -Sub_Reg_Path "WinRAR.ZIP" -Type "ZIP" -Key_Label "Extract RAR in Sandbox"
 		}
 
 		# Run on 7z
-		If (Test-Path "Registry::HKEY_CLASSES_ROOT\Applications\7zFM.exe") {
-			Add-RegKeys -Sub_Reg_Path "Applications\7zFM.exe" -Type "ZIP" -Info_Type "7z" -Entry_Name "ZIP" -Key_Label "Extract 7z file in Sandbox"
-		}
+		If(Test-Path "Registry::HKEY_CLASSES_ROOT\Applications\7zFM.exe"){
+			Add-RegKeys -Sub_Reg_Path "Applications\7zFM.exe" -Type "7z" -Info_Type "7z" -Entry_Name "ZIP" -Key_Label "Extract 7z file in Sandbox"
+		}		
+		If(Test-Path "Registry::HKEY_CLASSES_ROOT\7-Zip.7z"){
+			Add-RegKeys -Sub_Reg_Path "7-Zip.7z" -Type "7z" -Info_Type "7z" -Entry_Name "ZIP" -Key_Label "Extract 7z file in Sandbox"
+		}		
+		If(Test-Path "Registry::HKEY_CLASSES_ROOT\7-Zip.rar"){
+			Add-RegKeys -Sub_Reg_Path "7-Zip.rar" -Type "7z" -Info_Type "7z" -Entry_Name "ZIP" -Key_Label "Extract RAR file in Sandbox"
+		}			
 	}
 Write-Progress -Activity $Progress_Activity -PercentComplete 75
 		

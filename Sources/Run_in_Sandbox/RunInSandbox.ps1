@@ -21,8 +21,8 @@ Formatting and noprofile addition to all powershell commands being started
 #>
 
 param (
-    [String]$Type,	  
-    [String]$ScriptPath	
+    [Parameter(Mandatory=$true)] [String]$Type,
+    [Parameter(Mandatory=$true)] [String]$ScriptPath
 )
 
 $special_char_array = 'é', 'è', 'à', 'â', 'ê', 'û', 'î', 'ä', 'ë', 'ü', 'ï', 'ö', 'ù', 'ò', '~', '!', '@', '#', '$', '%', '^', '&', '+', '=', '}', '{', '|', '<', '>', ';'
@@ -38,22 +38,22 @@ $ScriptPath = $ScriptPath.replace('"', '')
 $ScriptPath = $ScriptPath.Trim();
 $ScriptPath = [WildcardPattern]::Escape($ScriptPath)
 
-If ( ($Type -eq "Folder_Inside") -or ($Type -eq "Folder_On") ) {
+if ( ($Type -eq "Folder_Inside") -or ($Type -eq "Folder_On") ) {
     $DirectoryName = (Get-Item $ScriptPath).fullname
 } else {
     $FolderPath = Split-Path (Split-Path "$ScriptPath" -Parent) -Leaf
     $DirectoryName = (Get-Item $ScriptPath).DirectoryName
     $FileName = (Get-Item $ScriptPath).BaseName
-    $Full_FileName = (Get-Item $ScriptPath).Name	
+    $Full_FileName = (Get-Item $ScriptPath).Name
 }
 
 $Sandbox_Desktop_Path = "C:\Users\WDAGUtilityAccount\Desktop"
 $Sandbox_Shared_Path = "$Sandbox_Desktop_Path\$FolderPath"
 
+$Sandbox_Root_Path = "C:\Run_in_Sandbox"
 $Full_Startup_Path = "$Sandbox_Shared_Path\$Full_FileName"
 $Full_Startup_Path = """$Full_Startup_Path"""
 
-$ProgData = $env:ProgramData
 $Run_in_Sandbox_Folder = "$env:ProgramData\Run_in_Sandbox"
 
 $PSRun_File = "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -sta -WindowStyle Hidden -NoProfile -ExecutionPolicy Unrestricted -File"
@@ -74,78 +74,73 @@ $Sandbox_MemoryInMB = $my_xml.Configuration.MemoryInMB
 
 $WSB_Cleanup = $my_xml.Configuration.WSB_Cleanup
 
-if ( $Sandbox_WSB_Location -eq "Default") {
-    $Sandbox_File_Path = "$env:temp\$FileName.wsb"			
+if ($Sandbox_WSB_Location -eq "Default") {
+    $Sandbox_File_Path = "$env:temp\$FileName.wsb"
 } else {
-    $Sandbox_File_Path = "$Sandbox_WSB_Location\$FileName.wsb"			
+    $Sandbox_File_Path = "$Sandbox_WSB_Location\$FileName.wsb"
 }
 
 if (Test-Path $Sandbox_File_Path) {
     Remove-Item $Sandbox_File_Path
 }
-	
 
-Function New-WSB {
+
+function New-WSB {
     param (
         [String]$Command_to_Run
-        # [String]$SDBApp_File			
-    )	
-	 
-    New-Item $Sandbox_File_Path -type file -Force | Out-Null
-    Add-Content $Sandbox_File_Path  "<Configuration>"	
-    Add-Content $Sandbox_File_Path  "	<VGpu>$Sandbox_VGpu</VGpu>"	
-    Add-Content $Sandbox_File_Path  "	<Networking>$Sandbox_Networking</Networking>"	
-    Add-Content $Sandbox_File_Path  "	<AudioInput>$Sandbox_AudioInput</AudioInput>"	
-    Add-Content $Sandbox_File_Path  "	<VideoInput>$Sandbox_VideoInput</VideoInput>"	
-    Add-Content $Sandbox_File_Path  "	<ProtectedClient>$Sandbox_ProtectedClient</ProtectedClient>"	
-    Add-Content $Sandbox_File_Path  "	<PrinterRedirection>$Sandbox_PrinterRedirection</PrinterRedirection>"	
-    Add-Content $Sandbox_File_Path  "	<ClipboardRedirection>$Sandbox_ClipboardRedirection</ClipboardRedirection>"	
-    Add-Content $Sandbox_File_Path  "	<MemoryInMB>$Sandbox_MemoryInMB</MemoryInMB>"	
+        # [String]$SDBApp_File
+    )
 
-    Add-Content $Sandbox_File_Path  "	<MappedFolders>"	
-    # If ( ($Type -eq "Intunewin") -or ($Type -eq "ISO") -or ($Type -eq "7z")  -or ($Type -eq "PS1System") -or ($Type -eq "SDBApp") ) {
+    New-Item $Sandbox_File_Path -ItemType File -Force | Out-Null
+    Add-Content -Path $Sandbox_File_Path -Value "<Configuration>"
+    Add-Content -Path $Sandbox_File_Path -Value "	<VGpu>$Sandbox_VGpu</VGpu>"
+    Add-Content -Path $Sandbox_File_Path -Value "	<Networking>$Sandbox_Networking</Networking>"
+    Add-Content -Path $Sandbox_File_Path -Value "	<AudioInput>$Sandbox_AudioInput</AudioInput>"
+    Add-Content -Path $Sandbox_File_Path -Value "	<VideoInput>$Sandbox_VideoInput</VideoInput>"
+    Add-Content -Path $Sandbox_File_Path -Value "	<ProtectedClient>$Sandbox_ProtectedClient</ProtectedClient>"
+    Add-Content -Path $Sandbox_File_Path -Value "	<PrinterRedirection>$Sandbox_PrinterRedirection</PrinterRedirection>"
+    Add-Content -Path $Sandbox_File_Path -Value "	<ClipboardRedirection>$Sandbox_ClipboardRedirection</ClipboardRedirection>"
+    Add-Content -Path $Sandbox_File_Path -Value "	<MemoryInMB>$Sandbox_MemoryInMB</MemoryInMB>"
+
+    Add-Content -Path $Sandbox_File_Path  -Value "	<MappedFolders>"
     if ( ($Type -eq "Intunewin") -or ($Type -eq "ISO") -or ($Type -eq "PS1System") -or ($Type -eq "SDBApp") -or ($Type -eq "7z") -or ($Type -eq "EXE") ) {
-        Add-Content $Sandbox_File_Path  "		<MappedFolder>"
-        Add-Content $Sandbox_File_Path  "			<HostFolder>C:\ProgramData\Run_in_Sandbox</HostFolder>"	
-        Add-Content $Sandbox_File_Path  "			<ReadOnly>$Sandbox_ReadOnlyAccess</ReadOnly>"	
-        Add-Content $Sandbox_File_Path  "		</MappedFolder>"
+        Add-Content $Sandbox_File_Path  -Value "		<MappedFolder>"
+        Add-Content $Sandbox_File_Path  -Value "			<HostFolder>C:\ProgramData\Run_in_Sandbox</HostFolder>"
+        Add-Content $Sandbox_File_Path  -Value "			<ReadOnly>$Sandbox_ReadOnlyAccess</ReadOnly>"
+        Add-Content $Sandbox_File_Path  -Value "		</MappedFolder>"
     }
 
-    if ($Type -eq "SDBApp") {			
-        $SDB_Full_Path = $ScriptPath
-        Copy-Item $ScriptPath $Run_in_Sandbox_Folder -Force
-        $Get_Apps_to_install = [xml](Get-Content $SDB_Full_Path)				
+    if ($Type -eq "SDBApp") {
+        Copy-Item -Path $ScriptPath -Destination $Run_in_Sandbox_Folder -Force
+        $Get_Apps_to_install = [xml](Get-Content -Path $ScriptPath)
         $Apps_to_install_path = $Get_Apps_to_install.Applications.Application.Path | Select-Object -Unique
 
         foreach ($App_Path in $Apps_to_install_path) {
-            Add-Content $Sandbox_File_Path  "		<MappedFolder>"
-            Add-Content $Sandbox_File_Path  "			<HostFolder>$App_Path</HostFolder>"	
-            Add-Content $Sandbox_File_Path  "			<ReadOnly>$Sandbox_ReadOnlyAccess</ReadOnly>"	
-            Add-Content $Sandbox_File_Path  "		</MappedFolder>"					
-        }													
+            Add-Content -Path $Sandbox_File_Path  -Value "		<MappedFolder>"
+            Add-Content -Path $Sandbox_File_Path  -Value "			<HostFolder>$App_Path</HostFolder>"
+            Add-Content -Path $Sandbox_File_Path  -Value "			<ReadOnly>$Sandbox_ReadOnlyAccess</ReadOnly>"
+            Add-Content -Path $Sandbox_File_Path  -Value "		</MappedFolder>"
+        }
     } else {
-		
-        Add-Content $Sandbox_File_Path  "		<MappedFolder>"	
-        Add-Content $Sandbox_File_Path  "			<HostFolder>$DirectoryName</HostFolder>"	
-        Add-Content $Sandbox_File_Path  "			<ReadOnly>$Sandbox_ReadOnlyAccess</ReadOnly>"	
-        Add-Content $Sandbox_File_Path  "		</MappedFolder>"	
-    }
-	
-    Add-Content $Sandbox_File_Path  "	</MappedFolders>"	
 
-    Add-Content $Sandbox_File_Path  "	<LogonCommand>"	
-    Add-Content $Sandbox_File_Path  "		<Command>$Command_to_Run</Command>"		
-    Add-Content $Sandbox_File_Path  "	</LogonCommand>"	
-    Add-Content $Sandbox_File_Path  "</Configuration>"		
+        Add-Content -Path $Sandbox_File_Path  -Value "		<MappedFolder>"
+        Add-Content -Path $Sandbox_File_Path  -Value "			<HostFolder>$DirectoryName</HostFolder>"
+        Add-Content -Path $Sandbox_File_Path  -Value "			<ReadOnly>$Sandbox_ReadOnlyAccess</ReadOnly>"
+        Add-Content -Path $Sandbox_File_Path  -Value "		</MappedFolder>"
+    }
+
+    Add-Content -Path $Sandbox_File_Path  -Value "	</MappedFolders>"
+
+    Add-Content -Path $Sandbox_File_Path  -Value "	<LogonCommand>"
+    Add-Content -Path $Sandbox_File_Path  -Value "		<Command>$Command_to_Run</Command>"
+    Add-Content -Path $Sandbox_File_Path  -Value "	</LogonCommand>"
+    Add-Content -Path $Sandbox_File_Path  -Value "</Configuration>"
 }
-	
+
 switch ($Type) {
     "7Z" {
-        # $Script:Startup_Command = "$Sandbox_Root_Path\7z\7z.exe" + " " + "x" + " " + "$Full_Startup_Path" + " " + "-y" + " " + "-o" + "C:\Users\WDAGUtilityAccount\Desktop\Extracted_File"
-        # New-WSB -Command_to_Run $Startup_Command
-					
-        $Script:Startup_Command = "C:\Users\WDAGUtilityAccount\Desktop\Run_in_Sandbox\7z\7z.exe x -y -oC:\Users\WDAGUtilityAccount\Desktop\Extracted_File $Full_Startup_Path"
-        New-WSB -Command_to_Run $Startup_Command			
+        $Script:Startup_Command = "$Sandbox_Root_Path\7z\7z.exe" + " " + "x" + " " + "$Full_Startup_Path" + " " + "-y" + " " + "-o" + "C:\Users\WDAGUtilityAccount\Desktop\Extracted_File"
+        New-WSB -Command_to_Run $Startup_Command
     }
     "CMD" {
         $Script:Startup_Command = $PSRun_Command + " " + "Start-Process $Full_Startup_Path"
@@ -154,10 +149,10 @@ switch ($Type) {
     "EXE" {
         $Full_Startup_Path = $Full_Startup_Path.Replace('"', "")
 
-        [System.Reflection.Assembly]::LoadWithPartialName('presentationframework') 				| Out-Null	
-        [System.Reflection.Assembly]::LoadFrom("$Run_in_Sandbox_Folder\assembly\MahApps.Metro.dll") | Out-Null 
-        [System.Reflection.Assembly]::LoadFrom("$Run_in_Sandbox_Folder\assembly\MahApps.Metro.IconPacks.dll")      | Out-Null  
-        function LoadXml ($global:file2) {
+        [System.Reflection.Assembly]::LoadWithPartialName('presentationframework') | Out-Null
+        [System.Reflection.Assembly]::LoadFrom("$Run_in_Sandbox_Folder\assembly\MahApps.Metro.dll") | Out-Null
+        [System.Reflection.Assembly]::LoadFrom("$Run_in_Sandbox_Folder\assembly\MahApps.Metro.IconPacks.dll") | Out-Null
+        Function LoadXml ($global:file2) {
             $XamlLoader = (New-Object System.Xml.XmlDocument)
             $XamlLoader.Load($file2)
             return $XamlLoader
@@ -165,57 +160,56 @@ switch ($Type) {
 
         $XamlMainWindow = LoadXml("$Run_in_Sandbox_Folder\RunInSandbox_EXE.xaml")
         $Reader = (New-Object System.Xml.XmlNodeReader $XamlMainWindow)
-        $Form_EXE = [Windows.Markup.XamlReader]::Load($Reader)		
+        $Form_EXE = [Windows.Markup.XamlReader]::Load($Reader)
         $EXE_Command_File = "$Run_in_Sandbox_Folder\EXE_Command_File.txt"
-						
-        $switches_for_exe = $Form_EXE.findname("switches_for_exe") 
-        $add_switches = $Form_EXE.findname("add_switches") 
-			
+
+        $switches_for_exe = $Form_EXE.findname("switches_for_exe")
+        $add_switches = $Form_EXE.findname("add_switches")
+
         $add_switches.Add_Click({
                 $Script:Switches_EXE = $switches_for_exe.Text.ToString()
                 $Script:Startup_Command = $Full_Startup_Path + " " + $Switches_EXE
                 $Startup_Command | Out-File $EXE_Command_File -Force -NoNewline
-                $Form_EXE.close()			
-            })		
-			
+                $Form_EXE.close()
+            })
+
         $Form_EXE.Add_Closing({
                 $Script:Switches_EXE = $switches_for_exe.Text.ToString()
                 $Script:Startup_Command = $Full_Startup_Path + " " + $Switches_EXE
                 $Startup_Command | Out-File $EXE_Command_File -Force -NoNewline
             })
-			
-        $Form_EXE.ShowDialog() | Out-Null	
+
+        $Form_EXE.ShowDialog() | Out-Null
 
         $EXE_Installer = "$Sandbox_Desktop_Path\Run_in_Sandbox\EXE_Install.ps1"
         $Script:Startup_Command = $PSRun_File + " " + "$EXE_Installer"
-        New-WSB -Command_to_Run $Startup_Command			
+        New-WSB -Command_to_Run $Startup_Command
     }
     "Folder_On" {
         New-WSB
     }
     "Folder_Inside" {
         New-WSB
-    }	
+    }
     "HTML" {
         $Script:Startup_Command = $PSRun_Command + " " + "`"Invoke-Item -Path `'$Full_Startup_Path`'`""
-        New-WSB -Command_to_Run $Startup_Command			
+        New-WSB -Command_to_Run $Startup_Command
     }
     "URL" {
         $Script:Startup_Command = $PSRun_Command + " " + "Start-Process $Sandbox_Root_Path"
-        New-WSB -Command_to_Run $Startup_Command			
-    }		
+        New-WSB -Command_to_Run $Startup_Command
+    }
     "Intunewin" {
-        $Intunewin_Folder = "$Sandbox_Desktop_Path\$FolderPath\$FileName.intunewin"	
-        # $Intunewin_Folder = "C:\IntuneWin\$FileName.intunewin"		
+        $Intunewin_Folder = "Sandbox_Shared_Path\$FileName.intunewin"
         $Intunewin_Content_File = "$Run_in_Sandbox_Folder\Intunewin_Folder.txt"
-        $Intunewin_Command_File = "$Run_in_Sandbox_Folder\Intunewin_Install_Command.txt"		
+        $Intunewin_Command_File = "$Run_in_Sandbox_Folder\Intunewin_Install_Command.txt"
         $Intunewin_Folder | Out-File $Intunewin_Content_File -Force -NoNewline
-			
+
         $Full_Startup_Path = $Full_Startup_Path.Replace('"', "")
-		
-        [System.Reflection.Assembly]::LoadWithPartialName('presentationframework') 	| Out-Null	
-        [System.Reflection.Assembly]::LoadFrom("$Run_in_Sandbox_Folder\assembly\MahApps.Metro.dll") | Out-Null 
-        [System.Reflection.Assembly]::LoadFrom("$Run_in_Sandbox_Folder\assembly\MahApps.Metro.IconPacks.dll") | Out-Null  	
+
+        [System.Reflection.Assembly]::LoadWithPartialName('presentationframework') 	| Out-Null
+        [System.Reflection.Assembly]::LoadFrom("$Run_in_Sandbox_Folder\assembly\MahApps.Metro.dll") | Out-Null
+        [System.Reflection.Assembly]::LoadFrom("$Run_in_Sandbox_Folder\assembly\MahApps.Metro.IconPacks.dll") | Out-Null
         function LoadXml ($global:file1) {
             $XamlLoader = (New-Object System.Xml.XmlDocument)
             $XamlLoader.Load($file1)
@@ -224,42 +218,39 @@ switch ($Type) {
 
         $XamlMainWindow = LoadXml("$Run_in_Sandbox_Folder\RunInSandbox_Intunewin.xaml")
         $Reader = (New-Object System.Xml.XmlNodeReader $XamlMainWindow)
-        $Form_PS1 = [Windows.Markup.XamlReader]::Load($Reader)		
-				
-        $install_command_intunewin = $Form_PS1.findname("install_command_intunewin") 
-        $add_install_command = $Form_PS1.findname("add_install_command") 
-			
+        $Form_PS1 = [Windows.Markup.XamlReader]::Load($Reader)
+
+        $install_command_intunewin = $Form_PS1.findname("install_command_intunewin")
+        $add_install_command = $Form_PS1.findname("add_install_command")
+
         $add_install_command.add_click({
                 $Script:install_command = $install_command_intunewin.Text.ToString()
-                $install_command | Out-File $Intunewin_Command_File			
+                $install_command | Out-File $Intunewin_Command_File
                 $Form_PS1.close()
             })
-			
+
         $Form_PS1.Add_Closing({
                 $Script:install_command = $install_command_intunewin.Text.ToString()
                 $install_command | Out-File $Intunewin_Command_File -Force -NoNewline
-                $Form_PS1.close()		
-            })			
-					
-        $Form_PS1.ShowDialog() | Out-Null	
+                $Form_PS1.close()
+            })
+
+        $Form_PS1.ShowDialog() | Out-Null
 
         $Intunewin_Installer = "$Sandbox_Desktop_Path\Run_in_Sandbox\IntuneWin_Install.ps1"
         $Script:Startup_Command = $PSRun_File + " " + "$Intunewin_Installer"
-        New-WSB -Command_to_Run $Startup_Command						
+        New-WSB -Command_to_Run $Startup_Command
     }
     "ISO" {
-        # $Script:Startup_Command = "$Sandbox_Root_Path\7z\7z.exe" + " " + "x" + " " + "$Full_Startup_Path" + " " + "-y" + " " + "-o" + "C:\Users\WDAGUtilityAccount\Desktop\Extracted_ISO"
-        # New-WSB -Command_to_Run $Startup_Command
-			
-        $Script:Startup_Command = "C:\Users\WDAGUtilityAccount\Desktop\Run_in_Sandbox\7z\7z.exe x -y -oC:\Users\WDAGUtilityAccount\Desktop\Extracted_ISO $Full_Startup_Path"
-        New-WSB -Command_to_Run $Startup_Command						
+        $Script:Startup_Command = "$Sandbox_Root_Path\7z\7z.exe" + " " + "x" + " " + "$Full_Startup_Path" + " " + "-y" + " " + "-o" + "C:\Users\WDAGUtilityAccount\Desktop\Extracted_ISO"
+        New-WSB -Command_to_Run $Startup_Command
     }
     "MSI" {
         $Full_Startup_Path = $Full_Startup_Path.Replace('"', "")
 
-        [System.Reflection.Assembly]::LoadWithPartialName('presentationframework') 				| Out-Null	
-        [System.Reflection.Assembly]::LoadFrom("$Run_in_Sandbox_Folder\assembly\MahApps.Metro.dll") | Out-Null 
-        [System.Reflection.Assembly]::LoadFrom("$Run_in_Sandbox_Folder\assembly\MahApps.Metro.IconPacks.dll")      | Out-Null  
+        [System.Reflection.Assembly]::LoadWithPartialName('presentationframework') 				| Out-Null
+        [System.Reflection.Assembly]::LoadFrom("$Run_in_Sandbox_Folder\assembly\MahApps.Metro.dll") | Out-Null
+        [System.Reflection.Assembly]::LoadFrom("$Run_in_Sandbox_Folder\assembly\MahApps.Metro.IconPacks.dll")      | Out-Null
         function LoadXml ($global:file2) {
             $XamlLoader = (New-Object System.Xml.XmlDocument)
             $XamlLoader.Load($file2)
@@ -268,29 +259,29 @@ switch ($Type) {
 
         $XamlMainWindow = LoadXml("$Run_in_Sandbox_Folder\RunInSandbox_EXE.xaml")
         $Reader = (New-Object System.Xml.XmlNodeReader $XamlMainWindow)
-        $Form_MSI = [Windows.Markup.XamlReader]::Load($Reader)		
-				
-        $switches_for_exe = $Form_MSI.findname("switches_for_exe") 
-        $add_switches = $Form_MSI.findname("add_switches") 
+        $Form_MSI = [Windows.Markup.XamlReader]::Load($Reader)
+
+        $switches_for_exe = $Form_MSI.findname("switches_for_exe")
+        $add_switches = $Form_MSI.findname("add_switches")
 
         $add_switches.Add_Click({
                 $Script:Switches_MSI = $switches_for_exe.Text.ToString()
-                $Script:Startup_Command = "msiexec /i `"$Full_Startup_Path`" " + $Switches_MSI		
+                $Script:Startup_Command = "msiexec /i `"$Full_Startup_Path`" " + $Switches_MSI
                 $Form_MSI.close()
             })
 
         $Form_MSI.Add_Closing({
                 $Script:Switches_MSI = $switches_for_exe.Text.ToString()
                 $Script:Startup_Command = "msiexec /i `"$Full_Startup_Path`" " + $Switches_MSI
-            })		
-			
-        $Form_MSI.ShowDialog() | Out-Null			
-			
+            })
+
+        $Form_MSI.ShowDialog() | Out-Null
+
         New-WSB -Command_to_Run $Startup_Command
     }
-    "MSIX" {			
+    "MSIX" {
         $Script:Startup_Command = $PSRun_Command + " " + "Add-AppPackage -Path $Full_Startup_Path"
-        New-WSB -Command_to_Run $Startup_Command			
+        New-WSB -Command_to_Run $Startup_Command
     }
     "PDF" {
         $Full_Startup_Path = $Full_Startup_Path.Replace('"', '')
@@ -299,22 +290,22 @@ switch ($Type) {
     }
     "PPKG" {
         $Script:Startup_Command = $PSRun_Command + " " + "Install-ProvisioningPackage $Full_Startup_Path -forceinstall -quietinstall"
-        New-WSB -Command_to_Run $Startup_Command			
-    }	
-    "PS1Basic" {			
+        New-WSB -Command_to_Run $Startup_Command
+    }
+    "PS1Basic" {
         $Script:Startup_Command = $PSRun_File + " " + "$Full_Startup_Path"
-        New-WSB -Command_to_Run $Startup_Command			
+        New-WSB -Command_to_Run $Startup_Command
     }
     "PS1System" {
         $Script:Startup_Command = "C:\Users\WDAGUtilityAccount\Desktop\Run_in_Sandbox\PsExec.exe -accepteula -i -d -s powershell -executionpolicy bypass -file $Full_Startup_Path"
-        New-WSB -Command_to_Run $Startup_Command			
-    }				
+        New-WSB -Command_to_Run $Startup_Command
+    }
     "PS1Params" {
         $Full_Startup_Path = $Full_Startup_Path.Replace('"', "")
-		
-        [System.Reflection.Assembly]::LoadWithPartialName('presentationframework') 	| Out-Null	
-        [System.Reflection.Assembly]::LoadFrom("$Run_in_Sandbox_Folder\assembly\MahApps.Metro.dll") | Out-Null 
-        [System.Reflection.Assembly]::LoadFrom("$Run_in_Sandbox_Folder\assembly\MahApps.Metro.IconPacks.dll") | Out-Null  	
+
+        [System.Reflection.Assembly]::LoadWithPartialName('presentationframework') 	| Out-Null
+        [System.Reflection.Assembly]::LoadFrom("$Run_in_Sandbox_Folder\assembly\MahApps.Metro.dll") | Out-Null
+        [System.Reflection.Assembly]::LoadFrom("$Run_in_Sandbox_Folder\assembly\MahApps.Metro.IconPacks.dll") | Out-Null
         function LoadXml ($global:file1) {
             $XamlLoader = (New-Object System.Xml.XmlDocument)
             $XamlLoader.Load($file1)
@@ -323,10 +314,10 @@ switch ($Type) {
 
         $XamlMainWindow = LoadXml("$Run_in_Sandbox_Folder\RunInSandbox_Params.xaml")
         $Reader = (New-Object System.Xml.XmlNodeReader $XamlMainWindow)
-        $Form_PS1 = [Windows.Markup.XamlReader]::Load($Reader)		
-				
-        $parameters_to_add = $Form_PS1.findname("parameters_to_add") 
-        $add_parameters = $Form_PS1.findname("add_parameters") 
+        $Form_PS1 = [Windows.Markup.XamlReader]::Load($Reader)
+
+        $parameters_to_add = $Form_PS1.findname("parameters_to_add")
+        $add_parameters = $Form_PS1.findname("add_parameters")
 
         $add_parameters.add_click({
                 $Script:Paramaters = $parameters_to_add.Text.ToString()
@@ -337,28 +328,24 @@ switch ($Type) {
         $Form_PS1.Add_Closing({
                 $Script:Paramaters = $parameters_to_add.Text.ToString()
                 $Script:Startup_Command = $PSRun_File + " " + "$Full_Startup_Path" + " " + "$Paramaters"
-            })		
-						
-        $Form_PS1.ShowDialog() | Out-Null	
-			
-        New-WSB -Command_to_Run $Startup_Command	
+            })
+
+        $Form_PS1.ShowDialog() | Out-Null
+
+        New-WSB -Command_to_Run $Startup_Command
     }
     "REG" {
-        $Script:Startup_Command = "REG IMPORT $Full_Startup_Path"			
-        New-WSB -Command_to_Run $Startup_Command			
+        $Script:Startup_Command = "REG IMPORT $Full_Startup_Path"
+        New-WSB -Command_to_Run $Startup_Command
     }
     "SDBApp" {
-        # $AppBundle_Installer = "$Sandbox_Root_Path\AppBundle_Install.ps1"
-        # $Script:Startup_Command = $PSRun_File + " " + "$AppBundle_Installer"
-        # New-WSB -Command_to_Run $Startup_Command
-			
-        $AppBundle_Installer = "$Sandbox_Desktop_Path\Run_in_Sandbox\AppBundle_Install.ps1"
+        $AppBundle_Installer = "$Sandbox_Root_Path\AppBundle_Install.ps1"
         $Script:Startup_Command = $PSRun_File + " " + "$AppBundle_Installer"
-        New-WSB -Command_to_Run $Startup_Command			
+        New-WSB -Command_to_Run $Startup_Command
     }
     "VBSBasic" {
-        $Script:Startup_Command = "wscript.exe $Full_Startup_Path"			
-        New-WSB -Command_to_Run $Startup_Command		
+        $Script:Startup_Command = "wscript.exe $Full_Startup_Path"
+        New-WSB -Command_to_Run $Startup_Command
     }
     "VBSParams" {
         $Full_Startup_Path = $Full_Startup_Path.Replace('"', '')
@@ -394,9 +381,9 @@ switch ($Type) {
 
         New-WSB -Command_to_Run $Startup_Command
     }
-    "ZIP" {		
+    "ZIP" {
         $Script:Startup_Command = $PSRun_Command + " " + "Expand-Archive $Full_Startup_Path $Sandbox_Desktop_Path\ZIP_extracted"
-        New-WSB -Command_to_Run $Startup_Command			
+        New-WSB -Command_to_Run $Startup_Command
     }
 }
 

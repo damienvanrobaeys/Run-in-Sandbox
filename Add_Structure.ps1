@@ -29,19 +29,19 @@ $TEMP_Folder = $env:temp
 $Log_File = "$TEMP_Folder\RunInSandbox_Install.log"
 $Current_Folder = Split-Path $MyInvocation.MyCommand.Path
 
-$Script:Current_User_SID = (Get-ChildItem Registry::\HKEY_USERS | Where-Object { Test-Path "$($_.pspath)\Volatile Environment" } | ForEach-Object { (Get-ItemProperty "$($_.pspath)\Volatile Environment") }).PSParentPath.split("\")[-1]
+$Script:Current_User_SID = (Get-ChildItem -Path Registry::\HKEY_USERS | Where-Object { Test-Path -Path "$($_.pspath)\Volatile Environment" } | ForEach-Object { (Get-ItemProperty -Path "$($_.pspath)\Volatile Environment") }).PSParentPath.split("\")[-1]
 $HKCU = "Registry::HKEY_USERS\$Current_User_SID"
 $HKCU_Classes = "Registry::HKEY_USERS\$Current_User_SID" + "_Classes"
 $Windows_Version = (Get-CimInstance -class Win32_OperatingSystem).Caption
 
-if (Test-Path $Log_File) {
-    Remove-Item $Log_File
+if (Test-Path -Path $Log_File) {
+    Remove-Item -Path $Log_File
 }
-New-Item $Log_File -Type file -Force | Out-Null
+New-Item -Path $Log_File -Type file -Force | Out-Null
 
 Function Write-LogMessage([string]$Message, [string]$Message_Type) {
     $MyDate = "[{0:MM/dd/yy} {0:HH:mm:ss}]" -f (Get-Date)
-    Add-Content $Log_File "$MyDate - $Message_Type : $Message"
+    Add-Content -Path $Log_File -Value "$MyDate - $Message_Type : $Message"
     Write-Output "$MyDate - $Message_Type : $Message"
 }
 
@@ -51,7 +51,7 @@ Function Export-RegConfig {
         $Backup_Path
     )
 
-    if (Test-Path "Registry::HKEY_CLASSES_ROOT\$Reg_Path") {
+    if (Test-Path -Path "Registry::HKEY_CLASSES_ROOT\$Reg_Path") {
         try {
             reg export "HKEY_CLASSES_ROOT\$Reg_Path" $Backup_Path /y | Out-Null
             Write-LogMessage -Message_Type "SUCCESS" -Message "$Reg_Path has been exported"
@@ -61,7 +61,7 @@ Function Export-RegConfig {
     } else {
         Write-LogMessage -Message_Type "INFO" -Message "Can not find registry path: Registry::HKEY_CLASSES_ROOT\$Reg_Path"
     }
-    Add-Content $log_file ""
+    Add-Content -Path $log_file -Value ""
 }
 
 
@@ -84,9 +84,9 @@ if ($Is_Sandbox_Installed -eq "Disabled") {
     break
 }
 
-$Current_Folder = Split-Path $MyInvocation.MyCommand.Path
+$Current_Folder = Split-Path -Path $MyInvocation.MyCommand.Path
 $Sources = $Current_Folder + "\" + "Sources\*"
-if (-not (Test-Path $Sources) ) {
+if (-not (Test-Path -Path $Sources) ) {
     Write-LogMessage -Message_Type "ERROR" -Message "Sources folder is missing"
     [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
     [System.Windows.Forms.MessageBox]::Show("It seems you haven´t downloaded all the folder structure.`nThe folder `"Sources`" is missing !!!")
@@ -95,12 +95,12 @@ if (-not (Test-Path $Sources) ) {
 
 Write-LogMessage -Message_Type "SUCCESS" -Message "The sources folder exists"
 
-Add-Content $log_file ""
+Add-Content -Path $log_file -Value ""
 
 $Progress_Activity = "Enabling Run in Sandbox context menus"
 Write-Progress -Activity $Progress_Activity -PercentComplete 1
 
-$Check_Sources_Files_Count = (Get-ChildItem "$Current_Folder\Sources\Run_in_Sandbox" -Recurse).count
+$Check_Sources_Files_Count = (Get-ChildItem -Path "$Current_Folder\Sources\Run_in_Sandbox" -Recurse).count
 
 if ($Check_Sources_Files_Count -ne 40) {
     Write-LogMessage -Message_Type "ERROR" -Message "Some contents are missing"
@@ -111,7 +111,7 @@ if ($Check_Sources_Files_Count -ne 40) {
 
 $Destination_folder = "$env:ProgramData\Run_in_Sandbox"
 try {
-    Copy-Item $Sources $env:ProgramData -Force -Recurse | Out-Null
+    Copy-Item -Path $Sources -Destination $env:ProgramData -Force -Recurse | Out-Null
     Write-LogMessage -Message_Type "SUCCESS" -Message "Sources have been copied in $env:ProgramData\Run_in_Sandbox"
 } catch {
     Write-LogMessage -Message_Type "ERROR" -Message "Sources have not been copied in $env:ProgramData\Run_in_Sandbox"
@@ -120,7 +120,7 @@ try {
 
 $Sources_Unblocked = $False
 try {
-    Get-ChildItem -Recurse $Destination_folder | Unblock-File
+    Get-ChildItem -Path $Destination_folder -Recurse | Unblock-File
     Write-LogMessage -Message_Type "SUCCESS" -Message "Sources files have been unblocked"
     $Sources_Unblocked = $True
 } catch {
@@ -162,7 +162,7 @@ $Add_MSIX = $Get_XML_Content.Configuration.ContextMenu_MSIX
 $Add_CMD = $Get_XML_Content.Configuration.ContextMenu_CMD
 $Add_PDF = $Get_XML_Content.Configuration.ContextMenu_PDF
 
-if (-not (Test-Path "$env:ProgramData\Run_in_Sandbox\RunInSandbox.ps1") ) {
+if (-not (Test-Path -Path "$env:ProgramData\Run_in_Sandbox\RunInSandbox.ps1") ) {
     Write-LogMessage -Message_Type "ERROR" -Message "File RunInSandbox.ps1 is missing"
     [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
     [System.Windows.Forms.MessageBox]::Show("File RunInSandbox.ps1 is missing !!!")
@@ -170,7 +170,7 @@ if (-not (Test-Path "$env:ProgramData\Run_in_Sandbox\RunInSandbox.ps1") ) {
 }
 
 $Backup_Folder = "$Destination_folder\Registry_Backup"
-New-Item $Backup_Folder -Type Directory -Force | Out-Null
+New-Item -Path $Backup_Folder -Type Directory -Force | Out-Null
 
 Write-Progress -Activity $Progress_Activity -PercentComplete 5
 
@@ -187,9 +187,9 @@ Export-RegConfig -Reg_Path "Directory" -Backup_Path "$Backup_Folder\Backup_HKRoo
 Write-Progress -Activity $Progress_Activity -PercentComplete 10
 
 if (-not $NoCheckpoint) {
-    $Checkpoint_Command = 'Checkpoint-Computer -Description "Windows_Sandbox_Context_menus" -RestorePointType "MODifY_SETTINGS" -ErrorAction Stop'
-    $RetValue = Start-Process powershell -WindowStyle Hidden -ArgumentList $Checkpoint_Command -Wait -PassThru
-    if ($RetValue.ExitCode -eq 0) {
+    $Checkpoint_Command = 'Checkpoint-Computer -Description "Windows_Sandbox_Context_menus" -RestorePointType "MODIFY_SETTINGS" -ErrorAction Stop'
+    $ReturnValue = Start-Process powershell -WindowStyle Hidden -ArgumentList $Checkpoint_Command -Wait -PassThru
+    if ($ReturnValue.ExitCode -eq 0) {
         Write-LogMessage -Message_Type "SUCCESS" -Message "Creation of restore point `"Add Windows Sandbox Context menus`""
     } else {
         Write-LogMessage -Message_Type "ERROR" -Message "Creation of restore point `"Add Windows Sandbox Context menus`""
@@ -212,19 +212,19 @@ Function Add-RegKey {
         $Key_Label_Path = "$Shell_Registry_Key\$Key_Label"
         $Command_Path = "$Key_Label_Path\Command"
         $Command_for = "C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -WindowStyle Hidden -NoProfile -ExecutionPolicy Unrestricted -sta -File C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -Type $Type -ScriptPath `"%V`""
-        if (-not (Test-Path $Base_Registry_Key) ) {
-            New-Item $Base_Registry_Key -ErrorAction Stop | Out-Null
+        if (-not (Test-Path -Path $Base_Registry_Key) ) {
+            New-Item -Path $Base_Registry_Key -ErrorAction Stop | Out-Null
         }
-        if (-not (Test-Path $Shell_Registry_Key) ) {
-            New-Item $Shell_Registry_Key -ErrorAction Stop | Out-Null
+        if (-not (Test-Path -Path $Shell_Registry_Key) ) {
+            New-Item -Path $Shell_Registry_Key -ErrorAction Stop | Out-Null
         }
-        if (Test-Path $Key_Label_Path) {
+        if (Test-Path -Path $Key_Label_Path) {
             Write-LogMessage -Message_Type "SUCCESS" -Message "Context menu for $Type has already been added"
             return
         }
 
-        New-Item $Key_Label_Path -ErrorAction Stop | Out-Null
-        New-Item $Command_Path -ErrorAction Stop | Out-Null
+        New-Item -Path $Key_Label_Path -ErrorAction Stop | Out-Null
+        New-Item -Path $Command_Path -ErrorAction Stop | Out-Null
         # Add Sandbox Icons
         New-ItemProperty -Path $Key_Label_Path -Name "icon" -PropertyType String -Value $Sandbox_Icon -ErrorAction Stop | Out-Null
         # Set the command path
@@ -261,10 +261,10 @@ if ($Add_PS1 -eq $True) {
         Write-LogMessage -Message_Type "INFO" -Message "Running on Windows 11"
 
         $Default_PS1_HKCU = "$HKCU_Classes\.ps1"
-        if (Test-Path $HKCU_Classes) {
+        if (Test-Path -Path $HKCU_Classes) {
             $rOpenWithProgids_Key = "$Default_PS1_HKCU\rOpenWithProgids"
-            if (Test-Path $rOpenWithProgids_Key) {
-                $Get_OpenWithProgids_Default_Value = (Get-Item $rOpenWithProgids_Key).Property
+            if (Test-Path -Path $rOpenWithProgids_Key) {
+                $Get_OpenWithProgids_Default_Value = (Get-Item -Path $rOpenWithProgids_Key).Property
                 ForEach ($Prop in $Get_OpenWithProgids_Default_Value) {
                     $PS1_Shell_Registry_Key = "$HKCU_Classes\$Prop\Shell"
                     $Main_Menu_Path = "$PS1_Shell_Registry_Key\$PS1_Main_Menu"
@@ -278,8 +278,8 @@ if ($Add_PS1 -eq $True) {
                 }
             }
             $OpenWithProgids_Key = "$Default_PS1_HKCU\OpenWithProgids"
-            if (Test-Path $OpenWithProgids_Key) {
-                $Get_OpenWithProgids_Default_Value = (Get-Item $OpenWithProgids_Key).Property
+            if (Test-Path -Path $OpenWithProgids_Key) {
+                $Get_OpenWithProgids_Default_Value = (Get-Item -Path $OpenWithProgids_Key).Property
                 ForEach ($Prop in $Get_OpenWithProgids_Default_Value) {
                     $PS1_Shell_Registry_Key = "$HKCU_Classes\$Prop\Shell"
                     $Main_Menu_Path = "$PS1_Shell_Registry_Key\$PS1_Main_Menu"
@@ -295,11 +295,11 @@ if ($Add_PS1 -eq $True) {
             # ADDING CONTEXT MENU DEPENDING OF THE USERCHOICE
             # The userchoice for PS1 is located in: HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.ps1\UserChoice
             $PS1_UserChoice = "$HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.ps1\UserChoice"
-            $Get_UserChoice = (Get-ItemProperty $PS1_UserChoice).ProgID
+            $Get_UserChoice = (Get-ItemProperty -Path $PS1_UserChoice).ProgID
 
             $HKCR_UserChoice_Key = "Registry::HKEY_CLASSES_ROOT\$Get_UserChoice"
             $PS1_Shell_Registry_Key = "$HKCR_UserChoice_Key\Shell"
-            if (Test-Path $PS1_Shell_Registry_Key) {
+            if (Test-Path -Path $PS1_Shell_Registry_Key) {
                 $Main_Menu_Path = "$PS1_Shell_Registry_Key\$PS1_Main_Menu"
                 New-Item -Path $PS1_Shell_Registry_Key -Name $PS1_Main_Menu -Force | Out-Null
                 New-ItemProperty -Path $Main_Menu_Path -Name "subcommands" -PropertyType String | Out-Null
@@ -381,18 +381,18 @@ if ($Add_ZIP -eq $True) {
     Add-RegKey -Sub_Reg_Path "CompressedFolder" -Type "ZIP" -Key_Label "Extract ZIP in Sandbox"
 
     # Run on ZIP if WinRAR is installed
-    if (Test-Path "Registry::HKEY_CLASSES_ROOT\WinRAR.ZIP") {
+    if (Test-Path -Path "Registry::HKEY_CLASSES_ROOT\WinRAR.ZIP") {
         Add-RegKey -Sub_Reg_Path "WinRAR.ZIP" -Type "ZIP" -Key_Label "Extract RAR in Sandbox"
     }
 
     # Run on 7z
-    if (Test-Path "Registry::HKEY_CLASSES_ROOT\Applications\7zFM.exe") {
+    if (Test-Path -Path "Registry::HKEY_CLASSES_ROOT\Applications\7zFM.exe") {
         Add-RegKey -Sub_Reg_Path "Applications\7zFM.exe" -Type "7z" -Info_Type "7z" -Entry_Name "ZIP" -Key_Label "Extract 7z file in Sandbox"
     }
-    if (Test-Path "Registry::HKEY_CLASSES_ROOT\7-Zip.7z") {
+    if (Test-Path -Path "Registry::HKEY_CLASSES_ROOT\7-Zip.7z") {
         Add-RegKey -Sub_Reg_Path "7-Zip.7z" -Type "7z" -Info_Type "7z" -Entry_Name "ZIP" -Key_Label "Extract 7z file in Sandbox"
     }
-    if (Test-Path "Registry::HKEY_CLASSES_ROOT\7-Zip.rar") {
+    if (Test-Path -Path "Registry::HKEY_CLASSES_ROOT\7-Zip.rar") {
         Add-RegKey -Sub_Reg_Path "7-Zip.rar" -Type "7z" -Info_Type "7z" -Entry_Name "ZIP" -Key_Label "Extract RAR file in Sandbox"
     }
 }
@@ -400,13 +400,13 @@ Write-Progress -Activity $Progress_Activity -PercentComplete 75
 
 if ($Add_MSIX -eq $True) {
     $MSIX_Shell_Registry_Key = "Registry::HKEY_CLASSES_ROOT\.msix\OpenWithProgids"
-    if (Test-Path $MSIX_Shell_Registry_Key) {
-        $Get_Default_Value = (Get-Item $MSIX_Shell_Registry_Key).Property
+    if (Test-Path -Path $MSIX_Shell_Registry_Key) {
+        $Get_Default_Value = (Get-Item -Path $MSIX_Shell_Registry_Key).Property
         Add-RegKey -Sub_Reg_Path "$Get_Default_Value" -Type "MSIX"
     }
-    if (Test-Path $HKCU_Classes) {
+    if (Test-Path -Path $HKCU_Classes) {
         $Default_MSIX_HKCU = "$HKCU_Classes\.msix"
-        $Get_Default_Value = (Get-Item "$Default_MSIX_HKCU\OpenWithProgids").Property
+        $Get_Default_Value = (Get-Item -Path "$Default_MSIX_HKCU\OpenWithProgids").Property
         Add-RegKey -Reg_Path $HKCU_Classes -Sub_Reg_Path "$Get_Default_Value" -Type "MSIX"
     }
 }
@@ -426,8 +426,8 @@ Write-Progress -Activity $Progress_Activity -PercentComplete 90
 
 if ($Add_PDF -eq $True) {
 
-    if (-not (Test-Path "Registry::HKEY_CLASSES_ROOT\SystemFileAssociations\.pdf") ) {
-        New-Item "Registry::HKEY_CLASSES_ROOT\SystemFileAssociations\.pdf" -ErrorAction Stop | Out-Null
+    if (-not (Test-Path -Path "Registry::HKEY_CLASSES_ROOT\SystemFileAssociations\.pdf") ) {
+        New-Item -Path "Registry::HKEY_CLASSES_ROOT\SystemFileAssociations\.pdf" -ErrorAction Stop | Out-Null
     }
     Add-RegKey -Sub_Reg_Path "SystemFileAssociations\.pdf" -Type "PDF" -Key_Label "Open PDF in Sandbox"
 }

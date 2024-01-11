@@ -53,7 +53,7 @@ $Sandbox_Shared_Path = "$Sandbox_Desktop_Path\$FolderPath"
 
 $Sandbox_Root_Path = "C:\Run_in_Sandbox"
 $Full_Startup_Path = "$Sandbox_Shared_Path\$Full_FileName"
-$Full_Startup_Path = """$Full_Startup_Path"""
+$Full_Startup_Path_Quoted = """$Full_Startup_Path"""
 
 $Run_in_Sandbox_Folder = "$env:ProgramData\Run_in_Sandbox"
 
@@ -154,15 +154,15 @@ function New-WSB {
 
 switch ($Type) {
     "7Z" {
-        $Script:Startup_Command = "$Sandbox_Root_Path\7z\7z.exe" + " " + "x" + " " + "$Full_Startup_Path" + " " + "-y" + " " + "-o" + "C:\Users\WDAGUtilityAccount\Desktop\Extracted_File"
+        $Script:Startup_Command = "$Sandbox_Root_Path\7z\7z.exe" + " " + "x" + " " + "$Full_Startup_Path_Quoted" + " " + "-y" + " " + "-o" + "C:\Users\WDAGUtilityAccount\Desktop\Extracted_File"
         New-WSB -Command_to_Run $Startup_Command
     }
     "CMD" {
-        $Script:Startup_Command = $PSRun_Command + " " + "Start-Process $Full_Startup_Path"
+        $Script:Startup_Command = $PSRun_Command + " " + "Start-Process $Full_Startup_Path_Quoted"
         New-WSB -Command_to_Run $Startup_Command
     }
     "EXE" {
-        $Full_Startup_Path = $Full_Startup_Path.Replace('"', "")
+        $Full_Startup_Path_Quoted = $Full_Startup_Path_Quoted.Replace('"', "")
 
         [System.Reflection.Assembly]::LoadWithPartialName('presentationframework') | Out-Null
         [System.Reflection.Assembly]::LoadFrom("$Run_in_Sandbox_Folder\assembly\MahApps.Metro.dll") | Out-Null
@@ -183,14 +183,14 @@ switch ($Type) {
 
         $add_switches.Add_Click({
                 $Script:Switches_EXE = $switches_for_exe.Text.ToString()
-                $Script:Startup_Command = $Full_Startup_Path + " " + $Switches_EXE
+                $Script:Startup_Command = $Full_Startup_Path_Quoted + " " + $Switches_EXE
                 $Startup_Command | Out-File $EXE_Command_File -Force -NoNewline
                 $Form_EXE.close()
             })
 
         $Form_EXE.Add_Closing({
                 $Script:Switches_EXE = $switches_for_exe.Text.ToString()
-                $Script:Startup_Command = $Full_Startup_Path + " " + $Switches_EXE
+                $Script:Startup_Command = $Full_Startup_Path_Quoted + " " + $Switches_EXE
                 $Startup_Command | Out-File $EXE_Command_File -Force -NoNewline
             })
 
@@ -207,7 +207,7 @@ switch ($Type) {
         New-WSB
     }
     "HTML" {
-        $Script:Startup_Command = $PSRun_Command + " " + "`"Invoke-Item -Path `'$Full_Startup_Path`'`""
+        $Script:Startup_Command = $PSRun_Command + " " + "`"Invoke-Item -Path `'$Full_Startup_Path_Quoted`'`""
         New-WSB -Command_to_Run $Startup_Command
     }
     "URL" {
@@ -220,7 +220,7 @@ switch ($Type) {
         $Intunewin_Command_File = "$Run_in_Sandbox_Folder\Intunewin_Install_Command.txt"
         $Intunewin_Folder | Out-File $Intunewin_Content_File -Force -NoNewline
 
-        $Full_Startup_Path = $Full_Startup_Path.Replace('"', "")
+        $Full_Startup_Path_Quoted = $Full_Startup_Path_Quoted.Replace('"', "")
 
         [System.Reflection.Assembly]::LoadWithPartialName('presentationframework') 	| Out-Null
         [System.Reflection.Assembly]::LoadFrom("$Run_in_Sandbox_Folder\assembly\MahApps.Metro.dll") | Out-Null
@@ -257,11 +257,11 @@ switch ($Type) {
         New-WSB -Command_to_Run $Startup_Command
     }
     "ISO" {
-        $Script:Startup_Command = "$Sandbox_Root_Path\7z\7z.exe" + " " + "x" + " " + "$Full_Startup_Path" + " " + "-y" + " " + "-o" + "C:\Users\WDAGUtilityAccount\Desktop\Extracted_ISO"
+        $Script:Startup_Command = "$Sandbox_Root_Path\7z\7z.exe" + " " + "x" + " " + "$Full_Startup_Path_Quoted" + " " + "-y" + " " + "-o" + "C:\Users\WDAGUtilityAccount\Desktop\Extracted_ISO"
         New-WSB -Command_to_Run $Startup_Command
     }
     "MSI" {
-        $Full_Startup_Path = $Full_Startup_Path.Replace('"', "")
+        $Full_Startup_Path_Quoted = $Full_Startup_Path_Quoted.Replace('"', "")
 
         [System.Reflection.Assembly]::LoadWithPartialName('presentationframework') 				| Out-Null
         [System.Reflection.Assembly]::LoadFrom("$Run_in_Sandbox_Folder\assembly\MahApps.Metro.dll") | Out-Null
@@ -281,13 +281,13 @@ switch ($Type) {
 
         $add_switches.Add_Click({
                 $Script:Switches_MSI = $switches_for_exe.Text.ToString()
-                $Script:Startup_Command = "msiexec /i `"$Full_Startup_Path`" " + $Switches_MSI
+                $Script:Startup_Command = "msiexec /i `"$Full_Startup_Path_Quoted`" " + $Switches_MSI
                 $Form_MSI.close()
             })
 
         $Form_MSI.Add_Closing({
                 $Script:Switches_MSI = $switches_for_exe.Text.ToString()
-                $Script:Startup_Command = "msiexec /i `"$Full_Startup_Path`" " + $Switches_MSI
+                $Script:Startup_Command = "msiexec /i `"$Full_Startup_Path_Quoted`" " + $Switches_MSI
             })
 
         $Form_MSI.ShowDialog() | Out-Null
@@ -295,28 +295,28 @@ switch ($Type) {
         New-WSB -Command_to_Run $Startup_Command
     }
     "MSIX" {
-        $Script:Startup_Command = $PSRun_Command + " " + "Add-AppPackage -Path $Full_Startup_Path"
+        $Script:Startup_Command = $PSRun_Command + " " + "Add-AppPackage -Path $Full_Startup_Path_Quoted"
         New-WSB -Command_to_Run $Startup_Command
     }
     "PDF" {
-        $Full_Startup_Path = $Full_Startup_Path.Replace('"', '')
-        $Script:Startup_Command = $PSRun_Command + " " + "`"Invoke-Item -Path `'$Full_Startup_Path`'`""
+        $Full_Startup_Path_Quoted = $Full_Startup_Path_Quoted.Replace('"', '')
+        $Script:Startup_Command = $PSRun_Command + " " + "`"Invoke-Item -Path `'$Full_Startup_Path_Quoted`'`""
         New-WSB -Command_to_Run $Startup_Command
     }
     "PPKG" {
-        $Script:Startup_Command = $PSRun_Command + " " + "Install-ProvisioningPackage $Full_Startup_Path -forceinstall -quietinstall"
+        $Script:Startup_Command = $PSRun_Command + " " + "Install-ProvisioningPackage $Full_Startup_Path_Quoted -forceinstall -quietinstall"
         New-WSB -Command_to_Run $Startup_Command
     }
     "PS1Basic" {
-        $Script:Startup_Command = $PSRun_File + " " + "$Full_Startup_Path"
+        $Script:Startup_Command = $PSRun_File + " " + "$Full_Startup_Path_Quoted"
         New-WSB -Command_to_Run $Startup_Command
     }
     "PS1System" {
-        $Script:Startup_Command = "C:\Users\WDAGUtilityAccount\Desktop\Run_in_Sandbox\PsExec.exe -accepteula -i -d -s powershell -executionpolicy bypass -file $Full_Startup_Path"
+        $Script:Startup_Command = "C:\Users\WDAGUtilityAccount\Desktop\Run_in_Sandbox\PsExec.exe -accepteula -i -d -s powershell -executionpolicy bypass -file $Full_Startup_Path_Quoted"
         New-WSB -Command_to_Run $Startup_Command
     }
     "PS1Params" {
-        $Full_Startup_Path = $Full_Startup_Path.Replace('"', "")
+        $Full_Startup_Path_Quoted = $Full_Startup_Path_Quoted.Replace('"', "")
 
         [System.Reflection.Assembly]::LoadWithPartialName('presentationframework') 	| Out-Null
         [System.Reflection.Assembly]::LoadFrom("$Run_in_Sandbox_Folder\assembly\MahApps.Metro.dll") | Out-Null
@@ -336,13 +336,13 @@ switch ($Type) {
 
         $add_parameters.add_click({
                 $Script:Paramaters = $parameters_to_add.Text.ToString()
-                $Script:Startup_Command = $PSRun_File + " " + "$Full_Startup_Path" + " " + "$Paramaters"
+                $Script:Startup_Command = $PSRun_File + " " + "$Full_Startup_Path_Quoted" + " " + "$Paramaters"
                 $Form_PS1.close()
             })
 
         $Form_PS1.Add_Closing({
                 $Script:Paramaters = $parameters_to_add.Text.ToString()
-                $Script:Startup_Command = $PSRun_File + " " + "$Full_Startup_Path" + " " + "$Paramaters"
+                $Script:Startup_Command = $PSRun_File + " " + "$Full_Startup_Path_Quoted" + " " + "$Paramaters"
             })
 
         $Form_PS1.ShowDialog() | Out-Null
@@ -350,7 +350,7 @@ switch ($Type) {
         New-WSB -Command_to_Run $Startup_Command
     }
     "REG" {
-        $Script:Startup_Command = "REG IMPORT $Full_Startup_Path"
+        $Script:Startup_Command = "REG IMPORT $Full_Startup_Path_Quoted"
         New-WSB -Command_to_Run $Startup_Command
     }
     "SDBApp" {
@@ -359,11 +359,11 @@ switch ($Type) {
         New-WSB -Command_to_Run $Startup_Command
     }
     "VBSBasic" {
-        $Script:Startup_Command = "wscript.exe $Full_Startup_Path"
+        $Script:Startup_Command = "wscript.exe $Full_Startup_Path_Quoted"
         New-WSB -Command_to_Run $Startup_Command
     }
     "VBSParams" {
-        $Full_Startup_Path = $Full_Startup_Path.Replace('"', '')
+        $Full_Startup_Path_Quoted = $Full_Startup_Path_Quoted.Replace('"', '')
 
         [System.Reflection.Assembly]::LoadWithPartialName('presentationframework') | Out-Null
         [System.Reflection.Assembly]::LoadFrom("$Run_in_Sandbox_Folder\assembly\MahApps.Metro.dll") | Out-Null
@@ -383,13 +383,13 @@ switch ($Type) {
 
         $add_parameters.add_click({
                 $Script:Paramaters = $parameters_to_add.Text.ToString()
-                $Script:Startup_Command = "wscript.exe $Full_Startup_Path $Paramaters"
+                $Script:Startup_Command = "wscript.exe $Full_Startup_Path_Quoted $Paramaters"
                 $Form_VBS.close()
             })
 
         $Form_VBS.Add_Closing({
                 $Script:Paramaters = $parameters_to_add.Text.ToString()
-                $Script:Startup_Command = "wscript.exe $Full_Startup_Path $Paramaters"
+                $Script:Startup_Command = "wscript.exe $Full_Startup_Path_Quoted $Paramaters"
             })
 
         $Form_VBS.ShowDialog() | Out-Null
@@ -397,7 +397,7 @@ switch ($Type) {
         New-WSB -Command_to_Run $Startup_Command
     }
     "ZIP" {
-        $Script:Startup_Command = $PSRun_Command + " " + "Expand-Archive $Full_Startup_Path $Sandbox_Desktop_Path\ZIP_extracted"
+        $Script:Startup_Command = $PSRun_Command + " " + "`"Expand-Archive '$Full_Startup_Path' '$Sandbox_Desktop_Path\ZIP_extracted'`""
         New-WSB -Command_to_Run $Startup_Command
     }
 }

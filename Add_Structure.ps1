@@ -102,7 +102,7 @@ Write-Progress -Activity $Progress_Activity -PercentComplete 1
 
 $Check_Sources_Files_Count = (Get-ChildItem -Path "$Current_Folder\Sources\Run_in_Sandbox" -Recurse).count
 
-if ($Check_Sources_Files_Count -ne 40) {
+if ($Check_Sources_Files_Count -lt 40) {
     Write-LogMessage -Message_Type "ERROR" -Message "Some contents are missing"
     [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
     [System.Windows.Forms.MessageBox]::Show("It seems you haven´t downloaded all the folder structure !!!")

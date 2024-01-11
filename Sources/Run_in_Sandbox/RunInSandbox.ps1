@@ -48,6 +48,7 @@ if ( ($Type -eq "Folder_Inside") -or ($Type -eq "Folder_On") ) {
 }
 
 $Sandbox_Desktop_Path = "C:\Users\WDAGUtilityAccount\Desktop"
+$Sandbox_Root_Path = "C:\Run_in_Sandbox"
 $Sandbox_Shared_Path = "$Sandbox_Desktop_Path\$FolderPath"
 
 $Sandbox_Root_Path = "C:\Run_in_Sandbox"
@@ -56,11 +57,8 @@ $Full_Startup_Path = """$Full_Startup_Path"""
 
 $Run_in_Sandbox_Folder = "$env:ProgramData\Run_in_Sandbox"
 
-$PSRun_File = "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -sta -WindowStyle Hidden -NoProfile -ExecutionPolicy Unrestricted -File"
-$PSRun_Command = "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -sta -WindowStyle Hidden -NoProfile -ExecutionPolicy Unrestricted -Command"
-
 $xml = "$Run_in_Sandbox_Folder\Sandbox_Config.xml"
-$my_xml = [xml] (Get-Content $xml)
+$my_xml = [xml](Get-Content $xml)
 $Sandbox_VGpu = $my_xml.Configuration.VGpu
 $Sandbox_Networking = $my_xml.Configuration.Networking
 $Sandbox_ReadOnlyAccess = $my_xml.Configuration.ReadOnlyAccess
@@ -71,8 +69,24 @@ $Sandbox_ProtectedClient = $my_xml.Configuration.ProtectedClient
 $Sandbox_PrinterRedirection = $my_xml.Configuration.PrinterRedirection
 $Sandbox_ClipboardRedirection = $my_xml.Configuration.ClipboardRedirection
 $Sandbox_MemoryInMB = $my_xml.Configuration.MemoryInMB
-
 $WSB_Cleanup = $my_xml.Configuration.WSB_Cleanup
+$Hide_Powershell = $my_xml.Configuration.Hide_Powershell
+
+[System.Collections.ArrayList]$PowershellParameters = @(
+	 '-sta'
+	 '-WindowStyle'
+	 'Hidden'
+	 '-NoProfile'
+	 '-ExecutionPolicy'
+	 'Unrestricted'
+)
+
+if ($Hide_Powershell -eq "False") {
+	$PowershellParameters[[array]::IndexOf($PowershellParameters, "Hidden")] = "Normal"
+}
+
+$PSRun_File = "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe $PowershellParameters -File"
+$PSRun_Command = "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe $PowershellParameters -Command"
 
 if ($Sandbox_WSB_Location -eq "Default") {
     $Sandbox_File_Path = "$env:temp\$FileName.wsb"
@@ -106,6 +120,7 @@ function New-WSB {
     if ( ($Type -eq "Intunewin") -or ($Type -eq "ISO") -or ($Type -eq "PS1System") -or ($Type -eq "SDBApp") -or ($Type -eq "7z") -or ($Type -eq "EXE") ) {
         Add-Content $Sandbox_File_Path  -Value "		<MappedFolder>"
         Add-Content $Sandbox_File_Path  -Value "			<HostFolder>C:\ProgramData\Run_in_Sandbox</HostFolder>"
+        Add-Content $Sandbox_File_Path 	-Value "			<SandboxFolder>C:\Run_in_Sandbox</SandboxFolder>"
         Add-Content $Sandbox_File_Path  -Value "			<ReadOnly>$Sandbox_ReadOnlyAccess</ReadOnly>"
         Add-Content $Sandbox_File_Path  -Value "		</MappedFolder>"
     }

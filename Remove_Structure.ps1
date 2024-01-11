@@ -352,7 +352,7 @@ if ($Add_ZIP -eq $True) {
     }
 
 
-    # 7z
+    # RAR with 7z
     if (Test-Path "HKCR_SD:\WinRAR.ZIP\Shell\Extract 7z file in Sandbox") {
         $Shell_Registry_Key = "HKCR_SD:\Applications\7zFM.exe\Shell"
         # Remove-RegItem -Reg_Path "$ZIP_WinRAR_Shell_Registry_Key\$ZIP_Basic_Run"
@@ -382,6 +382,15 @@ if ($Add_ZIP -eq $True) {
             if (Test-Path $Default_ZIP_Shell_Registry_Key) {
                 Remove-RegItem -Reg_Path "$Default_ZIP_Shell_Registry_Key\$7z_Key_Label"
             }
+        }
+    }
+    
+    $7z_Key_Label = "Extract 7z file in Sandbox"
+    $7z_Shell_Registry_Key = "HKCR_SD:\Applications\7zFM.exe"
+    if (Test-Path $7z_Shell_Registry_Key) {
+        $Default_ZIP_Shell_Registry_Key = "HKCR_SD:\Applications\7zFM.exe\Shell"
+        if (Test-Path $Default_ZIP_Shell_Registry_Key) {
+            Remove-RegItem -Reg_Path "$Default_ZIP_Shell_Registry_Key\$7z_Key_Label"
         }
     }
 

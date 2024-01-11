@@ -196,7 +196,7 @@ switch ($Type) {
 
         $Form_EXE.ShowDialog() | Out-Null
 
-        $EXE_Installer = "$Sandbox_Desktop_Path\Run_in_Sandbox\EXE_Install.ps1"
+        $EXE_Installer = "$Sandbox_Root_Path\EXE_Install.ps1"
         $Script:Startup_Command = $PSRun_File + " " + "$EXE_Installer"
         New-WSB -Command_to_Run $Startup_Command
     }
@@ -215,7 +215,7 @@ switch ($Type) {
         New-WSB -Command_to_Run $Startup_Command
     }
     "Intunewin" {
-        $Intunewin_Folder = "Sandbox_Shared_Path\$FileName.intunewin"
+        $Intunewin_Folder = "$Sandbox_Shared_Path\$FileName.intunewin"
         $Intunewin_Content_File = "$Run_in_Sandbox_Folder\Intunewin_Folder.txt"
         $Intunewin_Command_File = "$Run_in_Sandbox_Folder\Intunewin_Install_Command.txt"
         $Intunewin_Folder | Out-File $Intunewin_Content_File -Force -NoNewline
@@ -252,7 +252,7 @@ switch ($Type) {
 
         $Form_PS1.ShowDialog() | Out-Null
 
-        $Intunewin_Installer = "$Sandbox_Desktop_Path\Run_in_Sandbox\IntuneWin_Install.ps1"
+        $Intunewin_Installer = "$Sandbox_Root_Path\IntuneWin_Install.ps1"
         $Script:Startup_Command = $PSRun_File + " " + "$Intunewin_Installer"
         New-WSB -Command_to_Run $Startup_Command
     }

@@ -1,4 +1,4 @@
-$Sandbox_Folder = "C:\Users\WDAGUtilityAccount\Desktop\Run_in_Sandbox"
+$Sandbox_Folder = "C:\Run_in_Sandbox"
 $FolderPath = Split-Path (Split-Path "$ScriptPath" -Parent) -Leaf
 $DirectoryName = (get-item $ScriptPath).DirectoryName
 $FileName = (get-item $ScriptPath).BaseName

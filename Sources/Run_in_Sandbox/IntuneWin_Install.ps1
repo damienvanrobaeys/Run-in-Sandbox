@@ -23,7 +23,7 @@ $New_Intunewin_Path = "$Intunewin_Extracted_Folder\$FileName.intunewin"
 
 Set-Location -Path $Sandbox_Folder
 & .\IntuneWinAppUtilDecoder.exe $New_Intunewin_Path -s
-$IntuneWinDecoded_File_Name = "$Intunewin_Extracted_Folder\$FileName.Intunewin.decoded"
+$IntuneWinDecoded_File_Name = "$Intunewin_Extracted_Folder\$FileName.decoded.zip"
 
 New-Item -Path "$Intunewin_Extracted_Folder\$FileName" -Type Directory -Force | Out-Null
 
@@ -38,7 +38,7 @@ Remove-Item -Path "$Intunewin_Extracted_Folder\$IntuneWin_Rename" -Force
 Start-Sleep -Seconds 1
 
 $ServiceUI = "$Sandbox_Folder\ServiceUI.exe"
-$PsExec = "$Sandbox_Folder\PsExec64.exe"
+$PsExec = "$Sandbox_Folder\PsExec.exe"
 
 $cmd = "$PsExec \\localhost -w $Extract_Path -nobanner -accepteula -s C:\Windows\System32\WindowsPowershell\v1.0\powershell.exe -ExecutionPolicy ByPass -NoProfile -NoLogo -NoExit -Command '$Command'"
 $cmd = "Write-Host `"Installing....`"; $cmd"

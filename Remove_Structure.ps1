@@ -348,7 +348,7 @@ if ($Add_ZIP -eq $True) {
     if (Test-Path "HKCR_SD:\WinRAR.ZIP\Shell\Extract RAR file in Sandbox") {
         $ZIP_WinRAR_Shell_Registry_Key = "HKCR_SD:\WinRAR.ZIP\Shell"
         # Remove-RegItem -Reg_Path "$ZIP_WinRAR_Shell_Registry_Key\$ZIP_Basic_Run"
-        Remove-RegItem -Reg_Path "$ZIP_WinRAR_Shell_Registry_Key\Extract RAR file in Sandbox"
+        Remove-RegItem -Reg_Path "$ZIP_WinRAR_Shell_Registry_Key\Extract ZIP (WinRAR) in Sandbox"
     }
 
 

@@ -49,7 +49,6 @@ if ( ($Type -eq "Folder_Inside") -or ($Type -eq "Folder_On") ) {
 }
 
 $Sandbox_Desktop_Path = "C:\Users\WDAGUtilityAccount\Desktop"
-$Sandbox_Root_Path = "C:\Run_in_Sandbox"
 $Sandbox_Shared_Path = "$Sandbox_Desktop_Path\$FolderPath"
 
 $Sandbox_Root_Path = "C:\Run_in_Sandbox"

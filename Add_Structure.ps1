@@ -382,7 +382,7 @@ if ($Add_ZIP -eq $True) {
 
     # Run on ZIP if WinRAR is installed
     if (Test-Path -Path "Registry::HKEY_CLASSES_ROOT\WinRAR.ZIP") {
-        Add-RegKey -Sub_Reg_Path "WinRAR.ZIP" -Type "ZIP" -Key_Label "Extract RAR in Sandbox"
+        Add-RegKey -Sub_Reg_Path "WinRAR.ZIP" -Type "ZIP" -Key_Label "Extract ZIP (WinRAR) in Sandbox"
     }
 
     # Run on 7z

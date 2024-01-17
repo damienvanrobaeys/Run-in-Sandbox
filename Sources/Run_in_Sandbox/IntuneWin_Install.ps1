@@ -40,7 +40,5 @@ Start-Sleep -Seconds 1
 $ServiceUI = "$Sandbox_Folder\ServiceUI.exe"
 $PsExec = "$Sandbox_Folder\PsExec.exe"
 
-$cmd = "$PsExec \\localhost -w $Extract_Path -nobanner -accepteula -s C:\Windows\System32\WindowsPowershell\v1.0\powershell.exe -ExecutionPolicy ByPass -NoProfile -NoLogo -NoExit -Command '$Command'"
-$cmd = "Write-Host `"Installing....`"; $cmd"
 
-& $ServiceUI -process:explorer.exe C:\Windows\System32\WindowsPowershell\v1.0\powershell.exe -NoProfile -NoLogo -Command $cmd
+& $PsExec \\localhost -w "$Extract_Path" -nobanner -accepteula -s $ServiceUI -Process:explorer.exe C:\WINDOWS\system32\cmd.exe /k $Command

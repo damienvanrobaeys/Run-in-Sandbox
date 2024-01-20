@@ -29,7 +29,8 @@ $special_char_array = 'é', 'è', 'à', 'â', 'ê', 'û', 'î', 'ä', 'ë', 'ü'
 foreach ($char in $special_char_array) {
     if ($ScriptPath -like "*$char*") {
         [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
-        [System.Windows.Forms.MessageBox]::Show("There is a special character in the path of the file :-(`nWindows Sandbox does not support this !!!", "Issue with your file", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Warning)
+        $message = "There is a special character in the path of the file (`'" + $char + "`').`nWindows Sandbox does not support this!"
+        [System.Windows.Forms.MessageBox]::Show($message, "Issue with your file", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Warning)
         EXIT
     }
 }

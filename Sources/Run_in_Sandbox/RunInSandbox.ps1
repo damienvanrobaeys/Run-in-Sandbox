@@ -397,11 +397,7 @@ switch ($Type) {
         New-WSB -Command_to_Run $Startup_Command
     }
     "ZIP" {
-        $command = "Expand-Archive -LiteralPath '$Full_Startup_Path' -DestinationPath '$Sandbox_Desktop_Path\ZIP_extracted'"
-        $bytes = [System.Text.Encoding]::Unicode.GetBytes($command)
-        $encodedCommand = [Convert]::ToBase64String($bytes)
-
-        $Script:Startup_Command = "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -sta -WindowStyle Hidden -NoProfile -ExecutionPolicy Unrestricted -EncodedCommand " + $encodedCommand
+        $Script:Startup_Command = $PSRun_Command + " " + "`"Expand-Archive -LiteralPath '$Full_Startup_Path' -DestinationPath '$Sandbox_Desktop_Path\ZIP_extracted'`""
         New-WSB -Command_to_Run $Startup_Command
     }
 }

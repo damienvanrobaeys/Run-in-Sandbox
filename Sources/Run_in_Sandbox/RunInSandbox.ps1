@@ -73,16 +73,16 @@ $WSB_Cleanup = $my_xml.Configuration.WSB_Cleanup
 $Hide_Powershell = $my_xml.Configuration.Hide_Powershell
 
 [System.Collections.ArrayList]$PowershellParameters = @(
-	 '-sta'
-	 '-WindowStyle'
-	 'Hidden'
-	 '-NoProfile'
-	 '-ExecutionPolicy'
-	 'Unrestricted'
+    '-sta'
+    '-WindowStyle'
+    'Hidden'
+    '-NoProfile'
+    '-ExecutionPolicy'
+    'Unrestricted'
 )
 
 if ($Hide_Powershell -eq "False") {
-	$PowershellParameters[[array]::IndexOf($PowershellParameters, "Hidden")] = "Normal"
+    $PowershellParameters[[array]::IndexOf($PowershellParameters, "Hidden")] = "Normal"
 }
 
 $PSRun_File = "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe $PowershellParameters -File"
@@ -100,51 +100,51 @@ if (Test-Path $Sandbox_File_Path) {
 
 
 function New-WSB {
-    Param (
-		    [String]$Command_to_Run
-	  )
+    param (
+        [String]$Command_to_Run
+    )
 
-	  New-Item $Sandbox_File_Path -type file -Force | Out-Null
-	  Add-Content -LiteralPath $Sandbox_File_Path -Value "<Configuration>"
-	  Add-Content -LiteralPath $Sandbox_File_Path -Value "	<VGpu>$Sandbox_VGpu</VGpu>"
-	  Add-Content -LiteralPath $Sandbox_File_Path -Value "	<Networking>$Sandbox_Networking</Networking>"
-	  Add-Content -LiteralPath $Sandbox_File_Path -Value "	<AudioInput>$Sandbox_AudioInput</AudioInput>"
-	  Add-Content -LiteralPath $Sandbox_File_Path -Value "	<VideoInput>$Sandbox_VideoInput</VideoInput>"
-	  Add-Content -LiteralPath $Sandbox_File_Path -Value "	<ProtectedClient>$Sandbox_ProtectedClient</ProtectedClient>"
-	  Add-Content -LiteralPath $Sandbox_File_Path -Value "	<PrinterRedirection>$Sandbox_PrinterRedirection</PrinterRedirection>"
-	  Add-Content -LiteralPath $Sandbox_File_Path -Value "	<ClipboardRedirection>$Sandbox_ClipboardRedirection</ClipboardRedirection>"
-    Add-Content -LiteralPath $Sandbox_File_Path -Value "	<MemoryInMB>$Sandbox_MemoryInMB</MemoryInMB>"
+    New-Item $Sandbox_File_Path -type file -Force | Out-Null
+    Add-Content -LiteralPath $Sandbox_File_Path -Value "<Configuration>"
+    Add-Content -LiteralPath $Sandbox_File_Path -Value "    <VGpu>$Sandbox_VGpu</VGpu>"
+    Add-Content -LiteralPath $Sandbox_File_Path -Value "    <Networking>$Sandbox_Networking</Networking>"
+    Add-Content -LiteralPath $Sandbox_File_Path -Value "    <AudioInput>$Sandbox_AudioInput</AudioInput>"
+    Add-Content -LiteralPath $Sandbox_File_Path -Value "    <VideoInput>$Sandbox_VideoInput</VideoInput>"
+    Add-Content -LiteralPath $Sandbox_File_Path -Value "    <ProtectedClient>$Sandbox_ProtectedClient</ProtectedClient>"
+    Add-Content -LiteralPath $Sandbox_File_Path -Value "    <PrinterRedirection>$Sandbox_PrinterRedirection</PrinterRedirection>"
+    Add-Content -LiteralPath $Sandbox_File_Path -Value "    <ClipboardRedirection>$Sandbox_ClipboardRedirection</ClipboardRedirection>"
+    Add-Content -LiteralPath $Sandbox_File_Path -Value "    <MemoryInMB>$Sandbox_MemoryInMB</MemoryInMB>"
 
-	  Add-Content $Sandbox_File_Path "	<MappedFolders>"
-	  if ( ($Type -eq "Intunewin") -or ($Type -eq "ISO") -or ($Type -eq "7z")  -or ($Type -eq "PS1System") -or ($Type -eq "SDBApp") ) {
-	      Add-Content -LiteralPath $Sandbox_File_Path -Value "		<MappedFolder>"
-		    Add-Content -LiteralPath $Sandbox_File_Path -Value "			<HostFolder>C:\ProgramData\Run_in_Sandbox</HostFolder>"
-		    Add-Content -LiteralPath $Sandbox_File_Path -Value "			<SandboxFolder>C:\Run_in_Sandbox</SandboxFolder>"
-		    Add-Content -LiteralPath $Sandbox_File_Path -Value "			<ReadOnly>$Sandbox_ReadOnlyAccess</ReadOnly>"
-		    Add-Content -LiteralPath $Sandbox_File_Path -Value "		</MappedFolder>"
-	  }
-
-	  if ($Type -eq "SDBApp") {
-		    $SDB_Full_Path = $ScriptPath
-		    Copy-Item $ScriptPath $Run_in_Sandbox_Folder -Force
-		    $Get_Apps_to_install = [xml](Get-Content $SDB_Full_Path)
-		    $Apps_to_install_path = $Get_Apps_to_install.Applications.Application.Path | Select-Object -Unique
-
-		    ForEach ($App_Path in $Apps_to_install_path) {
-			      Add-Content -LiteralPath $Sandbox_File_Path -Value "		<MappedFolder>"
-			      Add-Content -LiteralPath $Sandbox_File_Path -Value "			<HostFolder>$App_Path</HostFolder>"
-            Add-Content -LiteralPath $Sandbox_File_Path -Value "			<SandboxFolder>C:\SBDApp</SandboxFolder>"
-			      Add-Content -LiteralPath $Sandbox_File_Path -Value "			<ReadOnly>$Sandbox_ReadOnlyAccess</ReadOnly>"
-			      Add-Content -LiteralPath $Sandbox_File_Path -Value "		</MappedFolder>"
-		    }
-	  } else {
-        Add-Content -LiteralPath $Sandbox_File_Path -Value "		<MappedFolder>"
-        Add-Content -LiteralPath $Sandbox_File_Path -Value "			<HostFolder>$DirectoryName</HostFolder>"
-        if ($Type -eq "IntuneWin") { Add-Content -LiteralPath $Sandbox_File_Path -Value "			<SandboxFolder>C:\IntuneWin</SandboxFolder>" }
-        Add-Content -LiteralPath $Sandbox_File_Path -Value "			<ReadOnly>$Sandbox_ReadOnlyAccess</ReadOnly>"
-        Add-Content -LiteralPath $Sandbox_File_Path -Value "		</MappedFolder>"
+    Add-Content $Sandbox_File_Path "    <MappedFolders>"
+    if ( ($Type -eq "Intunewin") -or ($Type -eq "ISO") -or ($Type -eq "7z")  -or ($Type -eq "PS1System") -or ($Type -eq "SDBApp") ) {
+        Add-Content -LiteralPath $Sandbox_File_Path -Value "        <MappedFolder>"
+        Add-Content -LiteralPath $Sandbox_File_Path -Value "            <HostFolder>C:\ProgramData\Run_in_Sandbox</HostFolder>"
+        Add-Content -LiteralPath $Sandbox_File_Path -Value "            <SandboxFolder>C:\Run_in_Sandbox</SandboxFolder>"
+        Add-Content -LiteralPath $Sandbox_File_Path -Value "            <ReadOnly>$Sandbox_ReadOnlyAccess</ReadOnly>"
+        Add-Content -LiteralPath $Sandbox_File_Path -Value "        </MappedFolder>"
     }
-	  Add-Content -LiteralPath $Sandbox_File_Path -Value "	</MappedFolders>"
+
+    if ($Type -eq "SDBApp") {
+        $SDB_Full_Path = $ScriptPath
+        Copy-Item $ScriptPath $Run_in_Sandbox_Folder -Force
+        $Get_Apps_to_install = [xml](Get-Content $SDB_Full_Path)
+        $Apps_to_install_path = $Get_Apps_to_install.Applications.Application.Path | Select-Object -Unique
+
+        ForEach ($App_Path in $Apps_to_install_path) {
+            Add-Content -LiteralPath $Sandbox_File_Path -Value "        <MappedFolder>"
+            Add-Content -LiteralPath $Sandbox_File_Path -Value "            <HostFolder>$App_Path</HostFolder>"
+            Add-Content -LiteralPath $Sandbox_File_Path -Value "            <SandboxFolder>C:\SBDApp</SandboxFolder>"
+            Add-Content -LiteralPath $Sandbox_File_Path -Value "            <ReadOnly>$Sandbox_ReadOnlyAccess</ReadOnly>"
+            Add-Content -LiteralPath $Sandbox_File_Path -Value "        </MappedFolder>"
+        }
+    } else {
+        Add-Content -LiteralPath $Sandbox_File_Path -Value "        <MappedFolder>"
+        Add-Content -LiteralPath $Sandbox_File_Path -Value "            <HostFolder>$DirectoryName</HostFolder>"
+        if ($Type -eq "IntuneWin") { Add-Content -LiteralPath $Sandbox_File_Path -Value "           <SandboxFolder>C:\IntuneWin</SandboxFolder>" }
+        Add-Content -LiteralPath $Sandbox_File_Path -Value "            <ReadOnly>$Sandbox_ReadOnlyAccess</ReadOnly>"
+        Add-Content -LiteralPath $Sandbox_File_Path -Value "        </MappedFolder>"
+    }
+    Add-Content -LiteralPath $Sandbox_File_Path -Value "    </MappedFolders>"
 }
 
 switch ($Type) {
@@ -217,7 +217,7 @@ switch ($Type) {
 
         $Full_Startup_Path_Quoted = $Full_Startup_Path_Quoted.Replace('"', "")
 
-        [System.Reflection.Assembly]::LoadWithPartialName('presentationframework') 	| Out-Null
+        [System.Reflection.Assembly]::LoadWithPartialName('presentationframework')  | Out-Null
         [System.Reflection.Assembly]::LoadFrom("$Run_in_Sandbox_Folder\assembly\MahApps.Metro.dll") | Out-Null
         [System.Reflection.Assembly]::LoadFrom("$Run_in_Sandbox_Folder\assembly\MahApps.Metro.IconPacks.dll") | Out-Null
         function LoadXml ($global:file1) {
@@ -258,7 +258,7 @@ switch ($Type) {
     "MSI" {
         $Full_Startup_Path_Quoted = $Full_Startup_Path_Quoted.Replace('"', "")
 
-        [System.Reflection.Assembly]::LoadWithPartialName('presentationframework') 				| Out-Null
+        [System.Reflection.Assembly]::LoadWithPartialName('presentationframework')              | Out-Null
         [System.Reflection.Assembly]::LoadFrom("$Run_in_Sandbox_Folder\assembly\MahApps.Metro.dll") | Out-Null
         [System.Reflection.Assembly]::LoadFrom("$Run_in_Sandbox_Folder\assembly\MahApps.Metro.IconPacks.dll")      | Out-Null
         function LoadXml ($global:file2) {
@@ -313,7 +313,7 @@ switch ($Type) {
     "PS1Params" {
         $Full_Startup_Path_Quoted = $Full_Startup_Path_Quoted.Replace('"', "")
 
-        [System.Reflection.Assembly]::LoadWithPartialName('presentationframework') 	| Out-Null
+        [System.Reflection.Assembly]::LoadWithPartialName('presentationframework')  | Out-Null
         [System.Reflection.Assembly]::LoadFrom("$Run_in_Sandbox_Folder\assembly\MahApps.Metro.dll") | Out-Null
         [System.Reflection.Assembly]::LoadFrom("$Run_in_Sandbox_Folder\assembly\MahApps.Metro.IconPacks.dll") | Out-Null
         function LoadXml ($global:file1) {

@@ -100,56 +100,51 @@ if (Test-Path $Sandbox_File_Path) {
 
 
 function New-WSB {
-    param (
-        [String]$Command_to_Run
-        # [String]$SDBApp_File
-    )
+    Param (
+		    [String]$Command_to_Run
+	  )
 
-    New-Item $Sandbox_File_Path -ItemType File -Force | Out-Null
-    Add-Content -LiteralPath $Sandbox_File_Path -Value "<Configuration>"
-    Add-Content -LiteralPath $Sandbox_File_Path -Value "	<VGpu>$Sandbox_VGpu</VGpu>"
-    Add-Content -LiteralPath $Sandbox_File_Path -Value "	<Networking>$Sandbox_Networking</Networking>"
-    Add-Content -LiteralPath $Sandbox_File_Path -Value "	<AudioInput>$Sandbox_AudioInput</AudioInput>"
-    Add-Content -LiteralPath $Sandbox_File_Path -Value "	<VideoInput>$Sandbox_VideoInput</VideoInput>"
-    Add-Content -LiteralPath $Sandbox_File_Path -Value "	<ProtectedClient>$Sandbox_ProtectedClient</ProtectedClient>"
-    Add-Content -LiteralPath $Sandbox_File_Path -Value "	<PrinterRedirection>$Sandbox_PrinterRedirection</PrinterRedirection>"
-    Add-Content -LiteralPath $Sandbox_File_Path -Value "	<ClipboardRedirection>$Sandbox_ClipboardRedirection</ClipboardRedirection>"
+	  New-Item $Sandbox_File_Path -type file -Force | Out-Null
+	  Add-Content -LiteralPath $Sandbox_File_Path -Value "<Configuration>"
+	  Add-Content -LiteralPath $Sandbox_File_Path -Value "	<VGpu>$Sandbox_VGpu</VGpu>"
+	  Add-Content -LiteralPath $Sandbox_File_Path -Value "	<Networking>$Sandbox_Networking</Networking>"
+	  Add-Content -LiteralPath $Sandbox_File_Path -Value "	<AudioInput>$Sandbox_AudioInput</AudioInput>"
+	  Add-Content -LiteralPath $Sandbox_File_Path -Value "	<VideoInput>$Sandbox_VideoInput</VideoInput>"
+	  Add-Content -LiteralPath $Sandbox_File_Path -Value "	<ProtectedClient>$Sandbox_ProtectedClient</ProtectedClient>"
+	  Add-Content -LiteralPath $Sandbox_File_Path -Value "	<PrinterRedirection>$Sandbox_PrinterRedirection</PrinterRedirection>"
+	  Add-Content -LiteralPath $Sandbox_File_Path -Value "	<ClipboardRedirection>$Sandbox_ClipboardRedirection</ClipboardRedirection>"
     Add-Content -LiteralPath $Sandbox_File_Path -Value "	<MemoryInMB>$Sandbox_MemoryInMB</MemoryInMB>"
 
-    Add-Content -LiteralPath $Sandbox_File_Path  -Value "	<MappedFolders>"
-    if ( ($Type -eq "Intunewin") -or ($Type -eq "ISO") -or ($Type -eq "PS1System") -or ($Type -eq "SDBApp") -or ($Type -eq "7z") -or ($Type -eq "EXE") ) {
-        Add-Content $Sandbox_File_Path  -Value "		<MappedFolder>"
-        Add-Content $Sandbox_File_Path  -Value "			<HostFolder>C:\ProgramData\Run_in_Sandbox</HostFolder>"
-        Add-Content $Sandbox_File_Path 	-Value "			<SandboxFolder>C:\Run_in_Sandbox</SandboxFolder>"
-        Add-Content $Sandbox_File_Path  -Value "			<ReadOnly>$Sandbox_ReadOnlyAccess</ReadOnly>"
-        Add-Content $Sandbox_File_Path  -Value "		</MappedFolder>"
+	  Add-Content $Sandbox_File_Path "	<MappedFolders>"
+	  if ( ($Type -eq "Intunewin") -or ($Type -eq "ISO") -or ($Type -eq "7z")  -or ($Type -eq "PS1System") -or ($Type -eq "SDBApp") ) {
+	      Add-Content -LiteralPath $Sandbox_File_Path -Value "		<MappedFolder>"
+		    Add-Content -LiteralPath $Sandbox_File_Path -Value "			<HostFolder>C:\ProgramData\Run_in_Sandbox</HostFolder>"
+		    Add-Content -LiteralPath $Sandbox_File_Path -Value "			<SandboxFolder>C:\Run_in_Sandbox</SandboxFolder>"
+		    Add-Content -LiteralPath $Sandbox_File_Path -Value "			<ReadOnly>$Sandbox_ReadOnlyAccess</ReadOnly>"
+		    Add-Content -LiteralPath $Sandbox_File_Path -Value "		</MappedFolder>"
+	  }
+
+	  if ($Type -eq "SDBApp") {
+		    $SDB_Full_Path = $ScriptPath
+		    Copy-Item $ScriptPath $Run_in_Sandbox_Folder -Force
+		    $Get_Apps_to_install = [xml](Get-Content $SDB_Full_Path)
+		    $Apps_to_install_path = $Get_Apps_to_install.Applications.Application.Path | Select-Object -Unique
+
+		    ForEach ($App_Path in $Apps_to_install_path) {
+			      Add-Content -LiteralPath $Sandbox_File_Path -Value "		<MappedFolder>"
+			      Add-Content -LiteralPath $Sandbox_File_Path -Value "			<HostFolder>$App_Path</HostFolder>"
+            Add-Content -LiteralPath $Sandbox_File_Path -Value "			<SandboxFolder>C:\SBDApp</SandboxFolder>"
+			      Add-Content -LiteralPath $Sandbox_File_Path -Value "			<ReadOnly>$Sandbox_ReadOnlyAccess</ReadOnly>"
+			      Add-Content -LiteralPath $Sandbox_File_Path -Value "		</MappedFolder>"
+		    }
+	  } else {
+        Add-Content -LiteralPath $Sandbox_File_Path -Value "		<MappedFolder>"
+        Add-Content -LiteralPath $Sandbox_File_Path -Value "			<HostFolder>$DirectoryName</HostFolder>"
+        if ($Type -eq "IntuneWin") { Add-Content -LiteralPath $Sandbox_File_Path -Value "			<SandboxFolder>C:\IntuneWin</SandboxFolder>" }
+        Add-Content -LiteralPath $Sandbox_File_Path -Value "			<ReadOnly>$Sandbox_ReadOnlyAccess</ReadOnly>"
+        Add-Content -LiteralPath $Sandbox_File_Path -Value "		</MappedFolder>"
     }
-
-    if ($Type -eq "SDBApp") {
-        Copy-Item -Path $ScriptPath -Destination $Run_in_Sandbox_Folder -Force
-        $Get_Apps_to_install = [xml](Get-Content -Path $ScriptPath)
-        $Apps_to_install_path = $Get_Apps_to_install.Applications.Application.Path | Select-Object -Unique
-
-        foreach ($App_Path in $Apps_to_install_path) {
-            Add-Content -LiteralPath $Sandbox_File_Path  -Value "		<MappedFolder>"
-            Add-Content -LiteralPath $Sandbox_File_Path  -Value "			<HostFolder>$App_Path</HostFolder>"
-            Add-Content -LiteralPath $Sandbox_File_Path  -Value "			<ReadOnly>$Sandbox_ReadOnlyAccess</ReadOnly>"
-            Add-Content -LiteralPath $Sandbox_File_Path  -Value "		</MappedFolder>"
-        }
-    } else {
-
-        Add-Content -LiteralPath $Sandbox_File_Path  -Value "		<MappedFolder>"
-        Add-Content -LiteralPath $Sandbox_File_Path  -Value "			<HostFolder>$DirectoryName</HostFolder>"
-        Add-Content -LiteralPath $Sandbox_File_Path  -Value "			<ReadOnly>$Sandbox_ReadOnlyAccess</ReadOnly>"
-        Add-Content -LiteralPath $Sandbox_File_Path  -Value "		</MappedFolder>"
-    }
-
-    Add-Content -LiteralPath $Sandbox_File_Path  -Value "	</MappedFolders>"
-
-    Add-Content -LiteralPath $Sandbox_File_Path  -Value "	<LogonCommand>"
-    Add-Content -LiteralPath $Sandbox_File_Path  -Value "		<Command>$Command_to_Run</Command>"
-    Add-Content -LiteralPath $Sandbox_File_Path  -Value "	</LogonCommand>"
-    Add-Content -LiteralPath $Sandbox_File_Path  -Value "</Configuration>"
+	  Add-Content -LiteralPath $Sandbox_File_Path -Value "	</MappedFolders>"
 }
 
 switch ($Type) {
@@ -406,8 +401,8 @@ Start-Process $Sandbox_File_Path -Wait
 
 if ($WSB_Cleanup -eq $True) {
     Remove-Item -LiteralPath $Sandbox_File_Path -Force -ErrorAction SilentlyContinue
-    Remove-Item -Path $Intunewin_Command_File -Force -ErrorAction SilentlyContinue
-    Remove-Item -Path $Intunewin_Content_File -Force -ErrorAction SilentlyContinue
-    Remove-Item -Path $EXE_Command_File -Force -ErrorAction SilentlyContinue
-    Remove-Item -Path "$Run_in_Sandbox_Folder\App_Bundle.sdbapp" -Force -ErrorAction SilentlyContinue
+    Remove-Item -LiteralPath $Intunewin_Command_File -Force -ErrorAction SilentlyContinue
+    Remove-Item -LiteralPath $Intunewin_Content_File -Force -ErrorAction SilentlyContinue
+    Remove-Item -LiteralPath $EXE_Command_File -Force -ErrorAction SilentlyContinue
+    Remove-Item -LiteralPath "$Run_in_Sandbox_Folder\App_Bundle.sdbapp" -Force -ErrorAction SilentlyContinue
 }

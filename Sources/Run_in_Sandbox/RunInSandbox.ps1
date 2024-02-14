@@ -215,7 +215,7 @@ switch ($Type) {
         New-WSB -Command_to_Run $Startup_Command
     }
     "Intunewin" {
-        $Intunewin_Folder = "$Sandbox_Shared_Path\$FileName.intunewin"
+        $Intunewin_Folder = "C:\IntuneWin\$FileName.intunewin"
         $Intunewin_Content_File = "$Run_in_Sandbox_Folder\Intunewin_Folder.txt"
         $Intunewin_Command_File = "$Run_in_Sandbox_Folder\Intunewin_Install_Command.txt"
         $Intunewin_Folder | Out-File $Intunewin_Content_File -Force -NoNewline

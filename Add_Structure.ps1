@@ -1,23 +1,24 @@
 ﻿<#
-# Author & creator: Damien VAN ROBAEYS
-# Website: http://www.systanddeploy.com
-# Twitter: https://twitter.com/syst_and_deploy
+.NOTES
+    Author & creator: Damien VAN ROBAEYS
+    Website: http://www.systanddeploy.com
+    Twitter: https://twitter.com/syst_and_deploy
 
-Contributor: Joly0 with below GitHub PR
-- Added option to run cmd/bat files in sandbox (solves Run CMD/BAT as user or system in Sandbox #21)
-- Added option to run pdf-files in sandbox (these should be covered by run in html, but does not, if another program is default for pdf, other than edge/chrome/etc)
-- Added option to cleanup wsb file after closing the sandbox (solves Trash wbs file after closing sandbox #4)
-- Completly rewrote Add_Structure.ps1 for better readability and expansion in further releases
-- Outsourced changelog to separate changelog.md
-- Added ServiceUI in favor of psexec
-- Fixed a lot of issues with various context menu´s not correctly working/being added
+    Contributor: Joly0 with below GitHub PR
+    - Added option to run cmd/bat files in sandbox (solves Run CMD/BAT as user or system in Sandbox #21)
+    - Added option to run pdf-files in sandbox (these should be covered by run in html, but does not, if another program is default for pdf, other than edge/chrome/etc)
+    - Added option to cleanup wsb file after closing the sandbox (solves Trash wbs file after closing sandbox #4)
+    - Completly rewrote Add_Structure.ps1 for better readability and expansion in further releases
+    - Outsourced changelog to separate changelog.md
+    - Added ServiceUI in favor of psexec
+    - Fixed a lot of issues with various context menu´s not correctly working/being added
 
-Contributor: ImportTaste with below GitHub PR
-Add a switch to skip checkpoint creation
-Add PSEdition Desktop requirement
+    Contributor: ImportTaste with below GitHub PR
+    - Add a switch to skip checkpoint creation
+    - Add PSEdition Desktop requirement
 
-Contributor: Harm Veenstra with below GitHub PR
-Formatting and noprofile addition to all powershell commands being started
+    Contributor: Harm Veenstra with below GitHub PR
+    - Formatting and noprofile addition to all powershell commands being started
 #>
 
 param (
@@ -72,16 +73,26 @@ $Run_As_Admin = ([Security.Principal.WindowsPrincipal] [Security.Principal.Windo
 if ($Run_As_Admin -eq $False) {
     Write-LogMessage -Message_Type "ERROR" -Message "The script has not been launched with admin rights"
     [System.Windows.Forms.MessageBox]::Show("Please run the tool with admin rights :-)")
-    break
+    EXIT
 }
 
 Write-LogMessage -Message_Type "SUCCESS" -Message "The script has been launched with admin rights"
 
-$Is_Sandbox_Installed = (Get-WindowsOptionalFeature -Online | Where-Object { $_.featurename -eq "Containers-DisposableClientVM" }).state
+try {
+    $Is_Sandbox_Installed = (Get-WindowsOptionalFeature -Online -ErrorAction SilentlyContinue | Where-Object { $_.featurename -eq "Containers-DisposableClientVM" }).state
+} catch {
+    if (Test-Path "C:\Windows\System32\WindowsSandbox.exe") {
+        Write-LogMessage -Message_Type "Warning" -Message "It looks like you have the `"Windows Sandbox`" Feature installed, but your `"TrustedInstaller`" Service is disabled."
+        Write-LogMessage -Message_Type "Warning" -Message "The Script will continue, but you should check for issues running Windows Sandbox."
+        $Is_Sandbox_Installed = "Enabled"
+    } else {
+        $Is_Sandbox_Installed = "Disabled"  
+    }
+}
 if ($Is_Sandbox_Installed -eq "Disabled") {
     Write-LogMessage -Message_Type "ERROR" -Message "The feature `"Windows Sandbox`" is not installed !!!"
     [System.Windows.Forms.MessageBox]::Show("The feature `"Windows Sandbox`" is not installed !!!")
-    break
+    EXIT
 }
 
 $Current_Folder = Split-Path -Path $MyInvocation.MyCommand.Path
@@ -90,7 +101,7 @@ if (-not (Test-Path -Path $Sources) ) {
     Write-LogMessage -Message_Type "ERROR" -Message "Sources folder is missing"
     [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
     [System.Windows.Forms.MessageBox]::Show("It seems you haven´t downloaded all the folder structure.`nThe folder `"Sources`" is missing !!!")
-    break
+    EXIT
 }
 
 Write-LogMessage -Message_Type "SUCCESS" -Message "The sources folder exists"
@@ -101,12 +112,11 @@ $Progress_Activity = "Enabling Run in Sandbox context menus"
 Write-Progress -Activity $Progress_Activity -PercentComplete 1
 
 $Check_Sources_Files_Count = (Get-ChildItem -Path "$Current_Folder\Sources\Run_in_Sandbox" -Recurse).count
-
 if ($Check_Sources_Files_Count -lt 40) {
     Write-LogMessage -Message_Type "ERROR" -Message "Some contents are missing"
     [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
     [System.Windows.Forms.MessageBox]::Show("It seems you haven´t downloaded all the folder structure !!!")
-    break
+    EXIT
 }
 
 $Destination_folder = "$env:ProgramData\Run_in_Sandbox"
@@ -125,14 +135,14 @@ try {
     $Sources_Unblocked = $True
 } catch {
     Write-LogMessage -Message_Type "ERROR" -Message "Sources files have not been unblocked"
-    break
+    EXIT
 }
 
 if ($Sources_Unblocked -ne $True) {
     Write-LogMessage -Message_Type "ERROR" -Message "Source files could not be unblocked"
     [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
     [System.Windows.Forms.MessageBox]::Show("Source files could not be unblocked")
-    break
+    EXIT
 }
 
 if ($NoSilent) {
@@ -166,7 +176,7 @@ if (-not (Test-Path -Path "$env:ProgramData\Run_in_Sandbox\RunInSandbox.ps1") ) 
     Write-LogMessage -Message_Type "ERROR" -Message "File RunInSandbox.ps1 is missing"
     [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
     [System.Windows.Forms.MessageBox]::Show("File RunInSandbox.ps1 is missing !!!")
-    break
+    EXIT
 }
 
 $Backup_Folder = "$Destination_folder\Registry_Backup"
@@ -187,13 +197,20 @@ Export-RegConfig -Reg_Path "Directory" -Backup_Path "$Backup_Folder\Backup_HKRoo
 Write-Progress -Activity $Progress_Activity -PercentComplete 10
 
 if (-not $NoCheckpoint) {
-    $Checkpoint_Command = 'Checkpoint-Computer -Description "Windows_Sandbox_Context_menus" -RestorePointType "MODIFY_SETTINGS" -ErrorAction Stop'
-    $ReturnValue = Start-Process powershell -WindowStyle Hidden -ArgumentList $Checkpoint_Command -Wait -PassThru
-    if ($ReturnValue.ExitCode -eq 0) {
-        Write-LogMessage -Message_Type "SUCCESS" -Message "Creation of restore point `"Add Windows Sandbox Context menus`""
+    $SystemRestoreEnabled = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\SystemRestore" -Name "RPSessionInterval").RPSessionInterval
+    if ($SystemRestoreEnabled -eq 0) {
+        Write-LogMessage -Message_Type "Warning" -Message "System Restore feature is disabled. Enable this to create a System restore point"
     } else {
-        Write-LogMessage -Message_Type "ERROR" -Message "Creation of restore point `"Add Windows Sandbox Context menus`""
-    }
+        $Checkpoint_Command = '-NoExit -Command Checkpoint-Computer -Description "Windows_Sandbox_Context_menus" -RestorePointType "MODIFY_SETTINGS" -ErrorAction Stop'
+        $ReturnValue = Start-Process powershell -ArgumentList $Checkpoint_Command -Wait -PassThru -WindowStyle Hidden
+        if ($ReturnValue.ExitCode -eq 0) {
+            Write-LogMessage -Message_Type "SUCCESS" -Message "Creation of restore point `"Add Windows Sandbox Context menus`""
+        } else {
+            Write-LogMessage -Message_Type "ERROR" -Message "Creation of restore point `"Add Windows Sandbox Context menus`" failed."
+            Write-LogMessage -Message_Type "ERROR" -Message "Press any button to continue anyway."
+            Read-Host
+        }
+    } 
 }
 
 Function Add-RegKey {
@@ -225,15 +242,12 @@ Function Add-RegKey {
 
         New-Item -Path $Key_Label_Path -ErrorAction Stop | Out-Null
         New-Item -Path $Command_Path -ErrorAction Stop | Out-Null
-        # Add Sandbox Icons
         New-ItemProperty -Path $Key_Label_Path -Name "icon" -PropertyType String -Value $Sandbox_Icon -ErrorAction Stop | Out-Null
-        # Set the command path
         Set-Item -Path $Command_Path -Value $Command_for -Force -ErrorAction Stop | Out-Null
         Write-LogMessage -Message_Type "SUCCESS" -Message "Context menu for `"$Info_Type`" has been added"
     } catch {
         Write-LogMessage -Message_Type "ERROR" -Message "Context menu for $Type couldn´t be added"
     }
-
 }
 
 Write-Progress -Activity $Progress_Activity -PercentComplete 20
@@ -243,7 +257,7 @@ Write-LogMessage -Message_Type "INFO" -Message "OS version is: $Windows_Version"
 
 if ($Add_PS1 -eq $True) {
     $PS1_Main_Menu = "Run PS1 in Sandbox"
-
+    
     if ($Windows_Version -like "*Windows 10*") {
         Write-LogMessage -Message_Type "INFO" -Message "Running on Windows 10"
         $PS1_Shell_Registry_Key = "Registry::HKEY_CLASSES_ROOT\SystemFileAssociations\.ps1\Shell"
@@ -258,6 +272,7 @@ if ($Add_PS1 -eq $True) {
         New-ItemProperty -Path "$Main_Menu_Path" -Name "icon" -PropertyType String -Value $Sandbox_Icon | Out-Null
     }
     if ($Windows_Version -like "*Windows 11*") {
+        $Registry_Set = $False
         Write-LogMessage -Message_Type "INFO" -Message "Running on Windows 11"
 
         $Default_PS1_HKCU = "$HKCU_Classes\.ps1"
@@ -276,6 +291,7 @@ if ($Add_PS1 -eq $True) {
                     Add-RegKey -Reg_Path "$PS1_Shell_Registry_Key" -Sub_Reg_Path "$PS1_Main_Menu" -Type "PS1System" -Entry_Name "PS1 as system"
                     Add-RegKey -Reg_Path "$PS1_Shell_Registry_Key" -Sub_Reg_Path "$PS1_Main_Menu" -Type "PS1Params" -Entry_Name "PS1 with Parameters"
                 }
+                $Registry_Set = $True
             }
             $OpenWithProgids_Key = "$Default_PS1_HKCU\OpenWithProgids"
             if (Test-Path -Path $OpenWithProgids_Key) {
@@ -290,6 +306,7 @@ if ($Add_PS1 -eq $True) {
                     Add-RegKey -Reg_Path "$PS1_Shell_Registry_Key" -Sub_Reg_Path "$PS1_Main_Menu" -Type "PS1System" -Entry_Name "PS1 as system"
                     Add-RegKey -Reg_Path "$PS1_Shell_Registry_Key" -Sub_Reg_Path "$PS1_Main_Menu" -Type "PS1Params" -Entry_Name "PS1 with Parameters"
                 }
+                $Registry_Set = $True
             }
 
             # ADDING CONTEXT MENU DEPENDING OF THE USERCHOICE
@@ -307,7 +324,21 @@ if ($Add_PS1 -eq $True) {
                 Add-RegKey -Reg_Path "$PS1_Shell_Registry_Key" -Sub_Reg_Path "$PS1_Main_Menu" -Type "PS1Basic" -Entry_Name "PS1 as user"
                 Add-RegKey -Reg_Path "$PS1_Shell_Registry_Key" -Sub_Reg_Path "$PS1_Main_Menu" -Type "PS1System" -Entry_Name "PS1 as system"
                 Add-RegKey -Reg_Path "$PS1_Shell_Registry_Key" -Sub_Reg_Path "$PS1_Main_Menu" -Type "PS1Params" -Entry_Name "PS1 with Parameters"
+                $Registry_Set = $True
             }
+        }
+        if ($Registry_Set -eq $False) {
+            Write-LogMessage -Message_Type "WARNING" -Message "Couldn´t set the correct registry keys. You probably don´t have any programs selected as default for .ps1 extension!"
+            Write-LogMessage -Message_Type "WARNING" -Message "Will try anyway using the method for Windows 10"
+            $PS1_Shell_Registry_Key = "Registry::HKEY_CLASSES_ROOT\SystemFileAssociations\.ps1\Shell"
+            $Main_Menu_Path = "$PS1_Shell_Registry_Key\$PS1_Main_Menu"
+            New-Item -Path $PS1_Shell_Registry_Key -Name $PS1_Main_Menu -Force | Out-Null
+            New-ItemProperty -Path $Main_Menu_Path -Name "subcommands" -PropertyType String | Out-Null
+            New-Item -Path $Main_Menu_Path -Name "Shell" -Force | Out-Null
+
+            Add-RegKey -Sub_Reg_Path "SystemFileAssociations\.ps1\Shell\Run PS1 in Sandbox" -Type "PS1Basic" -Entry_Name "PS1 as user"
+            Add-RegKey -Sub_Reg_Path "SystemFileAssociations\.ps1\Shell\Run PS1 in Sandbox" -Type "PS1System" -Entry_Name "PS1 as system"
+            Add-RegKey -Sub_Reg_Path "SystemFileAssociations\.ps1\Shell\Run PS1 in Sandbox" -Type "PS1Params" -Entry_Name "PS1 with Parameters"
         }
         New-ItemProperty -Path "$Main_Menu_Path" -Name "icon" -PropertyType String -Value $Sandbox_Icon | Out-Null
     }
@@ -402,12 +433,18 @@ if ($Add_MSIX -eq $True) {
     $MSIX_Shell_Registry_Key = "Registry::HKEY_CLASSES_ROOT\.msix\OpenWithProgids"
     if (Test-Path -Path $MSIX_Shell_Registry_Key) {
         $Get_Default_Value = (Get-Item -Path $MSIX_Shell_Registry_Key).Property
-        Add-RegKey -Sub_Reg_Path "$Get_Default_Value" -Type "MSIX"
+        if ($Get_Default_Value) {
+            Add-RegKey -Sub_Reg_Path "$Get_Default_Value" -Type "MSIX"
+        } 
     }
     if (Test-Path -Path $HKCU_Classes) {
         $Default_MSIX_HKCU = "$HKCU_Classes\.msix"
-        $Get_Default_Value = (Get-Item -Path "$Default_MSIX_HKCU\OpenWithProgids").Property
-        Add-RegKey -Reg_Path $HKCU_Classes -Sub_Reg_Path "$Get_Default_Value" -Type "MSIX"
+        if (Test-Path -Path $Default_MSIX_HKCU) {
+            $Get_Default_Value = (Get-Item -Path "$Default_MSIX_HKCU\OpenWithProgids").Property
+            if ($Get_Default_Value) {
+                Add-RegKey -Reg_Path $HKCU_Classes -Sub_Reg_Path "$Get_Default_Value" -Type "MSIX"
+            }
+        }
     }
 }
 Write-Progress -Activity $Progress_Activity -PercentComplete 80
@@ -434,5 +471,3 @@ if ($Add_PDF -eq $True) {
 Write-Progress -Activity $Progress_Activity -PercentComplete 100
 
 Copy-Item -Path $Log_File -Destination $Destination_folder -Force
-
-

@@ -1,11 +1,4 @@
-﻿#***************************************************************************************************************
-# Author: Damien VAN ROBAEYS
-# Website: http://www.systanddeploy.com
-# Twitter: https://twitter.com/syst_and_deploy
-# Purpose: This script will remove context menus added to run quickly files in Windows Sandbox
-#***************************************************************************************************************
-
-Function Write-LogMessage([string]$Message, [string]$Message_Type) {
+﻿Function Write-LogMessage([string]$Message, [string]$Message_Type) {
     $MyDate = "[{0:MM/dd/yy} {0:HH:mm:ss}]" -f (Get-Date)
     Write-Output "$MyDate - $Message_Type : $Message"
 }

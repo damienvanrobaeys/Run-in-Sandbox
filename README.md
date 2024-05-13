@@ -1,6 +1,8 @@
 # Run in Sandbox: a quick way to run/extract files in Windows Sandbox from a right-click
 ###### *[View the full blog post here](https://www.systanddeploy.com/2023/06/runinsandbox-quick-way-to-runextract.html)*
 
+#### Original Author & creator: Damien VAN ROBAEYS
+#### Rewritten and maintained now by Joly0
 
 This allows you to do the below things in Windows Sandbox **just from a right-click** by adding context menus:
 - Run PS1 as user or system in Sandbox

@@ -1,27 +1,4 @@
-﻿<#
-.NOTES
-    Author & creator: Damien VAN ROBAEYS
-    Website: http://www.systanddeploy.com
-    Twitter: https://twitter.com/syst_and_deploy
-
-    Contributor: Joly0 with below GitHub PR
-    - Added option to run cmd/bat files in sandbox (solves Run CMD/BAT as user or system in Sandbox #21)
-    - Added option to run pdf-files in sandbox (these should be covered by run in html, but does not, if another program is default for pdf, other than edge/chrome/etc)
-    - Added option to cleanup wsb file after closing the sandbox (solves Trash wbs file after closing sandbox #4)
-    - Completly rewrote Add_Structure.ps1 for better readability and expansion in further releases
-    - Outsourced changelog to separate changelog.md
-    - Added ServiceUI in favor of psexec
-    - Fixed a lot of issues with various context menu´s not correctly working/being added
-
-    Contributor: ImportTaste with below GitHub PR
-    - Add a switch to skip checkpoint creation
-    - Add PSEdition Desktop requirement
-
-    Contributor: Harm Veenstra with below GitHub PR
-    - Formatting and noprofile addition to all powershell commands being started
-#>
-
-param (
+﻿param (
     [Switch]$NoSilent,
     [Switch]$NoCheckpoint
 )

@@ -6,6 +6,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## 2023-07-14
+### Added
+-  Added some better error handling and checking for needed features
+### Fixed
+- Probably fixed [#4]https://github.com/Joly0/Run-in-Sandbox/issues/4
+### Changed
+- Improved the way, exe files are handled inside the sandbox
+
+
+## 2023-07-14
 ### Fixed
 - Finally fixed running intunewin with serviceUI and psexec
 - Fixed [#40]https://github.com/damienvanrobaeys/Run-in-Sandbox/issues/40

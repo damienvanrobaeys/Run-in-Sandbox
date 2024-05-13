@@ -1,23 +1,24 @@
 <#
-# Author & creator: Damien VAN ROBAEYS
-# Website: http://www.systanddeploy.com
-# Twitter: https://twitter.com/syst_and_deploy
+.NOTES
+    Author & creator: Damien VAN ROBAEYS
+    Website: http://www.systanddeploy.com
+    Twitter: https://twitter.com/syst_and_deploy
 
-Contributor: Joly0 with below GitHub PR
-- Added option to run cmd/bat files in sandbox (solves Run CMD/BAT as user or system in Sandbox #21)
-- Added option to run pdf-files in sandbox (these should be covered by run in html, but does not, if another program is default for pdf, other than edge/chrome/etc)
-- Added option to cleanup wsb file after closing the sandbox (solves Trash wbs file after closing sandbox #4)
-- Completly rewrote Add_Structure.ps1 for better readability and expansion in further releases
-- Outsourced changelog to separate changelog.md
-- Added ServiceUI in favor of psexec
-- Fixed a lot of issues with various context menu´s not correctly working/being added
+    Contributor: Joly0 with below GitHub PR
+    - Added option to run cmd/bat files in sandbox (solves Run CMD/BAT as user or system in Sandbox #21)
+    - Added option to run pdf-files in sandbox (these should be covered by run in html, but does not, if another program is default for pdf, other than edge/chrome/etc)
+    - Added option to cleanup wsb file after closing the sandbox (solves Trash wbs file after closing sandbox #4)
+    - Completly rewrote Add_Structure.ps1 for better readability and expansion in further releases
+    - Outsourced changelog to separate changelog.md
+    - Added ServiceUI in favor of psexec
+    - Fixed a lot of issues with various context menu´s not correctly working/being added
 
-Contributor: ImportTaste with below GitHub PR
-Add a switch to skip checkpoint creation
-Add PSEdition Desktop requirement
+    Contributor: ImportTaste with below GitHub PR
+    - Add a switch to skip checkpoint creation
+    - Add PSEdition Desktop requirement
 
-Contributor: Harm Veenstra with below GitHub PR
-Formatting and noprofile addition to all powershell commands being started
+    Contributor: Harm Veenstra with below GitHub PR
+    - Formatting and noprofile addition to all powershell commands being started
 #>
 
 param (
@@ -116,7 +117,7 @@ function New-WSB {
     Add-Content -LiteralPath $Sandbox_File_Path -Value "    <MemoryInMB>$Sandbox_MemoryInMB</MemoryInMB>"
 
     Add-Content $Sandbox_File_Path "    <MappedFolders>"
-    if ( ($Type -eq "Intunewin") -or ($Type -eq "ISO") -or ($Type -eq "7z")  -or ($Type -eq "PS1System") -or ($Type -eq "SDBApp") ) {
+    if ( ($Type -eq "Intunewin") -or ($Type -eq "ISO") -or ($Type -eq "7z")  -or ($Type -eq "PS1System") -or ($Type -eq "SDBApp") -or ($Type -eq "EXE") -or ($Type -eq "Folder_On") -or ($Type -eq "Folder_Inside") ) {
         Add-Content -LiteralPath $Sandbox_File_Path -Value "        <MappedFolder>"
         Add-Content -LiteralPath $Sandbox_File_Path -Value "            <HostFolder>C:\ProgramData\Run_in_Sandbox</HostFolder>"
         Add-Content -LiteralPath $Sandbox_File_Path -Value "            <SandboxFolder>C:\Run_in_Sandbox</SandboxFolder>"
@@ -162,8 +163,6 @@ switch ($Type) {
         New-WSB -Command_to_Run $Startup_Command
     }
     "EXE" {
-        $Full_Startup_Path_Quoted = $Full_Startup_Path_Quoted.Replace('"', "")
-
         [System.Reflection.Assembly]::LoadWithPartialName('presentationframework') | Out-Null
         [System.Reflection.Assembly]::LoadFrom("$Run_in_Sandbox_Folder\assembly\MahApps.Metro.dll") | Out-Null
         [System.Reflection.Assembly]::LoadFrom("$Run_in_Sandbox_Folder\assembly\MahApps.Metro.IconPacks.dll") | Out-Null
@@ -220,7 +219,7 @@ switch ($Type) {
         $Intunewin_Command_File = "$Run_in_Sandbox_Folder\Intunewin_Install_Command.txt"
         $Intunewin_Folder | Out-File $Intunewin_Content_File -Force -NoNewline
 
-        $Full_Startup_Path_Quoted = $Full_Startup_Path_Quoted.Replace('"', "")
+        #$Full_Startup_Path_UnQuoted = $Full_Startup_Path_Quoted.Replace('"', "")
 
         [System.Reflection.Assembly]::LoadWithPartialName('presentationframework')  | Out-Null
         [System.Reflection.Assembly]::LoadFrom("$Run_in_Sandbox_Folder\assembly\MahApps.Metro.dll") | Out-Null
@@ -261,7 +260,7 @@ switch ($Type) {
         New-WSB -Command_to_Run $Startup_Command
     }
     "MSI" {
-        $Full_Startup_Path_Quoted = $Full_Startup_Path_Quoted.Replace('"', "")
+        $Full_Startup_Path_UnQuoted = $Full_Startup_Path_Quoted.Replace('"', "")
 
         [System.Reflection.Assembly]::LoadWithPartialName('presentationframework')              | Out-Null
         [System.Reflection.Assembly]::LoadFrom("$Run_in_Sandbox_Folder\assembly\MahApps.Metro.dll") | Out-Null
@@ -281,13 +280,13 @@ switch ($Type) {
 
         $add_switches.Add_Click({
                 $Script:Switches_MSI = $switches_for_exe.Text.ToString()
-                $Script:Startup_Command = "msiexec /i `"$Full_Startup_Path_Quoted`" " + $Switches_MSI
+                $Script:Startup_Command = "msiexec /i `"$Full_Startup_Path_UnQuoted`" " + $Switches_MSI
                 $Form_MSI.close()
             })
 
         $Form_MSI.Add_Closing({
                 $Script:Switches_MSI = $switches_for_exe.Text.ToString()
-                $Script:Startup_Command = "msiexec /i `"$Full_Startup_Path_Quoted`" " + $Switches_MSI
+                $Script:Startup_Command = "msiexec /i `"$Full_Startup_Path_UnQuoted`" " + $Switches_MSI
             })
 
         $Form_MSI.ShowDialog() | Out-Null
@@ -312,11 +311,12 @@ switch ($Type) {
         New-WSB -Command_to_Run $Startup_Command
     }
     "PS1System" {
-        $Script:Startup_Command = "C:\Users\WDAGUtilityAccount\Desktop\Run_in_Sandbox\PsExec.exe -accepteula -i -d -s powershell -executionpolicy bypass -file $Full_Startup_Path_Quoted"
+        $Script:Startup_Command = "$Sandbox_Root_Path\PsExec.exe \\localhost -nobanner -accepteula -s Powershell -ExecutionPolicy Bypass -File $Full_Startup_Path_Quoted"
+        #$Script:Startup_Command = "$Sandbox_Root_Path\PsExec.exe -accepteula -i -d -s powershell -executionpolicy bypass -file $Full_Startup_Path_Quoted"
         New-WSB -Command_to_Run $Startup_Command
     }
     "PS1Params" {
-        $Full_Startup_Path_Quoted = $Full_Startup_Path_Quoted.Replace('"', "")
+        $Full_Startup_Path_UnQuoted = $Full_Startup_Path_Quoted.Replace('"', "")
 
         [System.Reflection.Assembly]::LoadWithPartialName('presentationframework')  | Out-Null
         [System.Reflection.Assembly]::LoadFrom("$Run_in_Sandbox_Folder\assembly\MahApps.Metro.dll") | Out-Null
@@ -336,13 +336,13 @@ switch ($Type) {
 
         $add_parameters.add_click({
                 $Script:Paramaters = $parameters_to_add.Text.ToString()
-                $Script:Startup_Command = $PSRun_File + " " + "$Full_Startup_Path_Quoted" + " " + "$Paramaters"
+                $Script:Startup_Command = $PSRun_File + " " + "$Full_Startup_Path_UnQuoted" + " " + "$Paramaters"
                 $Form_PS1.close()
             })
 
         $Form_PS1.Add_Closing({
                 $Script:Paramaters = $parameters_to_add.Text.ToString()
-                $Script:Startup_Command = $PSRun_File + " " + "$Full_Startup_Path_Quoted" + " " + "$Paramaters"
+                $Script:Startup_Command = $PSRun_File + " " + "$Full_Startup_Path_UnQuoted" + " " + "$Paramaters"
             })
 
         $Form_PS1.ShowDialog() | Out-Null
@@ -363,7 +363,7 @@ switch ($Type) {
         New-WSB -Command_to_Run $Startup_Command
     }
     "VBSParams" {
-        $Full_Startup_Path_Quoted = $Full_Startup_Path_Quoted.Replace('"', '')
+        $Full_Startup_Path_UnQuoted = $Full_Startup_Path_Quoted.Replace('"', '')
 
         [System.Reflection.Assembly]::LoadWithPartialName('presentationframework') | Out-Null
         [System.Reflection.Assembly]::LoadFrom("$Run_in_Sandbox_Folder\assembly\MahApps.Metro.dll") | Out-Null
@@ -383,13 +383,13 @@ switch ($Type) {
 
         $add_parameters.add_click({
                 $Script:Paramaters = $parameters_to_add.Text.ToString()
-                $Script:Startup_Command = "wscript.exe $Full_Startup_Path_Quoted $Paramaters"
+                $Script:Startup_Command = "wscript.exe $Full_Startup_Path_UnQuoted $Paramaters"
                 $Form_VBS.close()
             })
 
         $Form_VBS.Add_Closing({
                 $Script:Paramaters = $parameters_to_add.Text.ToString()
-                $Script:Startup_Command = "wscript.exe $Full_Startup_Path_Quoted $Paramaters"
+                $Script:Startup_Command = "wscript.exe $Full_Startup_Path_UnQuoted $Paramaters"
             })
 
         $Form_VBS.ShowDialog() | Out-Null

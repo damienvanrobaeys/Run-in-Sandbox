@@ -1,4 +1,4 @@
-﻿param (
+param (
     [Switch]$NoSilent,
     [Switch]$NoCheckpoint
 )

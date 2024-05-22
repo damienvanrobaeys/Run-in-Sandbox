@@ -4,8 +4,37 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 2024-05-22
+### Added
+-  Added easy install Script
+### Changed
+- Improved console output and make it easier readable
+- Improved readme and install steps
 
-## Unreleased
+
+## 2024-05-14
+### Added
+-  Added some better error handling and checking for needed features
+### Fixed
+- Probably fixed [#4]https://github.com/Joly0/Run-in-Sandbox/issues/4
+### Changed
+- Improved the way, exe files are handled inside the sandbox
+
+
+## 2023-07-14
+### Fixed
+- Finally fixed running intunewin with serviceUI and psexec
+- Fixed [#40]https://github.com/damienvanrobaeys/Run-in-Sandbox/issues/40
+- Fixed [#41]https://github.com/damienvanrobaeys/Run-in-Sandbox/issues/41
+### Changed
+- Changed formatting to OTBS using "Invoke-Formatter" cmdlet in "Script-Analyzer" module (On-going discussion [#44]https://github.com/damienvanrobaeys/Run-in-Sandbox/discussions/44) and applied some powershell best-pratices
+
+
+## 2023-05-01
+### Added
+- Reimplemented running Intunewin as System using psexec (serviceui will stay)
+### Fixed
+- Fixed [#18]https://github.com/damienvanrobaeys/Run-in-Sandbox/issues/18
 
 
 ## 2023-05-03

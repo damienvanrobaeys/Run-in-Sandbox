@@ -20,7 +20,15 @@ New-Item -Path $Log_File -Type file -Force | Out-Null
 Function Write-LogMessage([string]$Message, [string]$Message_Type) {
     $MyDate = "[{0:MM/dd/yy} {0:HH:mm:ss}]" -f (Get-Date)
     Add-Content -Path $Log_File -Value "$MyDate - $Message_Type : $Message"
-    Write-Output "$MyDate - $Message_Type : $Message"
+    switch ( $Message_Type )
+    {
+        "INFO" { $ForegroundColor  = 'White'    }
+        "SUCCESS" { $ForegroundColor  = 'Green'    }
+        "WARNING" { $ForegroundColor  = 'DarkYellow'    }
+        "ERROR" { $ForegroundColor  = 'DarkRed'   }
+        default { $ForegroundColor  = 'White'  }
+    }
+    Write-Host "$MyDate - $Message_Type : $Message" -ForegroundColor $ForegroundColor
 }
 
 Function Export-RegConfig {
@@ -59,8 +67,8 @@ try {
     $Is_Sandbox_Installed = (Get-WindowsOptionalFeature -Online -ErrorAction SilentlyContinue | Where-Object { $_.featurename -eq "Containers-DisposableClientVM" }).state
 } catch {
     if (Test-Path "C:\Windows\System32\WindowsSandbox.exe") {
-        Write-LogMessage -Message_Type "Warning" -Message "It looks like you have the `"Windows Sandbox`" Feature installed, but your `"TrustedInstaller`" Service is disabled."
-        Write-LogMessage -Message_Type "Warning" -Message "The Script will continue, but you should check for issues running Windows Sandbox."
+        Write-LogMessage -Message_Type "WARNING" -Message "It looks like you have the `"Windows Sandbox`" Feature installed, but your `"TrustedInstaller`" Service is disabled."
+        Write-LogMessage -Message_Type "WARNING" -Message "The Script will continue, but you should check for issues running Windows Sandbox."
         $Is_Sandbox_Installed = "Enabled"
     } else {
         $Is_Sandbox_Installed = "Disabled"  
@@ -176,10 +184,10 @@ Write-Progress -Activity $Progress_Activity -PercentComplete 10
 if (-not $NoCheckpoint) {
     $SystemRestoreEnabled = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\SystemRestore" -Name "RPSessionInterval").RPSessionInterval
     if ($SystemRestoreEnabled -eq 0) {
-        Write-LogMessage -Message_Type "Warning" -Message "System Restore feature is disabled. Enable this to create a System restore point"
+        Write-LogMessage -Message_Type "WARNING" -Message "System Restore feature is disabled. Enable this to create a System restore point"
     } else {
         $Checkpoint_Command = '-NoExit -Command Checkpoint-Computer -Description "Windows_Sandbox_Context_menus" -RestorePointType "MODIFY_SETTINGS" -ErrorAction Stop'
-        $ReturnValue = Start-Process powershell -ArgumentList $Checkpoint_Command -Wait -PassThru -WindowStyle Hidden
+        $ReturnValue = Start-Process powershell -ArgumentList $Checkpoint_Command -Wait -PassThru -WindowStyle Minimized
         if ($ReturnValue.ExitCode -eq 0) {
             Write-LogMessage -Message_Type "SUCCESS" -Message "Creation of restore point `"Add Windows Sandbox Context menus`""
         } else {

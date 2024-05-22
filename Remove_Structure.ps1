@@ -1,6 +1,14 @@
 ﻿Function Write-LogMessage([string]$Message, [string]$Message_Type) {
     $MyDate = "[{0:MM/dd/yy} {0:HH:mm:ss}]" -f (Get-Date)
-    Write-Output "$MyDate - $Message_Type : $Message"
+    switch ( $Message_Type )
+    {
+        "INFO" { $ForegroundColor  = 'White'    }
+        "SUCCESS" { $ForegroundColor  = 'Green'    }
+        "WARNING" { $ForegroundColor  = 'DarkYellow'    }
+        "ERROR" { $ForegroundColor  = 'DarkRed'   }
+        default { $ForegroundColor  = 'White'  }
+    }
+    Write-Host "$MyDate - $Message_Type : $Message" -ForegroundColor $ForegroundColor
 }
 
 Function Remove-RegItem {
@@ -69,7 +77,7 @@ New-PSDrive -PSProvider registry -Root HKEY_CLASSES_ROOT -Name HKCR_SD | Out-Nul
 
 if ($Add_PS1 -eq $True) {
     # REMOVE RUN ON PS1
-    Write-Output "Removing context menu for PS1"
+    Write-LogMessage -Message_Type "INFO" -Message "Removing context menu for PS1"
 
     $PS1_Main_Menu = "Run PS1 in Sandbox"
     $Windows_Version = (Get-CimInstance -class Win32_OperatingSystem).Caption
@@ -131,7 +139,7 @@ if ($Add_PS1 -eq $True) {
 
 if ($Add_Reg -eq $True) {
     # REMOVE RUN ON REG
-    Write-Output "Removing context menu for REG"
+    Write-LogMessage -Message_Type "INFO" -Message "Removing context menu for REG"
     $Reg_Shell_Registry_Key = "HKCR_SD:\regfile\Shell"
     $Reg_Key_Label = "Test reg file in Sandbox"
     Remove-RegItem -Reg_Path "$REG_Shell_Registry_Key\$Reg_Key_Label"
@@ -145,7 +153,7 @@ if ($Add_ISO -eq $True) {
     $ISO_Key_Label = "Extract ISO file in Sandbox"
 
     # REMOVE RUN ON REG from HKCR under Windows.IsoFile
-    Write-Output "Removing context menu for ISO"
+    Write-LogMessage -Message_Type "INFO" -Message "Removing context menu for ISO"
     $ISO_Shell_Registry_Key = "HKCR_SD:\Windows.IsoFile\Shell"
     if (Test-Path "$ISO_Shell_Registry_Key\$ISO_Key_Label") {
         Remove-RegItem -Reg_Path "$ISO_Shell_Registry_Key\$ISO_Key_Label"
@@ -199,7 +207,7 @@ if ($Add_ISO -eq $True) {
 }
 
 if ($Add_MSIX -eq $True) {
-    Write-Output "Removing context menu for MSIX"
+    Write-LogMessage -Message_Type "INFO" -Message "Removing context menu for MSIX"
     $MSIX_Key_Label = "Run MSIX file in Sandbox"
     # REMOVE RUN ON REG from HKCR
     $MSIX_Shell_Registry_Key = "HKCR_SD:\.msix\OpenWithProgids"
@@ -231,7 +239,7 @@ if ($Add_MSIX -eq $True) {
 
 if ($Add_PPKG -eq $True) {
     # REMOVE RUN ON PPKG
-    Write-Output "Removing context menu for PPKG"
+    Write-LogMessage -Message_Type "INFO" -Message "Removing context menu for PPKG"
     $PPKG_Shell_Registry_Key = "HKCR_SD:\Microsoft.ProvTool.Provisioning.1\Shell"
     $PPKG_Key_Label = "Run PPKG file in Sandbox"
     Remove-RegItem -Reg_Path "$PPKG_Shell_Registry_Key\$PPKG_Key_Label"
@@ -261,7 +269,7 @@ if ($Add_HTML -eq $True) {
 
 if ($Add_EXE -eq $True) {
     # REMOVE RUN ON EXE
-    Write-Output "Removing context menu for PS1"
+    Write-LogMessage -Message_Type "INFO" -Message "Removing context menu for EXE"
     $EXE_Shell_Registry_Key = "HKCR_SD:\exefile\Shell"
     $EXE_Basic_Run = "Run EXE in Sandbox"
     Remove-RegItem -Reg_Path "$EXE_Shell_Registry_Key\$EXE_Basic_Run"
@@ -273,7 +281,7 @@ if ($Add_EXE -eq $True) {
 
 if ($Add_MSI -eq $True) {
     # RUN ON MSI
-    Write-Output "Removing context menu for MSI"
+    Write-LogMessage -Message_Type "INFO" -Message "Removing context menu for MSI"
     $MSI_Shell_Registry_Key = "HKCR_SD:\Msi.Package\Shell"
     $MSI_Basic_Run = "Run MSI in Sandbox"
     Remove-RegItem -Reg_Path "$MSI_Shell_Registry_Key\$MSI_Basic_Run"
@@ -284,7 +292,7 @@ if ($Add_MSI -eq $True) {
 }
 
 if ($Add_Folder -eq $True) {
-    Write-Output "Removing context menu for folder"
+    Write-LogMessage -Message_Type "INFO" -Message "Removing context menu for folder"
     # Share this folder - Inside the folder
     $Folder_Inside_Shell_Registry_Key = "HKCR_SD:\Directory\Background\shell"
     $Folder_Inside_Basic_Run = "Share this folder in a Sandbox"
@@ -298,19 +306,19 @@ if ($Add_Folder -eq $True) {
 
 if ($Add_Intunewin -eq $True) {
     # RUN ON Intunewin
-    Write-Output "Removing context menu for intunewin"
+    Write-LogMessage -Message_Type "INFO" -Message "Removing context menu for intunewin"
     Remove-RegItem -Reg_Path "HKCR_SD:\.intunewin"
 }
 
 if ($Add_MultipleApp -eq $True) {
     # RUN ON multiple app context menu
-    Write-Output "Removing context menu for multiple app"
+    Write-LogMessage -Message_Type "INFO" -Message "Removing context menu for multiple app"
     Remove-RegItem -Reg_Path "HKCR_SD:\.sdbapp"
 }
 
 if ($Add_VBS -eq $True) {
     # REMOVE RUN ON VBS
-    Write-Output "Removing context menu for VBS"
+    Write-LogMessage -Message_Type "INFO" -Message "Removing context menu for VBS"
     $VBS_Shell_Registry_Key = "HKCR_SD:\VBSFile\Shell"
     $VBS_Basic_Run = "Run VBS in Sandbox"
     $VBS_Parameter_Run = "Run VBS in Sandbox with parameters"
@@ -327,7 +335,7 @@ if ($Add_VBS -eq $True) {
 }
 
 if ($Add_ZIP -eq $True) {
-    Write-Output "Removing context menu for ZIP"
+    Write-LogMessage -Message_Type "INFO" -Message "Removing context menu for ZIP"
     # RUN ON ZIP
     $ZIP_Shell_Registry_Key = "HKCR_SD:\CompressedFolder\Shell"
     $ZIP_Basic_Run = "Extract ZIP in Sandbox"
@@ -411,7 +419,7 @@ if ($Add_ZIP -eq $True) {
 
 if ($Add_CMD -eq $True) {
     # REMOVE RUN ON CMD
-    Write-Output "Removing context menu for CMD"
+    Write-LogMessage -Message_Type "INFO" -Message "Removing context menu for CMD"
     $CMD_Shell_Registry_Key = "HKCR_SD:\cmdfile\Shell"
     $CMD_Key_Label = "Run CMD in Sandbox"
 
@@ -420,7 +428,7 @@ if ($Add_CMD -eq $True) {
     }
 
     # REMOVE RUN ON BAT
-    Write-Output "Removing context menu for BAT"
+    Write-LogMessage -Message_Type "INFO" -Message "Removing context menu for BAT"
     $BAT_Shell_Registry_Key = "HKCR_SD:\batfile\Shell"
     $BAT_Key_Label = "Run BAT in Sandbox"
 
@@ -431,7 +439,7 @@ if ($Add_CMD -eq $True) {
 
 if ($Add_PDF -eq $True) {
     # REMOVE RUN ON CMD
-    Write-Output "Removing context menu for PDF"
+    Write-LogMessage -Message_Type "INFO" -Message "Removing context menu for PDF"
     $PDF_Shell_Registry_Key = "HKCR_SD:\SystemFileAssociations\.pdf\Shell"
     $PDF_Key_Label = "Open PDF in Sandbox"
 

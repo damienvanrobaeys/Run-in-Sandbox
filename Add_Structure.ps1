@@ -186,8 +186,8 @@ if (-not $NoCheckpoint) {
     if ($SystemRestoreEnabled -eq 0) {
         Write-LogMessage -Message_Type "WARNING" -Message "System Restore feature is disabled. Enable this to create a System restore point"
     } else {
-        $Checkpoint_Command = '-NoExit -Command Checkpoint-Computer -Description "Windows_Sandbox_Context_menus" -RestorePointType "MODIFY_SETTINGS" -ErrorAction Stop'
-        $ReturnValue = Start-Process powershell -ArgumentList $Checkpoint_Command -Wait -PassThru -WindowStyle Minimized
+        $Checkpoint_Command = '-Command Checkpoint-Computer -Description "Windows_Sandbox_Context_menus" -RestorePointType "MODIFY_SETTINGS" -ErrorAction Stop'
+        $ReturnValue = Start-Process -FilePath "C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe" -ArgumentList $Checkpoint_Command -Wait -PassThru -WindowStyle Minimized
         if ($ReturnValue.ExitCode -eq 0) {
             Write-LogMessage -Message_Type "SUCCESS" -Message "Creation of restore point `"Add Windows Sandbox Context menus`""
         } else {

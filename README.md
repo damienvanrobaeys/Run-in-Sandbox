@@ -20,6 +20,20 @@ This allows you to do the below things in Windows Sandbox **just from a right-cl
 **Note that this project has been build on personal time, it's not a professional project. Use it at your own risk, and please read How to install it before running it.**
 
 ### How to install it ?
+#### All the steps need to be executed from the Host, not inside the Sandbox
+
+##### Method 1 - PowerShell (Recommended)
+-   Right-click on the Windows start menu and select PowerShell or Terminal (Not CMD).
+-   Copy and paste the code below and press enter 
+`irm https://raw.githubusercontent.com/Joly0/Run-in-Sandbox/master/Install_Run-in-Sandbox.ps1 | iex`  
+-   You will see the process being started. You will probably be asked to grant admin rights.
+-   That's all.
+
+Note - On older Windows builds you may need to run the below command before,  
+`[Net.ServicePointManager]::SecurityProtocol=[Net.SecurityProtocolType]::Tls12`
+
+##### Method 2 - Traditional
+This method allows you to use the parameters "-NoCheckpoint" to skip creation of a restore point and "-NoSilent" to give a bit more output
 - Download the ZIP Run-in-Sandbox project (this is the main prerequiste)
 - Extract the ZIP
 - The Run-in-Sandbox-master **should contain** at least Add_Structure.ps1  and a Sources folder

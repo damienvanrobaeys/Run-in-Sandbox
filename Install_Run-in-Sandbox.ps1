@@ -1,7 +1,7 @@
 # Function to restart the script with admin rights
 function Restart-ScriptWithAdmin {
     if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
-        Start-Process powershell.exe "-NoExit -NoProfile -ExecutionPolicy Bypass -Command `"(Invoke-webrequest -URI `"https://raw.githubusercontent.com/Joly0/Run-in-Sandbox/master/Install_Run-in-Sandbox.ps1`").Content | Invoke-Expression`"" -Verb RunAs
+        Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -Command `"(Invoke-webrequest -URI `"https://raw.githubusercontent.com/Joly0/Run-in-Sandbox/master/Install_Run-in-Sandbox.ps1`").Content | Invoke-Expression`"" -Verb RunAs
         exit
     }
 }

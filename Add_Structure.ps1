@@ -24,7 +24,7 @@ Function Write-LogMessage([string]$Message, [string]$Message_Type) {
     {
         "INFO" { $ForegroundColor  = 'White'    }
         "SUCCESS" { $ForegroundColor  = 'Green'    }
-        "WARNING" { $ForegroundColor  = 'DarkYellow'    }
+        "WARNING" { $ForegroundColor  = 'Yellow'    }
         "ERROR" { $ForegroundColor  = 'DarkRed'   }
         default { $ForegroundColor  = 'White'  }
     }

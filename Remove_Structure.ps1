@@ -4,7 +4,7 @@
     {
         "INFO" { $ForegroundColor  = 'White'    }
         "SUCCESS" { $ForegroundColor  = 'Green'    }
-        "WARNING" { $ForegroundColor  = 'DarkYellow'    }
+        "WARNING" { $ForegroundColor  = 'Yellow'    }
         "ERROR" { $ForegroundColor  = 'DarkRed'   }
         default { $ForegroundColor  = 'White'  }
     }

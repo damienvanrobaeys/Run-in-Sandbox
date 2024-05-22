@@ -93,7 +93,7 @@ Write_Log -Message_Type "SUCCESS" -Message "The script has been launched with ad
 $Is_Sandbox_Installed = (Get-WindowsOptionalFeature -online | where {$_.featurename -eq "Containers-DisposableClientVM"}).state
 If ($Is_Sandbox_Installed -eq "Disabled") 
 	{
-		Write-Log -Message_Type "ERROR" -Message "The feature `"Windows Sandbox`" is not installed !!!"
+		Write_Log -Message_Type "ERROR" -Message "The feature `"Windows Sandbox`" is not installed !!!"
 		[System.Windows.Forms.MessageBox]::Show("The feature `"Windows Sandbox`" is not installed !!!")
 		break
 	}		
@@ -147,7 +147,7 @@ Try
 	}
 Catch 
 	{
-		Write-Log -Message_Type "ERROR" -Message "Sources files have not been unblocked"
+		Write_Log -Message_Type "ERROR" -Message "Sources files have not been unblocked"
 		break
 	}
 

@@ -36,7 +36,7 @@ foreach ($App in $Apps_to_install) {
 
         $App_Full_Path | Out-File $Intunewin_Content_File -Force -NoNewline
         $App_CommandLine | Out-File $Intunewin_Command_File -Force -NoNewline
-        C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -sta -WindowStyle Normal -NoProfile -ExecutionPolicy Unrestricted -File $Sandbox_Root_Path\IntuneWin_Install.ps1 $Intunewin_Content_File $Intunewin_Command_File
+        C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -sta -WindowStyle Normal -NoProfile -ExecutionPolicy Unrestricted -File $Sandbox_Root_Path\IntuneWin_Install.ps1 -Intunewin_Content_File $Intunewin_Content_File -Intunewin_Command_File $Intunewin_Command_File
     } else {
         Set-Location $App_Folder
         & { Invoke-Expression (Get-Content -Raw $App_File) }

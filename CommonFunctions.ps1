@@ -107,10 +107,12 @@ function Add-RegItem {
         }
         
         if ($MainMenuSwitch) {
-            New-Item -Path $Shell_Registry_Key -Name $MainMenuLabel -Force | Out-Null
-            New-ItemProperty -Path $MainMenuLabel_Path -Name "subcommands" -PropertyType String | Out-Null
-            New-Item -Path $MainMenuLabel_Path -Name "Shell" -Force | Out-Null
-            New-ItemProperty -Path $MainMenuLabel_Path -Name "icon" -PropertyType String -Value $Sandbox_Icon -ErrorAction Stop | Out-Null
+            if ( -not (Test-Path $MainMenuLabel_Path) ) {
+                New-Item -Path $Shell_Registry_Key -Name $MainMenuLabel -Force | Out-Null
+                New-ItemProperty -Path $MainMenuLabel_Path -Name "subcommands" -PropertyType String | Out-Null
+                New-Item -Path $MainMenuLabel_Path -Name "Shell" -Force | Out-Null
+                New-ItemProperty -Path $MainMenuLabel_Path -Name "icon" -PropertyType String -Value $Sandbox_Icon -ErrorAction Stop | Out-Null
+            }
             $Key_Label_Path = "$MainMenuLabel_Path\Shell\$Key_Label"
             $Command_Path = "$Key_Label_Path\Command"
         }

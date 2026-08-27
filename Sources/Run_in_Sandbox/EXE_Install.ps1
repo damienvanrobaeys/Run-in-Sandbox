@@ -7,7 +7,8 @@ $Executable = Split-Path($Content.Split('"')[1]) -Leaf
 $Executable = "./$Executable"
 $Arguments = ($Content.Split('"',3)[-1]).Trim()
 
-$Command = $Executable + " " + $Arguments
+# The executable has to be quoted, otherwise Invoke-Expression breaks on file names with spaces
+$Command = "& `"$Executable`" " + $Arguments
 
 Set-Location -Path $BaseFolder
 

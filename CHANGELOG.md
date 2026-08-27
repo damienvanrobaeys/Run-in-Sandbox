@@ -4,6 +4,34 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 2026-08-24
+### Added
+- The sandbox now uses **Notepad++** from the host when it is installed: the installation folder is mounted read only to `C:\Program Files\Notepad++` (the same way the host installation of 7-Zip is used), and inside the sandbox "Edit with Notepad++", "Open Notepad++" on the folder background and the .txt association are registered. Nothing is copied and no write access to ProgramData is needed. Only when no Notepad++ is found, the classic Notepad is staged as before
+### Fixed
+- Fixed context menu entries doing nothing at all (no sandbox, no error): `Add-NotepadToSandbox` throws when `notepad.exe` or its `.mui` file cannot be found (e.g. when the classic Notepad has been removed), which aborted `RunInSandbox.ps1` before the .wsb file was even written. Preparing Notepad is optional now and only logs a warning
+- Fixed the registry backup never being written: `Export-RegConfig` returned before exporting anything and used a fixed size array for the already exported keys
+- Fixed the ZIP context menu missing when another application (7-Zip, PeaZip, WinZip, ...) is registered as default for .zip files, by also adding the entry to the ProgID from the users file association
+- Fixed leftover registry keys when uninstalling (`SystemFileAssociations\.7z` and the ProgID of the default .zip application)
+- HTML/URL: the command was built with the already quoted path inside single quotes (`-Path '"C:\..."'`), so `Invoke-Item` never found the file
+- HTML: the entry was added to `SystemFileAssociations\.html` *and* to the browser ProgIDs (MSEdgeHTM, ChromeHTML, IE.AssocFile.HTM), which shows it twice for Edge/Chrome users. Only `SystemFileAssociations` is used now, `.htm` and `.url` are covered as well
+- PS1 with parameters and VBS with parameters: the script path was passed unquoted and broke as soon as a folder or file name contained a space
+- EXE with switches: `EXE_Install.ps1` called `Invoke-Expression` with an unquoted executable, which failed for file names containing spaces
+- App bundles (.sdbapp): the bundle was copied under its original name while `AppBundle_Install.ps1` always reads `App_Bundle.sdbapp`, and every application folder was mapped to `C:\SBDApp` instead of `C:\SBDApp\<folder name>` (wrong paths, and a collision for bundles with more than one folder)
+- MSIX: only the first ProgID of `OpenWithProgids` was used, several ProgIDs ended up as one invalid registry key
+- Folders: a left over `OriginalCommand.txt` of a previous run was executed again when sharing a folder (the folder types pass no command)
+- Files in folders containing `[` or `]`: the folder name was taken from the wildcard escaped path and contained backticks, so the file could not be found inside the sandbox
+- Uninstall: `.intunewin` was removed under the wrong path, the HTML entries were not removed at all
+- Registry backup: keys containing a backslash (`SystemFileAssociations\.html`, `Directory\Background`, ...) were exported into a folder that does not exist, so `reg export` failed for exactly those keys. Backups of the same key name in HKCR and HKU also overwrote each other
+- Notepad payload: a missing `notepad.exe.mui` no longer skips the whole payload (only the localized strings are missing then), the 0 byte app execution alias in WindowsApps is not copied any more and failures are logged with their reason
+- The context menu runs without elevation, but `Enable-StartupScripts` rewrote `_orchestrator.ps1` on every run - a file the elevated installer put there, so a standard user gets "access denied" and the launch died before the sandbox even started. The file is only written when it is missing or outdated now, and a failed write falls back to the installed version
+- A failing write of `OriginalCommand.txt` now reports the path instead of starting a sandbox that does nothing
+- Cleanup after the sandbox was closed crashed at the end of **every** run: `$Intunewin_Command_File`, `$Intunewin_Content_File` and `$EXE_Command_File` are only set by their own type, and `Remove-Item -LiteralPath $null` is a parameter binding error - which is terminating and not suppressed by `-ErrorAction SilentlyContinue`. The .wsb file was never deleted either
+- Uninstall reported "Run-in-Sandbox has been removed" even when the folder could not be deleted, because `Remove-Item` without `-ErrorAction Stop` never reaches the catch block
+- `01-Copy-Notepad.ps1` no longer registers "Edit with Notepad" and the .txt association when the host could not stage a notepad.exe, which pointed the association to a file that does not exist inside the sandbox
+### Added
+- `RunInSandbox.ps1` now writes a log to `%TEMP%\RunInSandbox.log` and shows a message box on errors, instead of failing silently because it is started with `-WindowStyle Hidden`
+- Unsupported/unknown `-Type` values and a missing .wsb file are reported instead of silently doing nothing
+
 ## 2025-10-07
 ### Added
 - Added HTML file association when other browsers (instead of chrome or edge) are default

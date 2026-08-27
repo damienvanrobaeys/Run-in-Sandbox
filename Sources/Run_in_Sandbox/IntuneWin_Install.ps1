@@ -11,9 +11,10 @@ if (-not (Test-Path $Intunewin_Command_File) ) {
 }
 
 $Sandbox_Folder = "C:\Run_in_Sandbox"
-$ScriptPath = Get-Content -Raw $Intunewin_Content_File
+# Trim, the dialog writes the command with a trailing new line in some cases
+$ScriptPath = (Get-Content -Raw $Intunewin_Content_File).Trim()
 $Command = Get-Content -Raw $Intunewin_Command_File
-$Command = $Command.replace('"','')
+$Command = $Command.replace('"','').Trim()
 
 $FileName = (Get-Item $ScriptPath).BaseName
 

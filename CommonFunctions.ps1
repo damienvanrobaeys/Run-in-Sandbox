@@ -9,7 +9,7 @@ $HKCU = "Registry::HKEY_USERS\$Current_User_SID"
 $HKCU_Classes = "Registry::HKEY_USERS\$Current_User_SID" + "_Classes"
 $Sandbox_Icon = "$env:ProgramData\Run_in_Sandbox\sandbox.ico"
 $Sources = $Current_Folder + "\" + "Sources\*"
-$Exported_Keys = @()
+$Exported_Keys = [System.Collections.ArrayList]@()
 
 [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms") | Out-Null
 
@@ -37,15 +37,14 @@ function Export-RegConfig {
     param (
         [string] $Reg_Path,
         [string] $Backup_Folder = "$Run_in_Sandbox_Folder\Registry_Backup",
-        [string] $Type,
-        [string] $Sub_Reg_Path
+        [string] $Type
     )
     
+    # Every key only has to be exported once, before it is modified for the first time
     if ($Exported_Keys -contains $Reg_Path) {
-        $Exported_Keys.Add($Reg_Path)
-    } else {
         return
     }
+    [void]$Exported_Keys.Add($Reg_Path)
     
     if (-not (Test-Path $Backup_Folder) ) {
         New-Item -ItemType Directory -Path $Backup_Folder -Force | Out-Null
@@ -53,11 +52,13 @@ function Export-RegConfig {
     
     Write-LogMessage -Message_Type "INFO" -Message "Exporting registry keys"
     
-    $Backup_Path = $Backup_Folder + "\" + "Backup_" + $Type
-    if ($Sub_Reg_Path) {
-        $Backup_Path = $Backup_Path + "_" + $Sub_Reg_Path
-    }
-    $Backup_Path = $Backup_Path + ".reg"
+    # The registry path is part of the file name, but it contains characters that are not
+    # allowed there. Without replacing them "SystemFileAssociations\.html" would point into a
+    # folder that does not exist and "reg export" fails. The full path (including the hive) is
+    # used so that backups of the same key name in HKCR and HKU do not overwrite each other
+    $Backup_Name = "Backup_" + $Type + "_" + $Reg_Path
+    $Backup_Name = $Backup_Name -replace '[\\/:*?"<>|]', '_'
+    $Backup_Path = Join-Path -Path $Backup_Folder -ChildPath "$Backup_Name.reg"
     
     reg export $Reg_Path $Backup_Path /y > $null 2>&1
 
@@ -90,7 +91,7 @@ function Add-RegItem {
     $Command_Path = "$Key_Label_Path\Command"
     $Command_for = "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe -WindowStyle Hidden -NoProfile -ExecutionPolicy Unrestricted -sta -File C:\\ProgramData\\Run_in_Sandbox\\RunInSandbox.ps1 -Type $Type -ScriptPath `"%V`""
     
-    Export-RegConfig -Reg_Path $($Base_Registry_Key.Split("::")[-1]) -Type $Type -Sub_Reg_Path $Sub_Reg_Path -ErrorAction Continue
+    Export-RegConfig -Reg_Path $($Base_Registry_Key.Split("::")[-1]) -Type $Type -ErrorAction Continue
     
     try {
         # Log the root registry path to the specified file
@@ -250,6 +251,63 @@ function Find-Host7Zip {
         }
     } catch {}
     
+    return $null
+}
+
+# Function to find a Notepad++ installation on the host system
+function Find-HostNotepadPlusPlus {
+    # Try common installation paths
+    $CommonPaths = @(
+        "${env:ProgramFiles}\Notepad++\notepad++.exe",
+        "${env:ProgramFiles(x86)}\Notepad++\notepad++.exe",
+        "C:\Program Files\Notepad++\notepad++.exe",
+        "C:\Program Files (x86)\Notepad++\notepad++.exe"
+    )
+
+    foreach ($Path in $CommonPaths) {
+        if ( (-not [string]::IsNullOrEmpty($Path)) -and (Test-Path -LiteralPath $Path) ) {
+            return $Path
+        }
+    }
+
+    # Check the registry, this also finds installations on another drive
+    $RegistryPaths = @(
+        "HKLM:\SOFTWARE\Notepad++",
+        "HKLM:\SOFTWARE\WOW6432Node\Notepad++"
+    )
+
+    foreach ($RegistryPath in $RegistryPaths) {
+        try {
+            $Install_Folder = (Get-ItemProperty -Path $RegistryPath -ErrorAction SilentlyContinue)."(default)"
+            if ( (-not [string]::IsNullOrEmpty($Install_Folder)) -and (Test-Path -LiteralPath "$Install_Folder\notepad++.exe") ) {
+                return "$Install_Folder\notepad++.exe"
+            }
+        } catch {}
+    }
+
+    # Check the uninstall entry
+    $UninstallPaths = @(
+        "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Notepad++",
+        "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Notepad++"
+    )
+
+    foreach ($UninstallPath in $UninstallPaths) {
+        try {
+            $Install_Folder = (Get-ItemProperty -Path $UninstallPath -Name "InstallLocation" -ErrorAction SilentlyContinue).InstallLocation
+            if ( (-not [string]::IsNullOrEmpty($Install_Folder)) -and (Test-Path -LiteralPath "$Install_Folder\notepad++.exe") ) {
+                return "$Install_Folder\notepad++.exe"
+            }
+        } catch {}
+    }
+
+    # Check PATH environment variable, this also covers portable installations added to PATH
+    try {
+        $NotepadPlusPlusInPath = Get-Command "notepad++.exe" -ErrorAction SilentlyContinue
+        if ($NotepadPlusPlusInPath) {
+            return $NotepadPlusPlusInPath.Source
+        }
+    } catch {}
+
     return $null
 }
 

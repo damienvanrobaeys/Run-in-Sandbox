@@ -74,11 +74,11 @@ if ($Add_Folder -eq $True) {
 Write-Progress -Activity $Progress_Activity -PercentComplete 35
 
 if ($Add_HTML -eq $True) {
+    # SystemFileAssociations is shown for every default browser. Adding the entry to the
+    # browser ProgIDs (MSEdgeHTM, ChromeHTML, ...) as well would show it twice in the menu
     Add-RegItem -Sub_Reg_Path "SystemFileAssociations\.html" -Type "HTML" -Key_Label "Run this web link in Sandbox"
-    Add-RegItem -Sub_Reg_Path "MSEdgeHTM" -Type "HTML" -Key_Label "Run this web link in Sandbox"
-    Add-RegItem -Sub_Reg_Path "ChromeHTML" -Type "HTML" -Key_Label "Run this web link in Sandbox"
-    Add-RegItem -Sub_Reg_Path "IE.AssocFile.HTM" -Type "HTML" -Key_Label "Run this web link in Sandbox"
-    Add-RegItem -Sub_Reg_Path "IE.AssocFile.URL" -Type "HTML" -Key_Label "Run this URL in Sandbox"
+    Add-RegItem -Sub_Reg_Path "SystemFileAssociations\.htm" -Type "HTML" -Key_Label "Run this web link in Sandbox"
+    Add-RegItem -Sub_Reg_Path "SystemFileAssociations\.url" -Type "HTML" -Key_Label "Run this URL in Sandbox"
 }
 Write-Progress -Activity $Progress_Activity -PercentComplete 40
 
@@ -100,18 +100,19 @@ if ($Add_MSI -eq $True) {
 Write-Progress -Activity $Progress_Activity -PercentComplete 55
 
 if ($Add_MSIX -eq $True) {
+    # .msix can be registered for more than one ProgID, every one of them needs its own entry
     $MSIX_Shell_Registry_Key = "Registry::HKEY_CLASSES_ROOT\.msix\OpenWithProgids"
     if (Test-Path -Path $MSIX_Shell_Registry_Key) {
         $Get_Default_Value = (Get-Item -Path $MSIX_Shell_Registry_Key).Property
-        if ($Get_Default_Value) {
-            Add-RegItem -Sub_Reg_Path "$Get_Default_Value" -Type "MSIX"
-        } 
+        ForEach ($Prop in $Get_Default_Value) {
+            Add-RegItem -Sub_Reg_Path "$Prop" -Type "MSIX"
+        }
     }
-    $Default_MSIX_HKCU = "$HKCU_Classes\.msix"
+    $Default_MSIX_HKCU = "$HKCU_Classes\.msix\OpenWithProgids"
     if (Test-Path -Path $Default_MSIX_HKCU) {
-        $Get_Default_Value = (Get-Item -Path "$Default_MSIX_HKCU\OpenWithProgids").Property
-        if ($Get_Default_Value) {
-            Add-RegItem -Reg_Path $HKCU_Classes -Sub_Reg_Path "$Get_Default_Value" -Type "MSIX"
+        $Get_Default_Value = (Get-Item -Path $Default_MSIX_HKCU).Property
+        ForEach ($Prop in $Get_Default_Value) {
+            Add-RegItem -Reg_Path $HKCU_Classes -Sub_Reg_Path "$Prop" -Type "MSIX"
         }
     }
 }
@@ -202,6 +203,19 @@ if ($Add_ZIP -eq $True) {
     # Run on ZIP if WinRAR is installed
     if (Test-Path -Path "Registry::HKEY_CLASSES_ROOT\WinRAR.ZIP") {
         Add-RegItem -Sub_Reg_Path "WinRAR.ZIP" -Type "ZIP" -Key_Label "Extract ZIP (WinRAR) in Sandbox"
+    }
+
+    # Run on ZIP if another application (7-Zip, PeaZip, WinZip, ...) is the default for .zip
+    # Explorer only shows the entries of the ProgID a file is really associated with,
+    # so the entry has to be added to that ProgID as well
+    # The userchoice for ZIP is located in: HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.zip\UserChoice
+    $ZIP_UserChoice = "$HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.zip\UserChoice"
+    if (Test-Path -Path $ZIP_UserChoice) {
+        $Get_ZIP_UserChoice = (Get-ItemProperty -Path $ZIP_UserChoice).ProgID
+        if ( (-not [string]::IsNullOrEmpty($Get_ZIP_UserChoice)) -and ($Get_ZIP_UserChoice -notin @("CompressedFolder", "WinRAR.ZIP")) ) {
+            Write-LogMessage -Message_Type "INFO" -Message "Default application for .zip uses the ProgID `"$Get_ZIP_UserChoice`""
+            Add-RegItem -Sub_Reg_Path "$Get_ZIP_UserChoice" -Type "ZIP" -Key_Label "Extract ZIP in Sandbox"
+        }
     }
     
     # Run on 7z

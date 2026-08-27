@@ -3,6 +3,44 @@
     [Parameter(Mandatory=$true)] [String]$ScriptPath
 )
 
+# ------------------------------------------------------------------------------------
+# Logging and error handling
+# The context menu starts this script with "powershell.exe -WindowStyle Hidden", so any
+# terminating error would kill the script without the user noticing anything at all.
+# Everything is written to a log file and unexpected errors are shown in a message box.
+# ------------------------------------------------------------------------------------
+$Run_Log_File = Join-Path -Path $env:TEMP -ChildPath "RunInSandbox.log"
+
+function Write-RunLog {
+    param (
+        [string]$Message,
+        [string]$Message_Type = "INFO"
+    )
+
+    $MyDate = "[{0:MM/dd/yy} {0:HH:mm:ss}]" -f (Get-Date)
+    Add-Content -Path $Run_Log_File -Value "$MyDate - $Message_Type : $Message" -ErrorAction SilentlyContinue
+}
+
+function Show-RunError {
+    param (
+        [string]$Message
+    )
+
+    Write-RunLog -Message_Type "ERROR" -Message $Message
+    try {
+        [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms") | Out-Null
+        [System.Windows.Forms.MessageBox]::Show("$Message`n`nMore details can be found in `"$Run_Log_File`"", "Run in Sandbox", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Error) | Out-Null
+    } catch {}
+}
+
+trap {
+    Show-RunError -Message "Run in Sandbox stopped with an error: $($_.Exception.Message)"
+    Write-RunLog -Message_Type "ERROR" -Message "$($_.ScriptStackTrace)"
+    exit 1
+}
+
+Write-RunLog -Message_Type "INFO" -Message "Started for type `"$Type`" and path `"$ScriptPath`""
+
 #Start-Transcript -Path $(Join-Path -Path $([System.Environment]::GetEnvironmentVariables('Machine').TEMP) -ChildPath "RunInSandbox.log")
 
 $special_char_array = 'é', 'è', 'à', 'â', 'ê', 'û', 'î', 'ä', 'ë', 'ü', 'ï', 'ö', 'ù', 'ò', '~', '!', '@', '#', '$', '%', '^', '&', '+', '=', '}', '{', '|', '<', '>', ';'
@@ -22,8 +60,10 @@ $ScriptPath = [WildcardPattern]::Escape($ScriptPath)
 if ( ($Type -eq "Folder_Inside") -or ($Type -eq "Folder_On") ) {
     $DirectoryName = (Get-Item $ScriptPath).fullname
 } else {
-    $FolderPath = Split-Path (Split-Path "$ScriptPath" -Parent) -Leaf
     $DirectoryName = (Get-Item $ScriptPath).DirectoryName
+    # Has to be taken from the resolved path, $ScriptPath is wildcard escaped and would
+    # add backticks to folder names containing "[" or "]", which then do not exist in the sandbox
+    $FolderPath = Split-Path $DirectoryName -Leaf
     $FileName = (Get-Item $ScriptPath).BaseName
     $Full_FileName = (Get-Item $ScriptPath).Name
 }
@@ -92,10 +132,23 @@ function Enable-StartupScripts {
     $StartupScriptsFolder = Join-Path $Run_in_Sandbox_Folder $StartupScriptFolderName
     New-Item -ItemType Directory -Path $StartupScriptsFolder -Force | Out-Null
     
+    $origCmdFile = Join-Path $StartupScriptsFolder "OriginalCommand.txt"
     if ($OriginalCommand -ne "") {
        # Write the original command into a file
-        $origCmdFile = Join-Path $StartupScriptsFolder "OriginalCommand.txt"
-        Set-Content -LiteralPath $origCmdFile -Value $OriginalCommand -Encoding UTF8 -Force 
+        try {
+            Set-Content -LiteralPath $origCmdFile -Value $OriginalCommand -Encoding UTF8 -Force -ErrorAction Stop
+        } catch {
+            # Without this file nothing would happen inside the sandbox, so do not continue silently
+            throw "The command for the sandbox could not be written to `"$origCmdFile`": $($_.Exception.Message)"
+        }
+    } else {
+        # Nothing to run, make sure the command of a previous run is not executed again
+        if (Test-Path -LiteralPath $origCmdFile) {
+            Remove-Item -LiteralPath $origCmdFile -Force -ErrorAction SilentlyContinue
+            if (Test-Path -LiteralPath $origCmdFile) {
+                Write-RunLog -Message_Type "WARNING" -Message "Could not delete `"$origCmdFile`", the command of the previous run will be executed again"
+            }
+        }
     }
 
     # Orchestrator that runs NN-*.ps1 in lexicographic order, then runs the original command
@@ -154,7 +207,27 @@ if (Test-Path -LiteralPath $origFile) {
 '@
 
     $orchestratorPath = Join-Path $StartupScriptsFolder "_orchestrator.ps1"
-    Set-Content -LiteralPath $orchestratorPath -Value $orchestrator -Encoding UTF8 -Force
+    # The context menu runs WITHOUT elevation, while this file was put there by the installer
+    # (elevated), so overwriting it is denied for a standard user. It only needs to be written
+    # when it is missing or outdated, and if that fails the installed one is just as good
+    $Orchestrator_OnDisk = ""
+    if (Test-Path -LiteralPath $orchestratorPath) {
+        $Orchestrator_OnDisk = Get-Content -LiteralPath $orchestratorPath -Raw -ErrorAction SilentlyContinue
+        if ($null -eq $Orchestrator_OnDisk) {
+            $Orchestrator_OnDisk = ""
+        }
+    }
+
+    if ($Orchestrator_OnDisk.TrimEnd() -ne $orchestrator.TrimEnd()) {
+        try {
+            Set-Content -LiteralPath $orchestratorPath -Value $orchestrator -Encoding UTF8 -Force -ErrorAction Stop
+        } catch {
+            if (-not (Test-Path -LiteralPath $orchestratorPath) ) {
+                throw
+            }
+            Write-RunLog -Message_Type "WARNING" -Message "Could not update `"$orchestratorPath`" ($($_.Exception.Message)), the installed version is used instead"
+        }
+    }
 
     # Return the single Sandbox command that runs the orchestrator
     "C:\Run_in_Sandbox\ServiceUI.exe -Process:explorer.exe C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -sta -WindowStyle Normal -NoProfile -ExecutionPolicy Bypass -NoExit -File `"$Sandbox_Root_Path\$StartupScriptFolderName\_orchestrator.ps1`""
@@ -169,8 +242,13 @@ function Add-NotepadToSandbox {
 
     # Resolve a single notepad.exe (prefer System32)
     $exeCandidates = Get-Command notepad.exe -ErrorAction Stop | Select-Object -ExpandProperty Source
+    # The app execution alias in WindowsApps is a 0 byte reparse point, copying it is useless
+    $exeCandidates = $exeCandidates | Where-Object { (Test-Path -LiteralPath $_) -and ((Get-Item -LiteralPath $_).Length -gt 0) }
     $exePath = ($exeCandidates | Where-Object { $_ -match '\\Windows\\System32\\' } | Select-Object -First 1)
     if (-not $exePath) { $exePath = $exeCandidates | Select-Object -First 1 }
+    if (-not $exePath) {
+        throw "No usable notepad.exe found, the classic Notepad seems to be removed from this system."
+    }
 
     $exeDir  = Split-Path $exePath -Parent
     $exeName = Split-Path $exePath -Leaf
@@ -209,16 +287,20 @@ function Add-NotepadToSandbox {
         }
     }
 
-    if (-not $muiPath) {
-        throw "Could not locate notepad.exe.mui for $exePath. On some systems Notepad is a Store app without a classic MUI."
-    }
-
     # Stage payload on host: System32\notepad.exe and System32\<lang>\notepad.exe.mui
+    # The .mui only holds the localized strings, notepad also runs without it, so a missing
+    # one must not cost us the whole payload
     $sys32Out = Join-Path $HostPayloadRoot "System32"
-    $langOut  = Join-Path $sys32Out $resolvedLang
-    New-Item -ItemType Directory -Path $langOut -Force | Out-Null
-    Copy-Item -LiteralPath $exePath -Destination (Join-Path $sys32Out $exeName) -Force
-    Copy-Item -LiteralPath $muiPath -Destination (Join-Path $langOut "$exeName.mui") -Force
+    New-Item -ItemType Directory -Path $sys32Out -Force -ErrorAction Stop | Out-Null
+    Copy-Item -LiteralPath $exePath -Destination (Join-Path $sys32Out $exeName) -Force -ErrorAction Stop
+
+    if ($muiPath) {
+        $langOut = Join-Path $sys32Out $resolvedLang
+        New-Item -ItemType Directory -Path $langOut -Force -ErrorAction Stop | Out-Null
+        Copy-Item -LiteralPath $muiPath -Destination (Join-Path $langOut "$exeName.mui") -Force -ErrorAction Stop
+    } else {
+        Write-RunLog -Message_Type "WARNING" -Message "No notepad.exe.mui found for $exePath, notepad will be copied without its localized strings"
+    }
 }
 
 function New-WSB {
@@ -228,8 +310,31 @@ function New-WSB {
         [Array]$AdditionalMappedFolders = @()
     )
     
-    # Prepare Notepad payload
-    $np = Add-NotepadToSandbox -EnforceEnUsFallback
+    # Give the sandbox an editor. Notepad++ from the host is preferred and only mounted
+    # read only, the same way the host installation of 7-Zip is used. Only when there is no
+    # Notepad++ the classic Notepad is staged as a fallback.
+    # Both are optional, neither may stop the sandbox from starting.
+    $NotepadPlusPlus_Path = Find-HostNotepadPlusPlus
+    if ($NotepadPlusPlus_Path) {
+        $NotepadPlusPlus_Folder = Split-Path $NotepadPlusPlus_Path -Parent
+        # Do not map it twice if the file that is opened lies in the Notepad++ folder itself
+        if ($NotepadPlusPlus_Folder -ne $DirectoryName) {
+            $AdditionalMappedFolders += @{
+                HostFolder = $NotepadPlusPlus_Folder
+                SandboxFolder = "C:\Program Files\Notepad++"
+                ReadOnly = "true"
+            }
+        }
+        Write-RunLog -Message_Type "INFO" -Message "Using the Notepad++ installation of the host: $NotepadPlusPlus_Path"
+    } else {
+        # Add-NotepadToSandbox throws when notepad.exe or its .mui file cannot be found,
+        # which is the case on systems where the classic Notepad has been removed
+        try {
+            Add-NotepadToSandbox -EnforceEnUsFallback | Out-Null
+        } catch {
+            Write-RunLog -Message_Type "WARNING" -Message "No Notepad++ found and Notepad could not be prepared either: $($_.Exception.Message)"
+        }
+    }
     
     New-Item $Sandbox_File_Path -type file -Force | Out-Null
     Add-Content -LiteralPath $Sandbox_File_Path -Value "<Configuration>"
@@ -253,15 +358,24 @@ function New-WSB {
 
     if ($Type -eq "SDBApp") {
         $SDB_Full_Path = $ScriptPath
-        Copy-Item $ScriptPath $Run_in_Sandbox_Folder -Force
+        # AppBundle_Install.ps1 reads the bundle as "App_Bundle.sdbapp", so it has to be
+        # copied under that name, no matter how the file the user picked is called
+        Copy-Item $ScriptPath "$Run_in_Sandbox_Folder\App_Bundle.sdbapp" -Force
         $Get_Apps_to_install = [xml](Get-Content $SDB_Full_Path)
         $Apps_to_install_path = $Get_Apps_to_install.Applications.Application.Path | Select-Object -Unique
 
         ForEach ($App_Path in $Apps_to_install_path) {
+            if ( [string]::IsNullOrEmpty($App_Path) ) {
+                continue
+            }
+            # Every application folder gets its own folder below C:\SBDApp. Mapping all of them
+            # to C:\SBDApp would collide as soon as a bundle contains more than one folder and
+            # AppBundle_Install.ps1 looks for the files in C:\SBDApp\<name of the host folder>
+            $App_Folder_Name = Split-Path $App_Path -Leaf
             Get-ChildItem -Path $App_Path -Recurse | Unblock-File
             Add-Content -LiteralPath $Sandbox_File_Path -Value "        <MappedFolder>"
             Add-Content -LiteralPath $Sandbox_File_Path -Value "            <HostFolder>$App_Path</HostFolder>"
-            Add-Content -LiteralPath $Sandbox_File_Path -Value "            <SandboxFolder>C:\SBDApp</SandboxFolder>"
+            Add-Content -LiteralPath $Sandbox_File_Path -Value "            <SandboxFolder>C:\SBDApp\$App_Folder_Name</SandboxFolder>"
             Add-Content -LiteralPath $Sandbox_File_Path -Value "            <ReadOnly>$Sandbox_ReadOnlyAccess</ReadOnly>"
             Add-Content -LiteralPath $Sandbox_File_Path -Value "        </MappedFolder>"
         }
@@ -383,7 +497,7 @@ switch ($Type) {
         New-WSB -Command_to_Run $Startup_Command
     }
     "HTML" {
-        $Script:Startup_Command = $PSRun_Command + " " + "`"Invoke-Item -Path `'$Full_Startup_Path_Quoted`'`""
+        $Script:Startup_Command = $PSRun_Command + " " + "`"Invoke-Item -Path `'$Full_Startup_Path`'`""
         
         $Startup_Command = Enable-StartupScripts -OriginalCommand $Startup_Command
         New-WSB -Command_to_Run $Startup_Command
@@ -562,13 +676,13 @@ switch ($Type) {
 
         $add_parameters.add_click({
                 $Script:Paramaters = $parameters_to_add.Text.ToString()
-                $Script:Startup_Command = $PSRun_File + " " + "$Full_Startup_Path_UnQuoted" + " " + "$Paramaters"
+                $Script:Startup_Command = $PSRun_File + " " + "`"$Full_Startup_Path_UnQuoted`"" + " " + "$Paramaters"
                 $Form_PS1.close()
             })
 
         $Form_PS1.Add_Closing({
                 $Script:Paramaters = $parameters_to_add.Text.ToString()
-                $Script:Startup_Command = $PSRun_File + " " + "$Full_Startup_Path_UnQuoted" + " " + "$Paramaters"
+                $Script:Startup_Command = $PSRun_File + " " + "`"$Full_Startup_Path_UnQuoted`"" + " " + "$Paramaters"
             })
 
         $Form_PS1.ShowDialog() | Out-Null
@@ -616,13 +730,13 @@ switch ($Type) {
 
         $add_parameters.add_click({
                 $Script:Paramaters = $parameters_to_add.Text.ToString()
-                $Script:Startup_Command = "wscript.exe $Full_Startup_Path_UnQuoted $Paramaters"
+                $Script:Startup_Command = "wscript.exe `"$Full_Startup_Path_UnQuoted`" $Paramaters"
                 $Form_VBS.close()
             })
 
         $Form_VBS.Add_Closing({
                 $Script:Paramaters = $parameters_to_add.Text.ToString()
-                $Script:Startup_Command = "wscript.exe $Full_Startup_Path_UnQuoted $Paramaters"
+                $Script:Startup_Command = "wscript.exe `"$Full_Startup_Path_UnQuoted`" $Paramaters"
             })
 
         $Form_VBS.ShowDialog() | Out-Null
@@ -636,19 +750,44 @@ switch ($Type) {
         $Startup_Command = Enable-StartupScripts -OriginalCommand $Startup_Command
         New-WSB -Command_to_Run $Startup_Command
     }
+    default {
+        Show-RunError -Message "The type `"$Type`" is not supported, nothing can be started in the sandbox."
+        exit 1
+    }
 }
 
+if (-not (Test-Path -LiteralPath $Sandbox_File_Path) ) {
+    Show-RunError -Message "No sandbox configuration file has been created for type `"$Type`", the sandbox cannot be started."
+    exit 1
+}
+
+Write-RunLog -Message_Type "INFO" -Message "Starting the sandbox with `"$Sandbox_File_Path`""
 Start-Process -FilePath $Sandbox_File_Path -Wait
 do {
     Start-Sleep -Seconds 1
 } while (Get-Process -Name "WindowsSandboxServer" -ErrorAction SilentlyContinue)
 
 if ($WSB_Cleanup -eq $True) {
-    Remove-Item -LiteralPath $Sandbox_File_Path -Force -ErrorAction SilentlyContinue
-    Remove-Item -LiteralPath $Intunewin_Command_File -Force -ErrorAction SilentlyContinue
-    Remove-Item -LiteralPath $Intunewin_Content_File -Force -ErrorAction SilentlyContinue
-    Remove-Item -LiteralPath $EXE_Command_File -Force -ErrorAction SilentlyContinue
-    Remove-Item -LiteralPath "$Run_in_Sandbox_Folder\App_Bundle.sdbapp" -Force -ErrorAction SilentlyContinue
-    Remove-Item -LiteralPath "$Run_in_Sandbox_Folder\NotepadPayload" -Force -Recurse -ErrorAction SilentlyContinue
-    Remove-Item -LiteralPath "$Run_in_Sandbox_Folder\startup-scripts\OriginalCommand.txt" -Force -ErrorAction SilentlyContinue
+    # Most of these variables are only set by one of the types, for every other type they are
+    # $null. Passing $null to -LiteralPath is a parameter binding error, and that one is
+    # terminating and NOT suppressed by -ErrorAction SilentlyContinue, so empty entries have to
+    # be skipped - otherwise the script dies here at the end of every single run
+    $Files_to_Cleanup = @(
+        $Sandbox_File_Path
+        $Intunewin_Command_File
+        $Intunewin_Content_File
+        $EXE_Command_File
+        "$Run_in_Sandbox_Folder\App_Bundle.sdbapp"
+        "$Run_in_Sandbox_Folder\NotepadPayload"
+        "$Run_in_Sandbox_Folder\startup-scripts\OriginalCommand.txt"
+    )
+
+    ForEach ($File_to_Cleanup in $Files_to_Cleanup) {
+        if ( [string]::IsNullOrEmpty($File_to_Cleanup) ) {
+            continue
+        }
+        Remove-Item -LiteralPath $File_to_Cleanup -Force -Recurse -ErrorAction SilentlyContinue
+    }
 }
+
+Write-RunLog -Message_Type "INFO" -Message "Finished"
